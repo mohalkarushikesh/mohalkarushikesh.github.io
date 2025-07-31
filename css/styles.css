@@ -1,0 +1,623 @@
+/* Custom CSS for AI/ML Portfolio */
+
+/* Neural Network Background Animation - DISABLED */
+.neural-network-bg {
+    display: none;
+}
+
+.neural-network-bg::before {
+    display: none;
+}
+
+.neural-node {
+    display: none;
+}
+
+.neural-connection {
+    display: none;
+}
+
+.neural-layer {
+    display: none;
+}
+
+.neural-layer-1,
+.neural-layer-2,
+.neural-layer-3,
+.neural-layer-4,
+.neural-layer-5 {
+    display: none;
+}
+
+.data-particle {
+    display: none;
+}
+
+/* Keyframes kept for potential future use but animations disabled */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 1;
+    }
+}
+
+@keyframes flow {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes dataFlow {
+    0% {
+        transform: translateX(-100vw) translateY(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(100vw) translateY(-100px);
+        opacity: 0;
+    }
+}
+
+/* Responsive adjustments - disabled */
+@media (max-width: 768px) {
+    .neural-network-bg {
+        display: none;
+    }
+    
+    .neural-node {
+        display: none;
+    }
+}
+
+/* Custom Styles for AI/ML Portfolio */
+
+/* Smooth scrolling for the entire page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom button styles */
+.btn-primary {
+    @apply inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105;
+}
+
+.btn-secondary {
+    @apply inline-flex items-center px-6 py-3 border border-blue-600 text-blue-600 dark:text-blue-400 font-semibold rounded-lg hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105;
+}
+
+/* Navigation link styles */
+.nav-link {
+    @apply text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+}
+
+.mobile-nav-link {
+    @apply text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200;
+}
+
+/* Skill tag styles */
+.skill-tag {
+    @apply inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium rounded-full;
+}
+
+.tech-tag {
+    @apply inline-block px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-medium rounded;
+}
+
+/* Social link styles */
+.social-link {
+    @apply text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200;
+}
+
+/* Project card hover effects */
+.project-card {
+    @apply transform transition-all duration-300 hover:scale-105;
+}
+
+/* Blog card hover effects */
+.blog-card {
+    @apply transform transition-all duration-300 hover:scale-105;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Form input focus styles */
+input:focus, textarea:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Dark mode toggle animation */
+#darkModeToggle svg {
+    @apply transition-transform duration-300;
+}
+
+#darkModeToggle:hover svg {
+    @apply transform rotate-12;
+}
+
+/* Back to top button animation */
+#backToTop {
+    @apply transition-all duration-300;
+}
+
+#backToTop.visible {
+    @apply opacity-100 visible;
+}
+
+/* Mobile menu animation */
+#mobileMenu {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+#mobileMenu.hidden {
+    @apply opacity-0 max-h-0 overflow-hidden;
+}
+
+#mobileMenu:not(.hidden) {
+    @apply opacity-100 max-h-96;
+}
+
+/* Hero section gradient animation */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#home {
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* Skill tags animation */
+.skill-tag {
+    @apply transition-all duration-300;
+}
+
+.skill-tag:hover {
+    @apply transform scale-110 bg-blue-200 dark:bg-blue-800;
+}
+
+/* Project card image hover effect */
+.project-card .bg-gradient-to-br {
+    @apply transition-all duration-300;
+}
+
+.project-card:hover .bg-gradient-to-br {
+    @apply transform scale-105;
+}
+
+/* Contact form validation styles */
+.form-error {
+    @apply border-red-500 focus:ring-red-500;
+}
+
+.form-success {
+    @apply border-green-500 focus:ring-green-500;
+}
+
+/* Loading animation for form submission */
+.btn-loading {
+    @apply opacity-75 cursor-not-allowed;
+}
+
+.btn-loading::after {
+    content: '';
+    @apply absolute inset-0 bg-white bg-opacity-20 rounded-lg;
+}
+
+/* Typography enhancements */
+h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+}
+
+/* Section spacing */
+section {
+    @apply relative;
+}
+
+/* Custom focus styles for accessibility */
+*:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
+}
+
+/* Print styles */
+@media print {
+    .btn-primary, .btn-secondary, #backToTop, #darkModeToggle {
+        @apply hidden;
+    }
+    
+    body {
+        @apply text-black bg-white;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .btn-primary {
+        @apply bg-black text-white border-2 border-black;
+    }
+    
+    .btn-secondary {
+        @apply border-2 border-black text-black;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        @apply transition-none;
+    }
+    
+    #home {
+        animation: none;
+    }
+    
+    .project-card:hover {
+        @apply transform-none;
+    }
+}
+
+/* Custom animations for AOS library */
+[data-aos] {
+    @apply transition-all duration-1000;
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+    h1 {
+        @apply text-4xl;
+    }
+    
+    h2 {
+        @apply text-3xl;
+    }
+    
+    h3 {
+        @apply text-2xl;
+    }
+}
+
+/* Custom utility classes */
+.text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+.bg-glass {
+    @apply bg-white bg-opacity-10 backdrop-blur-sm;
+}
+
+.shadow-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Hover effects for interactive elements */
+.interactive {
+    @apply transition-all duration-300 cursor-pointer;
+}
+
+.interactive:hover {
+    @apply transform scale-105 shadow-lg;
+}
+
+/* Custom grid for projects */
+.projects-grid {
+    @apply grid gap-8;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Responsive navigation */
+@media (max-width: 768px) {
+    .nav-link {
+        @apply text-base;
+    }
+}
+
+/* Custom focus ring for better accessibility */
+.focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Loading states */
+.loading {
+    @apply animate-pulse;
+}
+
+/* Success and error states */
+.success {
+    @apply text-green-600 dark:text-green-400;
+}
+
+.error {
+    @apply text-red-600 dark:text-red-400;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+}
+
+/* Custom scrollbar for webkit browsers */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Selection styles */
+::selection {
+    @apply bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100;
+}
+
+/* Placeholder styles */
+::placeholder {
+    @apply text-gray-500 dark:text-gray-400;
+}
+
+/* Custom border radius */
+.rounded-custom {
+    border-radius: 1rem;
+}
+
+/* Glass morphism effect */
+.glass {
+    @apply bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20;
+}
+
+/* Gradient text animation */
+.gradient-text {
+    @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+
+/* Custom shadows */
+.shadow-custom {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-custom-dark {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive padding */
+.responsive-padding {
+    @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Custom transitions */
+.transition-custom {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+/* Hover effects for cards */
+.card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:transform hover:scale-105;
+}
+
+/* Custom button variants */
+.btn-outline {
+    @apply border-2 border-blue-600 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all duration-300;
+}
+
+.btn-ghost {
+    @apply text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300;
+}
+
+/* Custom spacing utilities */
+.space-y-custom > * + * {
+    @apply mt-8;
+}
+
+/* Custom grid utilities */
+.grid-custom {
+    @apply grid gap-8;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Custom container */
+.container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Custom section spacing */
+.section-padding {
+    @apply py-20;
+}
+
+/* Custom text utilities */
+.text-balance {
+    text-wrap: balance;
+}
+
+/* Custom aspect ratios */
+.aspect-video {
+    aspect-ratio: 16 / 9;
+}
+
+.aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+/* Custom animations for loading states */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Custom focus styles for form elements */
+.form-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+/* Custom hover effects */
+.hover-lift {
+    @apply transition-transform duration-300 hover:transform hover:-translate-y-1;
+}
+
+.hover-glow {
+    @apply transition-shadow duration-300 hover:shadow-glow;
+}
+
+/* Custom responsive utilities */
+@media (max-width: 640px) {
+    .mobile-hidden {
+        @apply hidden;
+    }
+}
+
+@media (min-width: 641px) {
+    .desktop-hidden {
+        @apply hidden;
+    }
+}
+
+/* Custom dark mode utilities */
+.dark-mode-toggle {
+    @apply transition-colors duration-300;
+}
+
+/* Custom animation delays */
+.delay-100 {
+    animation-delay: 100ms;
+}
+
+.delay-200 {
+    animation-delay: 200ms;
+}
+
+.delay-300 {
+    animation-delay: 300ms;
+}
+
+.delay-400 {
+    animation-delay: 400ms;
+}
+
+.delay-500 {
+    animation-delay: 500ms;
+}
+
+/* Custom z-index utilities */
+.z-60 {
+    z-index: 60;
+}
+
+.z-70 {
+    z-index: 70;
+}
+
+.z-80 {
+    z-index: 80;
+}
+
+.z-90 {
+    z-index: 90;
+}
+
+.z-100 {
+    z-index: 100;
+} 
