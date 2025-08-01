@@ -1129,7 +1129,20 @@ class ResumeManager {
     loadResumesFromStorage() {
         const stored = localStorage.getItem('resumes');
         if (stored) {
-            return JSON.parse(stored);
+            // Check if the stored data has the old format (AI Research Engineer, etc.)
+            const parsedData = JSON.parse(stored);
+            if (parsedData[0] && parsedData[0].content && parsedData[0].content.experience) {
+                const firstExp = parsedData[0].content.experience[0];
+                if (firstExp && firstExp.title === "AI Research Engineer") {
+                    // Clear old data and return new default
+                    localStorage.removeItem('resumes');
+                    console.log('Cleared old resume data, loading new default resume');
+                } else {
+                    return parsedData;
+                }
+            } else {
+                return parsedData;
+            }
         }
         // Default resume
         return [
@@ -1143,28 +1156,22 @@ class ResumeManager {
                 content: {
                     experience: [
                         {
-                            title: "QA Engineer",
+                            title: "Programmer Analyst",
                             company: "Cognizant",
                             period: "2023 - Present",
-                            description: "Working as a QA Engineer at Cognizant, responsible for quality assurance and testing processes. Gained experience in software testing methodologies and quality control procedures."
-                        },
-                        {
-                            title: "Programmer Analyst",
-                            company: "Previous Company",
-                            period: "2022 - 2023",
-                            description: "Started as Intern, progressed to PA Trainee, and then promoted to Programmer Analyst. Developed programming skills and gained hands-on experience in software development."
+                            description: "Working as a QA Engineer at Cognizant, responsible for software testing, quality assurance, and ensuring product reliability. Contributing to the development of robust testing frameworks and methodologies."
                         },
                         {
                             title: "PA Trainee",
-                            company: "Previous Company",
-                            period: "2021 - 2022",
-                            description: "Trained as Programmer Analyst, learning software development practices and programming fundamentals."
+                            company: "Cognizant",
+                            period: "2022 - 2023",
+                            description: "Gained hands-on experience in software development lifecycle, testing methodologies, and quality assurance processes. Collaborated with development teams to ensure product quality."
                         },
                         {
                             title: "Intern",
-                            company: "Previous Company",
-                            period: "2020 - 2021",
-                            description: "Started career as an intern, learning basic programming concepts and software development lifecycle."
+                            company: "Cognizant",
+                            period: "2021 - 2022",
+                            description: "Started career journey as an intern, learning fundamental software development concepts, testing practices, and industry best practices in a professional environment."
                         }
                     ],
                     education: [
@@ -1225,7 +1232,7 @@ class ResumeManager {
                     <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Experience</h4>
                     <div class="space-y-4">
                         ${resume.content.experience.map((exp, index) => `
-                            <div class="border-l-4 border-${index === 0 ? 'blue' : 'green'}-500 pl-4">
+                            <div class="border-l-4 border-${index === 0 ? 'blue' : index === 1 ? 'green' : 'purple'}-500 pl-4">
                                 <h5 class="font-semibold text-gray-900 dark:text-white">${exp.title}</h5>
                                 <p class="text-sm text-gray-600 dark:text-gray-400">${exp.company} • ${exp.period}</p>
                                 <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
