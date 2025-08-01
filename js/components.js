@@ -648,7 +648,8 @@ class BlogManager {
                 <div class="relative">
                     <img src="${blog.image || 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500'}" 
                          alt="${blog.title}" 
-                         class="w-full h-48 object-cover">
+                         class="w-full h-48 object-cover"
+                         onerror="this.src='https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500'">
                     <div class="absolute top-4 left-4">
                         <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-medium">${blog.category}</span>
                     </div>
@@ -1176,10 +1177,10 @@ class ResumeManager {
                     ],
                     education: [
                         {
-                            degree: "Bachelor's in Computer Science",
-                            school: "University of Mumbai",
+                            degree: "BE in ENTC",
+                            school: "AISSMS IOIT College",
                             period: "2020 - 2024",
-                            description: "Focused on artificial intelligence, machine learning, and software engineering. Completed projects in computer vision and deep learning."
+                            description: "Bachelor of Engineering in Electronics and Telecommunication Engineering. Focused on electronics, communication systems, and engineering fundamentals."
                         },
                         {
                             degree: "AI/ML Certifications",
@@ -1679,7 +1680,15 @@ class ProjectManager {
     loadProjectsFromStorage() {
         const stored = localStorage.getItem('projects');
         if (stored) {
-            return JSON.parse(stored);
+            // Check if the stored data has old placeholder images
+            const parsedData = JSON.parse(stored);
+            if (parsedData[0] && parsedData[0].image && parsedData[0].image.includes('via.placeholder.com')) {
+                // Clear old data and return new default
+                localStorage.removeItem('projects');
+                console.log('Cleared old project data, loading new default projects');
+            } else {
+                return parsedData;
+            }
         }
         // Default projects
         return [
@@ -1689,7 +1698,7 @@ class ProjectManager {
                 description: "A deep learning project using Convolutional Neural Networks for image classification.",
                 category: "Computer Vision",
                 content: "This project implements a CNN architecture for image classification using TensorFlow and Keras. The model achieves high accuracy on various datasets and can be used for real-world applications.",
-                image: "https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=CNN+Project",
+                image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=300&fit=crop",
                 tags: ["CNN", "Image Classification", "TensorFlow", "Deep Learning"],
                 link: "https://github.com/username/image-classification",
                 demo: "https://demo.example.com/image-classification",
@@ -1701,7 +1710,7 @@ class ProjectManager {
                 description: "An NLP pipeline for text processing and sentiment analysis.",
                 category: "NLP",
                 content: "This project builds a comprehensive NLP pipeline that includes text preprocessing, tokenization, and sentiment analysis. It uses state-of-the-art transformer models for better accuracy.",
-                image: "https://via.placeholder.com/400x300/10B981/FFFFFF?text=NLP+Project",
+                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=300&fit=crop",
                 tags: ["NLP", "Sentiment Analysis", "Transformers", "Python"],
                 link: "https://github.com/username/nlp-pipeline",
                 demo: "https://demo.example.com/nlp-pipeline",
@@ -1713,7 +1722,7 @@ class ProjectManager {
                 description: "A reinforcement learning agent for game playing and decision making.",
                 category: "Deep Learning",
                 content: "This project implements a reinforcement learning agent using Q-learning and Deep Q-Networks. The agent learns to play games and make optimal decisions in various environments.",
-                image: "https://via.placeholder.com/400x300/F59E0B/FFFFFF?text=RL+Project",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500&h=300&fit=crop",
                 tags: ["Reinforcement Learning", "Q-Learning", "PyTorch", "Gym"],
                 link: "https://github.com/username/rl-agent",
                 demo: "https://demo.example.com/rl-agent",
@@ -1744,7 +1753,8 @@ class ProjectManager {
         
         card.innerHTML = `
             <div class="relative">
-                <img src="${project.image}" alt="${project.title}" class="w-full h-48 object-cover">
+                <img src="${project.image}" alt="${project.title}" class="w-full h-48 object-cover" 
+                     onerror="this.src='https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=300&fit=crop'">
                 <div class="absolute top-4 right-4">
                     <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">${project.category}</span>
                 </div>
