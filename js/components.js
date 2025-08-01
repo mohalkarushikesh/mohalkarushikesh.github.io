@@ -7,7 +7,7 @@ const projects = [
         title: "Movie Recommender System (RBM)",
         description: "Built a sophisticated movie recommendation system using Restricted Boltzmann Machines (RBM) for collaborative filtering. Achieved excellent performance with MAE < 0.3 on MovieLens dataset.",
         technologies: ["RBM", "Collaborative Filtering", "PyTorch"],
-        image: "assets/project1.jpg",
+        image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM",
         featured: true,
         status: "completed"
@@ -17,7 +17,7 @@ const projects = [
         title: "Google Stock Price Prediction (RNN-LSTM)",
         description: "Developed a Recurrent Neural Network with LSTM layers to predict Google stock prices. Implemented time series forecasting with 60-day lookback window for accurate predictions.",
         technologies: ["RNN", "LSTM", "TensorFlow"],
-        image: "assets/project2.jpg",
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM",
         featured: false,
         status: "completed"
@@ -27,7 +27,7 @@ const projects = [
         title: "Cat vs Dog Classifier (CNN)",
         description: "Built a Convolutional Neural Network for binary image classification to distinguish between cats and dogs. Achieved high accuracy using transfer learning and data augmentation techniques.",
         technologies: ["CNN", "Image Classification", "TensorFlow"],
-        image: "assets/project3.jpg",
+        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN",
         featured: false,
         status: "completed"
@@ -37,7 +37,7 @@ const projects = [
         title: "Lung Cancer Detection (CNN)",
         description: "Developed a deep learning model for early detection of lung cancer from CT scan images. Implemented medical image analysis with high precision for healthcare applications.",
         technologies: ["CNN", "Medical Imaging", "PyTorch"],
-        image: "assets/project4.jpg",
+        image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN",
         featured: false,
         status: "completed"
@@ -47,7 +47,7 @@ const projects = [
         title: "Pneumonia Detection (Deep Learning)",
         description: "Created a deep learning system for detecting pneumonia from chest X-ray images. Implemented binary classification with high accuracy for medical diagnosis.",
         technologies: ["Deep Learning", "Medical Diagnosis", "TensorFlow"],
-        image: "assets/project5.jpg",
+        image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning",
         featured: false,
         status: "completed"
@@ -57,7 +57,7 @@ const projects = [
         title: "Deep Learning Medical Diagnoser",
         description: "Built a comprehensive medical diagnosis system using deep learning for multiple disease detection. Integrated various medical imaging modalities for accurate diagnosis.",
         technologies: ["Deep Learning", "Medical AI", "Multi-class"],
-        image: "assets/project6.jpg",
+        image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500&h=300&fit=crop",
         github: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser",
         featured: false,
         status: "completed"
@@ -207,7 +207,7 @@ function createBlogCard(blog) {
 
 /* ===== LOAD PROJECTS ===== */
 function loadProjects() {
-    const projectsContainer = document.querySelector('#projects .grid');
+    const projectsContainer = document.getElementById('projectGrid');
     
     if (projectsContainer) {
         projectsContainer.innerHTML = projects.map(project => createProjectCard(project)).join('');
@@ -402,25 +402,16 @@ function createFilterButtons(container, items, renderFunction) {
 
 /* ===== INITIALIZE COMPONENTS ===== */
 document.addEventListener('DOMContentLoaded', function() {
-    // Load projects and blogs
-    loadProjects();
+    // Load blogs
     loadBlogs();
     
-    // Add search and filter functionality for projects only
-    const projectsSection = document.getElementById('projects');
-    
-    if (projectsSection) {
-        createSearchBar(projectsSection, projects, createProjectCard);
-        createFilterButtons(projectsSection, projects, createProjectCard);
-    }
-
     // Initialize blog manager (handles its own search/filter)
     blogManager = new BlogManager();
     
     // Initialize resume manager
     resumeManager = new ResumeManager();
     
-    // Initialize project manager
+    // Initialize project manager (handles projects loading and management)
     projectManager = new ProjectManager();
 });
 
@@ -1690,43 +1681,79 @@ class ProjectManager {
                 return parsedData;
             }
         }
-        // Default projects
+        // Default projects - using the original project structure
         return [
             {
                 id: 1,
-                title: "Image Classification with CNN",
-                description: "A deep learning project using Convolutional Neural Networks for image classification.",
-                category: "Computer Vision",
-                content: "This project implements a CNN architecture for image classification using TensorFlow and Keras. The model achieves high accuracy on various datasets and can be used for real-world applications.",
+                title: "Movie Recommender System (RBM)",
+                description: "Built a sophisticated movie recommendation system using Restricted Boltzmann Machines (RBM) for collaborative filtering. Achieved excellent performance with MAE < 0.3 on MovieLens dataset.",
+                technologies: ["RBM", "Collaborative Filtering", "PyTorch"],
                 image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=300&fit=crop",
-                tags: ["CNN", "Image Classification", "TensorFlow", "Deep Learning"],
-                link: "https://github.com/username/image-classification",
-                demo: "https://demo.example.com/image-classification",
+                github: "https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM",
+                featured: true,
+                status: "completed",
+                category: "Machine Learning",
                 date: "2024-01-15"
             },
             {
                 id: 2,
-                title: "Natural Language Processing Pipeline",
-                description: "An NLP pipeline for text processing and sentiment analysis.",
-                category: "NLP",
-                content: "This project builds a comprehensive NLP pipeline that includes text preprocessing, tokenization, and sentiment analysis. It uses state-of-the-art transformer models for better accuracy.",
+                title: "Google Stock Price Prediction (RNN-LSTM)",
+                description: "Developed a Recurrent Neural Network with LSTM layers to predict Google stock prices. Implemented time series forecasting with 60-day lookback window for accurate predictions.",
+                technologies: ["RNN", "LSTM", "TensorFlow"],
                 image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500&h=300&fit=crop",
-                tags: ["NLP", "Sentiment Analysis", "Transformers", "Python"],
-                link: "https://github.com/username/nlp-pipeline",
-                demo: "https://demo.example.com/nlp-pipeline",
-                date: "2024-02-20"
+                github: "https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM",
+                featured: false,
+                status: "completed",
+                category: "Deep Learning",
+                date: "2024-01-20"
             },
             {
                 id: 3,
-                title: "Reinforcement Learning Agent",
-                description: "A reinforcement learning agent for game playing and decision making.",
+                title: "Cat vs Dog Classifier (CNN)",
+                description: "Built a Convolutional Neural Network for binary image classification to distinguish between cats and dogs. Achieved high accuracy using transfer learning and data augmentation techniques.",
+                technologies: ["CNN", "Image Classification", "TensorFlow"],
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500&h=300&fit=crop",
+                github: "https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN",
+                featured: false,
+                status: "completed",
+                category: "Computer Vision",
+                date: "2024-02-01"
+            },
+            {
+                id: 4,
+                title: "Lung Cancer Detection (CNN)",
+                description: "Developed a deep learning model for early detection of lung cancer from CT scan images. Implemented medical image analysis with high precision for healthcare applications.",
+                technologies: ["CNN", "Medical Imaging", "PyTorch"],
+                image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=500&h=300&fit=crop",
+                github: "https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN",
+                featured: false,
+                status: "completed",
+                category: "Computer Vision",
+                date: "2024-02-15"
+            },
+            {
+                id: 5,
+                title: "Pneumonia Detection (Deep Learning)",
+                description: "Created a deep learning system for detecting pneumonia from chest X-ray images. Implemented binary classification with high accuracy for medical diagnosis.",
+                technologies: ["Deep Learning", "Medical Diagnosis", "TensorFlow"],
+                image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=500&h=300&fit=crop",
+                github: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning",
+                featured: false,
+                status: "completed",
                 category: "Deep Learning",
-                content: "This project implements a reinforcement learning agent using Q-learning and Deep Q-Networks. The agent learns to play games and make optimal decisions in various environments.",
-                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500&h=300&fit=crop",
-                tags: ["Reinforcement Learning", "Q-Learning", "PyTorch", "Gym"],
-                link: "https://github.com/username/rl-agent",
-                demo: "https://demo.example.com/rl-agent",
-                date: "2024-03-10"
+                date: "2024-03-01"
+            },
+            {
+                id: 6,
+                title: "Deep Learning Medical Diagnoser",
+                description: "Built a comprehensive medical diagnosis system using deep learning for multiple disease detection. Integrated various medical imaging modalities for accurate diagnosis.",
+                technologies: ["Deep Learning", "Medical AI", "Multi-class"],
+                image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500&h=300&fit=crop",
+                github: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser",
+                featured: false,
+                status: "completed",
+                category: "Deep Learning",
+                date: "2024-03-15"
             }
         ];
     }
@@ -1736,7 +1763,7 @@ class ProjectManager {
     }
 
     loadProjects() {
-        const projectGrid = document.querySelector('#projects .grid');
+        const projectGrid = document.getElementById('projectGrid');
         if (!projectGrid) return;
 
         projectGrid.innerHTML = '';
@@ -1751,25 +1778,37 @@ class ProjectManager {
         card.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300';
         card.setAttribute('data-aos', 'fade-up');
         
+        // Handle both old and new project structures
+        const technologies = project.technologies || project.tags || [];
+        const github = project.github || project.link || '';
+        const demo = project.demo || '';
+        const category = project.category || 'AI/ML';
+        const status = project.status || 'completed';
+        
         card.innerHTML = `
             <div class="relative">
                 <img src="${project.image}" alt="${project.title}" class="w-full h-48 object-cover" 
                      onerror="this.src='https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=300&fit=crop'">
                 <div class="absolute top-4 right-4">
-                    <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">${project.category}</span>
+                    <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">${category}</span>
                 </div>
+                ${project.featured ? `
+                    <div class="absolute top-4 left-4">
+                        <span class="px-2 py-1 bg-yellow-500 text-white text-xs rounded-full">Featured</span>
+                    </div>
+                ` : ''}
             </div>
             <div class="p-6">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">${project.title}</h3>
                 <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">${project.description}</p>
                 <div class="flex flex-wrap gap-2 mb-4">
-                    ${project.tags.map(tag => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded">${tag}</span>`).join('')}
+                    ${technologies.map(tech => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded">${tech}</span>`).join('')}
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-sm text-gray-500 dark:text-gray-400">${new Date(project.date).toLocaleDateString()}</span>
                     <div class="flex gap-2">
-                        ${project.link ? `<a href="${project.link}" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">Code</a>` : ''}
-                        ${project.demo ? `<a href="${project.demo}" target="_blank" class="text-green-500 hover:text-green-700 text-sm">Demo</a>` : ''}
+                        ${github ? `<a href="${github}" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">Code</a>` : ''}
+                        ${demo ? `<a href="${demo}" target="_blank" class="text-green-500 hover:text-green-700 text-sm">Demo</a>` : ''}
                     </div>
                 </div>
             </div>
@@ -1784,9 +1823,10 @@ class ProjectManager {
         const sortBy = document.getElementById('projectSortBy')?.value || 'date';
 
         let filteredProjects = this.projects.filter(project => {
+            const technologies = project.technologies || project.tags || [];
             const matchesSearch = project.title.toLowerCase().includes(searchTerm) ||
                                 project.description.toLowerCase().includes(searchTerm) ||
-                                project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+                                technologies.some(tech => tech.toLowerCase().includes(searchTerm));
             const matchesCategory = !categoryFilter || project.category === categoryFilter;
             return matchesSearch && matchesCategory;
         });
@@ -1806,7 +1846,7 @@ class ProjectManager {
         });
 
         // Update display
-        const projectGrid = document.querySelector('#projects .grid');
+        const projectGrid = document.getElementById('projectGrid');
         if (projectGrid) {
             projectGrid.innerHTML = '';
             filteredProjects.forEach(project => {
@@ -1839,12 +1879,13 @@ class ProjectManager {
 
     populateProjectForm(project) {
         document.getElementById('projectTitle').value = project.title;
-        document.getElementById('projectCategory').value = project.category;
+        document.getElementById('projectCategory').value = project.category || '';
         document.getElementById('projectDescription').value = project.description;
-        document.getElementById('projectContent').value = project.content;
+        document.getElementById('projectContent').value = project.content || '';
         document.getElementById('projectImage').value = project.image || '';
-        document.getElementById('projectTags').value = project.tags.join(', ');
-        document.getElementById('projectLink').value = project.link || '';
+        const technologies = project.technologies || project.tags || [];
+        document.getElementById('projectTags').value = technologies.join(', ');
+        document.getElementById('projectLink').value = project.github || project.link || '';
         document.getElementById('projectDemo').value = project.demo || '';
     }
 
@@ -1864,10 +1905,12 @@ class ProjectManager {
             description: formData.get('description'),
             content: formData.get('content'),
             image: formData.get('image'),
-            tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
-            link: formData.get('link'),
+            technologies: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+            github: formData.get('link'),
             demo: formData.get('demo'),
-            date: new Date().toISOString().split('T')[0]
+            date: new Date().toISOString().split('T')[0],
+            featured: false,
+            status: 'completed'
         };
         
         if (this.currentProjectId) {
