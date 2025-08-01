@@ -416,6 +416,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize blog manager (handles its own search/filter)
     blogManager = new BlogManager();
+    
+    // Initialize resume manager
+    resumeManager = new ResumeManager();
 });
 
 // Export for use in other modules
@@ -962,6 +965,505 @@ class BlogManager {
     loadMoreBlogs() {
         // Implement pagination logic here
         this.showNotification('Load more functionality coming soon!', 'info');
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+        
+        // Set colors based on type
+        switch (type) {
+            case 'success':
+                notification.className += ' bg-green-500 text-white';
+                break;
+            case 'error':
+                notification.className += ' bg-red-500 text-white';
+                break;
+            case 'warning':
+                notification.className += ' bg-yellow-500 text-white';
+                break;
+            default:
+                notification.className += ' bg-blue-500 text-white';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Resume Management System
+class ResumeManager {
+    constructor() {
+        this.resumes = this.loadResumesFromStorage();
+        this.currentResumeId = null;
+        this.isAdmin = false; // Start with admin mode disabled
+        this.adminPassword = "perceptron"; // Same password as blog system
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadResume();
+        this.toggleAdminControls();
+        this.checkAdminStatus();
+    }
+
+    checkAdminStatus() {
+        // Check if admin is already authenticated
+        const isAuthenticated = sessionStorage.getItem('resumeAdminAuthenticated');
+        if (isAuthenticated === 'true') {
+            this.isAdmin = true;
+            this.toggleAdminControls();
+        }
+    }
+
+    authenticateAdmin() {
+        const password = prompt("Enter admin password:");
+        if (password === this.adminPassword) {
+            this.isAdmin = true;
+            sessionStorage.setItem('resumeAdminAuthenticated', 'true');
+            this.toggleAdminControls();
+            this.showNotification('Admin access granted!', 'success');
+        } else {
+            this.showNotification('Incorrect password!', 'error');
+        }
+    }
+
+    setupEventListeners() {
+        // Admin controls
+        const uploadResumeBtn = document.getElementById('uploadResumeBtn');
+        const updateResumeBtn = document.getElementById('updateResumeBtn');
+        const deleteResumeBtn = document.getElementById('deleteResumeBtn');
+        const resumeModal = document.getElementById('resumeModal');
+        const resumeForm = document.getElementById('resumeForm');
+        const closeResumeModal = document.getElementById('closeResumeModal');
+        const cancelResumeBtn = document.getElementById('cancelResumeBtn');
+        const downloadResumeBtn = document.getElementById('downloadResumeBtn');
+
+        if (uploadResumeBtn) uploadResumeBtn.addEventListener('click', () => this.openResumeModal());
+        if (updateResumeBtn) updateResumeBtn.addEventListener('click', () => this.showResumeSelectionModal('update'));
+        if (deleteResumeBtn) deleteResumeBtn.addEventListener('click', () => this.deleteSelectedResume());
+        if (closeResumeModal) closeResumeModal.addEventListener('click', () => this.closeResumeModal());
+        if (cancelResumeBtn) cancelResumeBtn.addEventListener('click', () => this.closeResumeModal());
+        if (resumeForm) resumeForm.addEventListener('submit', (e) => this.handleResumeSubmit(e));
+        if (downloadResumeBtn) downloadResumeBtn.addEventListener('click', () => this.downloadResume());
+
+        // Close modal on outside click
+        if (resumeModal) resumeModal.addEventListener('click', (e) => {
+            if (e.target === resumeModal) this.closeResumeModal();
+        });
+
+        // Add admin authentication button
+        this.addAdminAuthButton();
+    }
+
+    addAdminAuthButton() {
+        const adminControls = document.getElementById('resumeAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section, but hide other buttons when not authenticated
+            adminControls.classList.remove('hidden');
+            
+            if (!adminControls.querySelector('#resumeAdminAuthBtn')) {
+                const authBtn = document.createElement('button');
+                authBtn.id = 'resumeAdminAuthBtn';
+                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mb-4';
+                authBtn.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
+                `;
+                authBtn.addEventListener('click', () => this.authenticateAdmin());
+                adminControls.insertBefore(authBtn, adminControls.firstChild);
+            }
+            
+            // Show/hide other admin buttons based on authentication status
+            const uploadResumeBtn = document.getElementById('uploadResumeBtn');
+            const updateResumeBtn = document.getElementById('updateResumeBtn');
+            const deleteResumeBtn = document.getElementById('deleteResumeBtn');
+            
+            if (uploadResumeBtn) uploadResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (updateResumeBtn) updateResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (deleteResumeBtn) deleteResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+        }
+    }
+
+    toggleAdminControls() {
+        const adminControls = document.getElementById('resumeAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section
+            adminControls.classList.remove('hidden');
+            this.addAdminAuthButton();
+        }
+    }
+
+    loadResumesFromStorage() {
+        const stored = localStorage.getItem('resumes');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Default resume
+        return [
+            {
+                id: 1,
+                title: "AI/ML Engineer Resume",
+                description: "Comprehensive resume showcasing expertise in artificial intelligence, machine learning, and deep learning technologies.",
+                version: "v2.1",
+                date: "2024-01-15",
+                fileUrl: null, // Will be set when file is uploaded
+                content: {
+                    experience: [
+                        {
+                            title: "AI Research Engineer",
+                            company: "TechCorp",
+                            period: "2022 - Present",
+                            description: "Leading research in computer vision and deep learning applications."
+                        },
+                        {
+                            title: "Machine Learning Engineer",
+                            company: "DataFlow Inc",
+                            period: "2020 - 2022",
+                            description: "Developed scalable ML pipelines and recommendation systems."
+                        }
+                    ],
+                    education: [
+                        {
+                            degree: "MSc in Computer Science",
+                            school: "AI University",
+                            period: "2018 - 2020",
+                            description: "Specialized in Artificial Intelligence and Machine Learning."
+                        },
+                        {
+                            degree: "BSc in Computer Science",
+                            school: "Tech University",
+                            period: "2014 - 2018",
+                            description: "Foundation in software engineering and algorithms."
+                        }
+                    ],
+                    skills: ["Python", "TensorFlow", "PyTorch", "OpenCV", "Scikit-learn", "NLP", "Computer Vision", "Deep Learning"]
+                }
+            }
+        ];
+    }
+
+    saveResumesToStorage() {
+        localStorage.setItem('resumes', JSON.stringify(this.resumes));
+    }
+
+    loadResume() {
+        const currentResume = this.resumes[0]; // Display the first resume
+        if (!currentResume) return;
+
+        const versionDisplay = document.getElementById('resumeVersionDisplay');
+        const dateDisplay = document.getElementById('resumeDateDisplay');
+        const content = document.getElementById('resumeContent');
+
+        if (versionDisplay) versionDisplay.textContent = currentResume.version;
+        if (dateDisplay) dateDisplay.textContent = `Updated: ${new Date(currentResume.date).toLocaleDateString()}`;
+
+        if (content) {
+            content.innerHTML = this.createResumeContent(currentResume);
+        }
+    }
+
+    createResumeContent(resume) {
+        return `
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                ${resume.description}
+            </p>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Experience</h4>
+                    <div class="space-y-4">
+                        ${resume.content.experience.map((exp, index) => `
+                            <div class="border-l-4 border-${index === 0 ? 'blue' : 'green'}-500 pl-4">
+                                <h5 class="font-semibold text-gray-900 dark:text-white">${exp.title}</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${exp.company} • ${exp.period}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                                    ${exp.description}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Education</h4>
+                    <div class="space-y-4">
+                        ${resume.content.education.map((edu, index) => `
+                            <div class="border-l-4 border-${index === 0 ? 'purple' : 'orange'}-500 pl-4">
+                                <h5 class="font-semibold text-gray-900 dark:text-white">${edu.degree}</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">${edu.school} • ${edu.period}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                                    ${edu.description}
+                                </p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Skills</h4>
+                <div class="flex flex-wrap gap-2">
+                    ${resume.content.skills.map(skill => `
+                        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">${skill}</span>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    openResumeModal(mode = 'add', resumeId = null) {
+        const modal = document.getElementById('resumeModal');
+        const modalTitle = document.getElementById('resumeModalTitle');
+        const form = document.getElementById('resumeForm');
+        
+        if (mode === 'update' && resumeId) {
+            const resume = this.resumes.find(r => r.id === resumeId);
+            if (resume) {
+                this.currentResumeId = resumeId;
+                modalTitle.textContent = 'Update Resume';
+                this.populateResumeForm(resume);
+            }
+        } else {
+            this.currentResumeId = null;
+            modalTitle.textContent = 'Upload Resume';
+            form.reset();
+        }
+        
+        modal.classList.remove('hidden');
+    }
+
+    populateResumeForm(resume) {
+        document.getElementById('resumeTitle').value = resume.title;
+        document.getElementById('resumeDescription').value = resume.description;
+        document.getElementById('resumeVersion').value = resume.version;
+    }
+
+    closeResumeModal() {
+        const modal = document.getElementById('resumeModal');
+        modal.classList.add('hidden');
+        this.currentResumeId = null;
+    }
+
+    handleResumeSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const fileInput = document.getElementById('resumeFile');
+        const file = fileInput.files[0];
+        
+        if (!file && !this.currentResumeId) {
+            this.showNotification('Please select a PDF file to upload', 'error');
+            return;
+        }
+        
+        const resumeData = {
+            title: formData.get('title'),
+            description: formData.get('description'),
+            version: formData.get('version'),
+            date: new Date().toISOString().split('T')[0]
+        };
+        
+        if (this.currentResumeId) {
+            // Update existing resume
+            const index = this.resumes.findIndex(r => r.id === this.currentResumeId);
+            if (index !== -1) {
+                this.resumes[index] = { ...this.resumes[index], ...resumeData };
+            }
+        } else {
+            // Add new resume
+            resumeData.id = Math.max(...this.resumes.map(r => r.id), 0) + 1;
+            resumeData.content = this.resumes[0].content; // Use default content structure
+            this.resumes.unshift(resumeData);
+        }
+        
+        this.saveResumesToStorage();
+        this.loadResume();
+        this.closeResumeModal();
+        this.showNotification('Resume saved successfully!', 'success');
+    }
+
+    deleteSelectedResume() {
+        this.showResumeSelectionModal('delete');
+    }
+
+    showResumeSelectionModal(action) {
+        // Create modal for resume selection
+        const modal = document.createElement('div');
+        modal.id = 'resumeSelectionModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto';
+        
+        const actionText = action === 'delete' ? 'Delete' : 'Update';
+        
+        modalContent.innerHTML = `
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Select Resume to ${actionText}</h3>
+                    <button id="closeResumeSelectionModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    ${this.resumes.map(resume => `
+                        <div class="resume-selection-item border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors" data-resume-id="${resume.id}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${resume.title}</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">${resume.description}</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${resume.version}</span>
+                                        <span>${new Date(resume.date).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <button class="ml-4 px-4 py-2 bg-${action === 'delete' ? 'red' : 'blue'}-500 text-white rounded-lg hover:bg-${action === 'delete' ? 'red' : 'blue'}-600 transition-colors">
+                                    ${actionText}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button id="cancelResumeSelection" class="btn-ghost">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        const closeBtn = modal.querySelector('#closeResumeSelectionModal');
+        const cancelBtn = modal.querySelector('#cancelResumeSelection');
+        const resumeItems = modal.querySelectorAll('.resume-selection-item');
+        
+        closeBtn.addEventListener('click', () => this.closeResumeSelectionModal());
+        cancelBtn.addEventListener('click', () => this.closeResumeSelectionModal());
+        
+        resumeItems.forEach(item => {
+            const resumeId = parseInt(item.getAttribute('data-resume-id'));
+            const actionBtn = item.querySelector('button');
+            
+            actionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (action === 'delete') {
+                    this.deleteResume(resumeId);
+                } else {
+                    this.selectResumeForUpdate(resumeId);
+                }
+                this.closeResumeSelectionModal();
+            });
+        });
+        
+        // Close on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeResumeSelectionModal();
+            }
+        });
+    }
+
+    closeResumeSelectionModal() {
+        const modal = document.getElementById('resumeSelectionModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    selectResumeForUpdate(resumeId) {
+        this.currentResumeId = resumeId;
+        this.openResumeModal('update', resumeId);
+    }
+
+    deleteResume(resumeId) {
+        const resume = this.resumes.find(r => r.id === resumeId);
+        if (!resume) return;
+        
+        if (confirm(`Are you sure you want to delete "${resume.title}"?\n\nThis action cannot be undone.`)) {
+            this.resumes = this.resumes.filter(r => r.id !== resumeId);
+            this.saveResumesToStorage();
+            this.loadResume();
+            this.currentResumeId = null;
+            this.showNotification(`Resume "${resume.title}" deleted successfully!`, 'success');
+        }
+    }
+
+    downloadResume() {
+        const currentResume = this.resumes[0];
+        if (!currentResume) {
+            this.showNotification('No resume available for download', 'error');
+            return;
+        }
+        
+        // Create a simple text-based resume for download
+        const resumeText = this.createResumeText(currentResume);
+        const blob = new Blob([resumeText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentResume.title.replace(/\s+/g, '_')}_${currentResume.version}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('Resume downloaded successfully!', 'success');
+    }
+
+    createResumeText(resume) {
+        return `
+${resume.title.toUpperCase()}
+Version: ${resume.version}
+Last Updated: ${new Date(resume.date).toLocaleDateString()}
+
+${resume.description}
+
+EXPERIENCE
+${resume.content.experience.map(exp => `
+${exp.title}
+${exp.company} • ${exp.period}
+${exp.description}
+`).join('')}
+
+EDUCATION
+${resume.content.education.map(edu => `
+${edu.degree}
+${edu.school} • ${edu.period}
+${edu.description}
+`).join('')}
+
+SKILLS
+${resume.content.skills.join(', ')}
+
+---
+Generated from Rushikesh Mohalkar's Portfolio
+        `.trim();
     }
 
     showNotification(message, type = 'info') {
