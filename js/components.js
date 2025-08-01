@@ -432,4 +432,572 @@ window.componentsJS = {
     createFilterButtons,
     loadProjects,
     loadBlogs
-}; 
+};
+
+// Blog Management System
+class BlogManager {
+    constructor() {
+        this.blogs = this.loadBlogsFromStorage();
+        this.currentBlogId = null;
+        this.isAdmin = false; // Start with admin mode disabled
+        this.adminPassword = "perceptron"; // Hardcoded password
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadBlogs();
+        this.toggleAdminControls();
+        this.checkAdminStatus();
+    }
+
+    checkAdminStatus() {
+        // Check if admin is already authenticated
+        const isAuthenticated = sessionStorage.getItem('blogAdminAuthenticated');
+        if (isAuthenticated === 'true') {
+            this.isAdmin = true;
+            this.toggleAdminControls();
+        }
+    }
+
+    authenticateAdmin() {
+        const password = prompt("Enter admin password:");
+        if (password === this.adminPassword) {
+            this.isAdmin = true;
+            sessionStorage.setItem('blogAdminAuthenticated', 'true');
+            this.toggleAdminControls();
+            this.showNotification('Admin access granted!', 'success');
+        } else {
+            this.showNotification('Incorrect password!', 'error');
+        }
+    }
+
+    setupEventListeners() {
+        // Admin controls
+        const addBlogBtn = document.getElementById('addBlogBtn');
+        const editBlogBtn = document.getElementById('editBlogBtn');
+        const deleteBlogBtn = document.getElementById('deleteBlogBtn');
+        const blogModal = document.getElementById('blogModal');
+        const blogForm = document.getElementById('blogForm');
+        const closeBlogModal = document.getElementById('closeBlogModal');
+        const cancelBlogBtn = document.getElementById('cancelBlogBtn');
+        const blogViewModal = document.getElementById('blogViewModal');
+        const closeBlogViewModal = document.getElementById('closeBlogViewModal');
+
+        // Search and filter
+        const blogSearch = document.getElementById('blogSearch');
+        const blogCategoryFilter = document.getElementById('blogCategoryFilter');
+        const blogSortBy = document.getElementById('blogSortBy');
+        const loadMoreBlogs = document.getElementById('loadMoreBlogs');
+
+        if (addBlogBtn) addBlogBtn.addEventListener('click', () => this.openBlogModal());
+        if (editBlogBtn) editBlogBtn.addEventListener('click', () => this.showBlogSelectionModal('edit'));
+        if (deleteBlogBtn) deleteBlogBtn.addEventListener('click', () => this.deleteSelectedBlog());
+        if (closeBlogModal) closeBlogModal.addEventListener('click', () => this.closeBlogModal());
+        if (cancelBlogBtn) cancelBlogBtn.addEventListener('click', () => this.closeBlogModal());
+        if (closeBlogViewModal) closeBlogViewModal.addEventListener('click', () => this.closeBlogViewModal());
+        if (blogForm) blogForm.addEventListener('submit', (e) => this.handleBlogSubmit(e));
+        if (loadMoreBlogs) loadMoreBlogs.addEventListener('click', () => this.loadMoreBlogs());
+
+        // Search and filter events
+        if (blogSearch) blogSearch.addEventListener('input', (e) => this.filterBlogs());
+        if (blogCategoryFilter) blogCategoryFilter.addEventListener('change', () => this.filterBlogs());
+        if (blogSortBy) blogSortBy.addEventListener('change', () => this.filterBlogs());
+
+        // Close modals on outside click
+        if (blogModal) blogModal.addEventListener('click', (e) => {
+            if (e.target === blogModal) this.closeBlogModal();
+        });
+        if (blogViewModal) blogViewModal.addEventListener('click', (e) => {
+            if (e.target === blogViewModal) this.closeBlogViewModal();
+        });
+
+        // Add admin authentication button
+        this.addAdminAuthButton();
+    }
+
+    addAdminAuthButton() {
+        const adminControls = document.getElementById('blogAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section, but hide other buttons when not authenticated
+            adminControls.classList.remove('hidden');
+            
+            if (!adminControls.querySelector('#adminAuthBtn')) {
+                const authBtn = document.createElement('button');
+                authBtn.id = 'adminAuthBtn';
+                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mb-4';
+                authBtn.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
+                `;
+                authBtn.addEventListener('click', () => this.authenticateAdmin());
+                adminControls.insertBefore(authBtn, adminControls.firstChild);
+            }
+            
+            // Show/hide other admin buttons based on authentication status
+            const addBlogBtn = document.getElementById('addBlogBtn');
+            const editBlogBtn = document.getElementById('editBlogBtn');
+            const deleteBlogBtn = document.getElementById('deleteBlogBtn');
+            
+            if (addBlogBtn) addBlogBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (editBlogBtn) editBlogBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (deleteBlogBtn) deleteBlogBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+        }
+    }
+
+    toggleAdminControls() {
+        const adminControls = document.getElementById('blogAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section
+            adminControls.classList.remove('hidden');
+            this.addAdminAuthButton();
+        }
+    }
+
+    loadBlogsFromStorage() {
+        const stored = localStorage.getItem('blogs');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Default blogs
+        return [
+            {
+                id: 1,
+                title: "Introduction to Machine Learning",
+                description: "A comprehensive guide to understanding the basics of machine learning algorithms and their applications in modern technology.",
+                content: "Machine Learning is a subset of artificial intelligence that enables computers to learn and improve from experience without being explicitly programmed. This field has revolutionized how we approach problem-solving in various domains, from healthcare to finance to entertainment.\n\nIn this comprehensive guide, we'll explore the fundamental concepts of machine learning, including supervised learning, unsupervised learning, and reinforcement learning. We'll also dive into popular algorithms like linear regression, decision trees, and neural networks.\n\nMachine learning has become an essential tool in modern technology, powering everything from recommendation systems to autonomous vehicles. Understanding these concepts is crucial for anyone interested in artificial intelligence and data science.\n\nKey Topics Covered:\n• Supervised vs Unsupervised Learning\n• Linear Regression and Classification\n• Decision Trees and Random Forests\n• Neural Networks Fundamentals\n• Model Evaluation and Validation\n• Feature Engineering Techniques\n• Overfitting and Underfitting\n• Cross-Validation Methods\n\nReal-world applications include:\n• Netflix's recommendation system\n• Google's search algorithms\n• Medical diagnosis systems\n• Financial fraud detection\n• Autonomous vehicle navigation\n\nMachine learning continues to evolve rapidly, with new algorithms and techniques being developed constantly. Staying updated with the latest trends and technologies is essential for anyone working in this field.",
+                category: "Machine Learning",
+                image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500",
+                tags: ["AI", "Machine Learning", "Python", "Algorithms", "Data Science", "Supervised Learning", "Unsupervised Learning"],
+                date: "2024-01-15",
+                views: 1250,
+                likes: 89
+            },
+            {
+                id: 2,
+                title: "Deep Learning with Neural Networks",
+                description: "Exploring the power of neural networks and deep learning techniques for complex problem solving and pattern recognition.",
+                content: "Deep Learning represents the cutting edge of artificial intelligence, using neural networks with multiple layers to process complex patterns in data. This revolutionary approach has transformed fields like computer vision, natural language processing, and speech recognition.\n\nNeural networks are inspired by the human brain's structure, with interconnected nodes (neurons) that process information. Deep learning takes this concept further by using multiple layers of neurons, allowing the system to learn increasingly complex representations of data.\n\nIn this article, we'll explore the architecture of neural networks, including convolutional neural networks (CNNs) for image processing and recurrent neural networks (RNNs) for sequential data. We'll also discuss popular frameworks like TensorFlow and PyTorch that make deep learning accessible to developers worldwide.\n\nDeep Learning Architecture:\n• Input Layer: Receives raw data\n• Hidden Layers: Process and transform data\n• Output Layer: Produces final predictions\n• Activation Functions: Introduce non-linearity\n• Backpropagation: Updates weights and biases\n\nPopular Neural Network Types:\n• Convolutional Neural Networks (CNNs)\n• Recurrent Neural Networks (RNNs)\n• Long Short-Term Memory (LSTM)\n• Generative Adversarial Networks (GANs)\n• Transformer Networks\n\nTraining Deep Learning Models:\n• Gradient Descent Optimization\n• Learning Rate Scheduling\n• Batch Normalization\n• Dropout Regularization\n• Early Stopping Techniques\n\nApplications in Real World:\n• Image and Video Recognition\n• Natural Language Processing\n• Speech Recognition and Synthesis\n• Autonomous Systems\n• Medical Image Analysis\n• Financial Market Prediction\n• Supply Chain Optimization\n\nChallenges and Considerations:\n• Computational Requirements\n• Data Quality and Quantity\n• Interpretability Issues\n• Ethical Considerations\n• Model Deployment Strategies\n\nDeep learning continues to push the boundaries of what's possible in AI, with new architectures and techniques being developed constantly.",
+                category: "Deep Learning",
+                image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=500",
+                tags: ["Deep Learning", "Neural Networks", "TensorFlow", "PyTorch", "CNN", "RNN", "LSTM", "Computer Vision"],
+                date: "2024-01-20",
+                views: 980,
+                likes: 67
+            },
+            {
+                id: 3,
+                title: "Computer Vision Applications",
+                description: "Real-world applications of computer vision in modern technology and industry, from medical imaging to autonomous vehicles.",
+                content: "Computer Vision is revolutionizing how machines perceive and understand the visual world around us. From facial recognition systems to autonomous vehicles, computer vision technologies are becoming increasingly sophisticated and widespread.\n\nThis field combines techniques from image processing, machine learning, and artificial intelligence to enable computers to interpret and analyze visual information. Applications range from medical imaging and quality control in manufacturing to augmented reality and security systems.\n\nIn this exploration, we'll examine key computer vision techniques including image preprocessing, feature extraction, object detection, and image segmentation. We'll also look at real-world applications that demonstrate the power and potential of computer vision technology.\n\nCore Computer Vision Techniques:\n• Image Preprocessing and Enhancement\n• Feature Detection and Extraction\n• Object Detection and Recognition\n• Image Segmentation and Classification\n• Motion Analysis and Tracking\n• 3D Reconstruction and Depth Estimation\n\nPopular Algorithms and Methods:\n• SIFT and SURF Feature Detection\n• HOG (Histogram of Oriented Gradients)\n• Haar Cascades for Face Detection\n• YOLO (You Only Look Once)\n• R-CNN Family of Algorithms\n• U-Net for Medical Image Segmentation\n\nIndustry Applications:\n• Healthcare and Medical Imaging\n• Autonomous Vehicles and Robotics\n• Manufacturing Quality Control\n• Security and Surveillance\n• Retail and E-commerce\n• Agriculture and Precision Farming\n• Entertainment and Gaming\n• Augmented and Virtual Reality\n\nMedical Imaging Applications:\n• X-ray and CT Scan Analysis\n• MRI and Ultrasound Processing\n• Pathology and Microscopy\n• Dermatology and Skin Cancer Detection\n• Ophthalmology and Retinal Analysis\n• Surgical Planning and Navigation\n\nAutonomous Systems:\n• Self-driving Cars and Navigation\n• Drone and UAV Applications\n• Industrial Robotics\n• Agricultural Automation\n• Warehouse and Logistics\n• Service and Domestic Robots\n\nChallenges and Future Directions:\n• Real-time Processing Requirements\n• Robustness to Environmental Conditions\n• Privacy and Ethical Concerns\n• Integration with Edge Computing\n• Multi-modal Vision Systems\n• Explainable AI in Computer Vision\n\nComputer vision continues to evolve rapidly, with new applications being discovered and developed across various industries.",
+                category: "Computer Vision",
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=500",
+                tags: ["Computer Vision", "Image Processing", "OpenCV", "AI", "Medical Imaging", "Autonomous Vehicles", "Object Detection"],
+                date: "2024-01-25",
+                views: 756,
+                likes: 45
+            },
+            {
+                id: 4,
+                title: "Natural Language Processing Revolution",
+                description: "Exploring the latest breakthroughs in NLP, from transformer models to large language models and their transformative impact on AI.",
+                content: "Natural Language Processing (NLP) has undergone a revolutionary transformation in recent years, driven by the development of transformer architectures and large language models. This field is now at the forefront of artificial intelligence innovation.\n\nFrom simple text classification to complex language understanding and generation, NLP technologies are reshaping how we interact with computers and process human language. The emergence of models like GPT, BERT, and their successors has opened new possibilities in language processing.\n\nKey Components of Modern NLP:\n• Tokenization and Text Preprocessing\n• Word Embeddings and Vector Representations\n• Attention Mechanisms and Transformers\n• Sequence-to-Sequence Models\n• Named Entity Recognition (NER)\n• Sentiment Analysis and Text Classification\n• Machine Translation Systems\n• Question Answering and Chatbots\n\nTransformer Architecture Revolution:\n• Self-Attention Mechanisms\n• Multi-Head Attention\n• Positional Encoding\n• Encoder-Decoder Architecture\n• Pre-training and Fine-tuning\n• Transfer Learning in NLP\n\nLarge Language Models (LLMs):\n• GPT Family and Generative Models\n• BERT and Bidirectional Models\n• T5 and Text-to-Text Transfer\n• RoBERTa and Optimized BERT\n• DistilBERT and Model Compression\n• Domain-Specific Language Models\n\nReal-world Applications:\n• Virtual Assistants and Chatbots\n• Machine Translation Services\n• Content Generation and Summarization\n• Sentiment Analysis for Business\n• Information Extraction and Retrieval\n• Language Learning and Education\n• Healthcare Documentation\n• Legal Document Analysis\n\nNLP in Business and Industry:\n• Customer Service Automation\n• Market Research and Analysis\n• Social Media Monitoring\n• Content Moderation\n• Email Classification and Routing\n• Voice Search and Recognition\n• Multilingual Support Systems\n• Accessibility and Assistive Technology\n\nChallenges and Ethical Considerations:\n• Bias and Fairness in Language Models\n• Privacy and Data Protection\n• Computational Resource Requirements\n• Interpretability and Explainability\n• Multilingual and Cross-cultural Issues\n• Misinformation and Content Generation\n\nFuture Trends in NLP:\n• Multimodal Language Models\n• Few-shot and Zero-shot Learning\n• Conversational AI and Dialogue Systems\n• Real-time Language Processing\n• Edge Computing for NLP\n• Specialized Domain Models\n\nNLP continues to evolve rapidly, with new models and applications being developed constantly. The field is moving towards more human-like language understanding and generation capabilities.",
+                category: "NLP",
+                image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=500",
+                tags: ["NLP", "Transformers", "BERT", "GPT", "Language Models", "Text Processing", "AI"],
+                date: "2024-01-30",
+                views: 892,
+                likes: 78
+            },
+            {
+                id: 5,
+                title: "Reinforcement Learning Fundamentals",
+                description: "A comprehensive introduction to reinforcement learning concepts, algorithms, and their applications in modern AI systems.",
+                content: "Reinforcement Learning (RL) represents a paradigm of machine learning where agents learn to make decisions by interacting with an environment and receiving feedback in the form of rewards or penalties. This approach has been fundamental to many breakthroughs in artificial intelligence.\n\nUnlike supervised learning, where the model learns from labeled examples, or unsupervised learning, where patterns are discovered without explicit guidance, reinforcement learning operates through trial and error, learning optimal strategies through experience.\n\nCore Concepts in Reinforcement Learning:\n• Agent: The learning entity that makes decisions\n• Environment: The world in which the agent operates\n• State: The current situation or configuration\n• Action: The decision made by the agent\n• Reward: Feedback signal indicating success or failure\n• Policy: Strategy for selecting actions\n• Value Function: Expected long-term reward\n• Q-Function: Action-value function\n\nKey Algorithms and Methods:\n• Q-Learning and Deep Q-Networks (DQN)\n• Policy Gradient Methods\n• Actor-Critic Algorithms\n• Proximal Policy Optimization (PPO)\n• Trust Region Policy Optimization (TRPO)\n• Soft Actor-Critic (SAC)\n• Multi-Agent Reinforcement Learning\n• Hierarchical Reinforcement Learning\n\nApplications in Real World:\n• Game Playing and Strategy Games\n• Robotics and Autonomous Systems\n• Autonomous Vehicles and Navigation\n• Resource Management and Optimization\n• Financial Trading and Portfolio Management\n• Healthcare Treatment Planning\n• Energy Management and Smart Grids\n• Supply Chain Optimization\n\nGaming and Entertainment:\n• AlphaGo and Game AI\n• Video Game NPCs and Opponents\n• Procedural Content Generation\n• Player Behavior Modeling\n• Dynamic Difficulty Adjustment\n• Multiplayer Game Balancing\n\nRobotics and Control Systems:\n• Robot Navigation and Path Planning\n• Manipulation and Grasping\n• Human-Robot Interaction\n• Swarm Robotics\n• Autonomous Drones\n• Industrial Automation\n\nChallenges and Research Areas:\n• Sample Efficiency and Data Requirements\n• Exploration vs Exploitation Trade-off\n• Reward Function Design\n• Multi-objective Optimization\n• Safety and Constraint Satisfaction\n• Transfer Learning and Generalization\n• Interpretability and Explainability\n• Real-world Deployment Challenges\n\nFuture Directions:\n• Meta-Learning and Few-shot RL\n• Multi-agent Systems and Cooperation\n• Hierarchical and Compositional Learning\n• Inverse Reinforcement Learning\n• Imitation Learning and Human Feedback\n• Safe and Robust RL Systems\n\nReinforcement learning continues to be a rapidly evolving field, with new algorithms and applications being developed constantly. It represents one of the most promising approaches for developing truly intelligent autonomous systems.",
+                category: "Reinforcement Learning",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500",
+                tags: ["Reinforcement Learning", "Q-Learning", "Policy Gradient", "Robotics", "Game AI", "Autonomous Systems"],
+                date: "2024-02-05",
+                views: 634,
+                likes: 52
+            }
+        ];
+    }
+
+    saveBlogsToStorage() {
+        localStorage.setItem('blogs', JSON.stringify(this.blogs));
+    }
+
+    createBlogCard(blog) {
+        return `
+            <div class="blog-card bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden" data-blog-id="${blog.id}">
+                <div class="relative">
+                    <img src="${blog.image || 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500'}" 
+                         alt="${blog.title}" 
+                         class="w-full h-48 object-cover">
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-medium">${blog.category}</span>
+                    </div>
+                    <div class="absolute top-4 right-4 flex gap-2">
+                        <span class="px-2 py-1 bg-black/50 text-white rounded text-xs">👁️ ${blog.views}</span>
+                        <span class="px-2 py-1 bg-red-500 text-white rounded text-xs">❤️ ${blog.likes}</span>
+                    </div>
+                    ${this.isAdmin ? `
+                        <div class="absolute bottom-4 right-4 flex gap-2">
+                            <button onclick="blogManager.selectBlogForEdit(${blog.id})" class="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600">
+                                Edit
+                            </button>
+                            <button onclick="blogManager.deleteBlog(${blog.id})" class="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600">
+                                Delete
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">${blog.title}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">${blog.description}</p>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${blog.tags.map(tag => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">${tag}</span>`).join('')}
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">${new Date(blog.date).toLocaleDateString()}</span>
+                        <button class="btn-primary text-sm" onclick="blogManager.viewBlog(${blog.id})">
+                            Read More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    loadBlogs() {
+        const blogGrid = document.getElementById('blogGrid');
+        if (!blogGrid) return;
+
+        const filteredBlogs = this.getFilteredBlogs();
+        blogGrid.innerHTML = filteredBlogs.map(blog => this.createBlogCard(blog)).join('');
+    }
+
+    getFilteredBlogs() {
+        let filtered = [...this.blogs];
+        
+        // Search filter
+        const searchTerm = document.getElementById('blogSearch')?.value.toLowerCase();
+        if (searchTerm) {
+            filtered = filtered.filter(blog => 
+                blog.title.toLowerCase().includes(searchTerm) ||
+                blog.description.toLowerCase().includes(searchTerm) ||
+                blog.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+        }
+        
+        // Category filter
+        const categoryFilter = document.getElementById('blogCategoryFilter')?.value;
+        if (categoryFilter) {
+            filtered = filtered.filter(blog => blog.category === categoryFilter);
+        }
+        
+        // Sort
+        const sortBy = document.getElementById('blogSortBy')?.value;
+        switch (sortBy) {
+            case 'title':
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'category':
+                filtered.sort((a, b) => a.category.localeCompare(b.category));
+                break;
+            case 'popularity':
+                filtered.sort((a, b) => b.views - a.views);
+                break;
+            default: // date
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+        
+        return filtered;
+    }
+
+    filterBlogs() {
+        this.loadBlogs();
+    }
+
+    selectBlogForEdit(blogId) {
+        this.currentBlogId = blogId;
+        this.openBlogModal('edit', blogId);
+    }
+
+    openBlogModal(mode = 'add', blogId = null) {
+        const modal = document.getElementById('blogModal');
+        const modalTitle = document.getElementById('blogModalTitle');
+        const form = document.getElementById('blogForm');
+        
+        if (mode === 'edit' && blogId) {
+            const blog = this.blogs.find(b => b.id === blogId);
+            if (blog) {
+                this.currentBlogId = blogId;
+                modalTitle.textContent = 'Edit Blog';
+                this.populateBlogForm(blog);
+            }
+        } else {
+            this.currentBlogId = null;
+            modalTitle.textContent = 'Add New Blog';
+            form.reset();
+        }
+        
+        modal.classList.remove('hidden');
+    }
+
+    populateBlogForm(blog) {
+        document.getElementById('blogTitle').value = blog.title;
+        document.getElementById('blogCategory').value = blog.category;
+        document.getElementById('blogDescription').value = blog.description;
+        document.getElementById('blogContent').value = blog.content;
+        document.getElementById('blogImage').value = blog.image || '';
+        document.getElementById('blogTags').value = blog.tags.join(', ');
+    }
+
+    closeBlogModal() {
+        const modal = document.getElementById('blogModal');
+        modal.classList.add('hidden');
+        this.currentBlogId = null;
+    }
+
+    handleBlogSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const blogData = {
+            title: formData.get('title'),
+            category: formData.get('category'),
+            description: formData.get('description'),
+            content: formData.get('content'),
+            image: formData.get('image'),
+            tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+            date: new Date().toISOString().split('T')[0],
+            views: 0,
+            likes: 0
+        };
+        
+        if (this.currentBlogId) {
+            // Edit existing blog
+            const index = this.blogs.findIndex(b => b.id === this.currentBlogId);
+            if (index !== -1) {
+                // Preserve existing views and likes
+                blogData.views = this.blogs[index].views;
+                blogData.likes = this.blogs[index].likes;
+                this.blogs[index] = { ...this.blogs[index], ...blogData };
+            }
+        } else {
+            // Add new blog
+            blogData.id = Math.max(...this.blogs.map(b => b.id), 0) + 1;
+            this.blogs.unshift(blogData);
+        }
+        
+        this.saveBlogsToStorage();
+        this.loadBlogs();
+        this.closeBlogModal();
+        this.showNotification('Blog saved successfully!', 'success');
+    }
+
+    deleteSelectedBlog() {
+        this.showBlogSelectionModal('delete');
+    }
+
+    showBlogSelectionModal(action) {
+        // Create modal for blog selection
+        const modal = document.createElement('div');
+        modal.id = 'blogSelectionModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto';
+        
+        const actionText = action === 'delete' ? 'Delete' : 'Edit';
+        const actionColor = action === 'delete' ? 'text-red-600' : 'text-blue-600';
+        
+        modalContent.innerHTML = `
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Select Blog to ${actionText}</h3>
+                    <button id="closeBlogSelectionModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    ${this.blogs.map(blog => `
+                        <div class="blog-selection-item border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors" data-blog-id="${blog.id}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${blog.title}</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-2 line-clamp-2">${blog.description}</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${blog.category}</span>
+                                        <span>👁️ ${blog.views} views</span>
+                                        <span>❤️ ${blog.likes} likes</span>
+                                        <span>${new Date(blog.date).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <button class="ml-4 px-4 py-2 bg-${action === 'delete' ? 'red' : 'blue'}-500 text-white rounded-lg hover:bg-${action === 'delete' ? 'red' : 'blue'}-600 transition-colors">
+                                    ${actionText}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button id="cancelBlogSelection" class="btn-ghost">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        const closeBtn = modal.querySelector('#closeBlogSelectionModal');
+        const cancelBtn = modal.querySelector('#cancelBlogSelection');
+        const blogItems = modal.querySelectorAll('.blog-selection-item');
+        
+        closeBtn.addEventListener('click', () => this.closeBlogSelectionModal());
+        cancelBtn.addEventListener('click', () => this.closeBlogSelectionModal());
+        
+        blogItems.forEach(item => {
+            const blogId = parseInt(item.getAttribute('data-blog-id'));
+            const actionBtn = item.querySelector('button');
+            
+            actionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (action === 'delete') {
+                    this.deleteBlog(blogId);
+                } else {
+                    this.selectBlogForEdit(blogId);
+                }
+                this.closeBlogSelectionModal();
+            });
+        });
+        
+        // Close on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeBlogSelectionModal();
+            }
+        });
+    }
+
+    closeBlogSelectionModal() {
+        const modal = document.getElementById('blogSelectionModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    deleteBlog(blogId) {
+        const blog = this.blogs.find(b => b.id === blogId);
+        if (!blog) return;
+        
+        if (confirm(`Are you sure you want to delete "${blog.title}"?\n\nThis action cannot be undone.`)) {
+            this.blogs = this.blogs.filter(b => b.id !== blogId);
+            this.saveBlogsToStorage();
+            this.loadBlogs();
+            this.currentBlogId = null;
+            this.showNotification(`Blog "${blog.title}" deleted successfully!`, 'success');
+        }
+    }
+
+    viewBlog(blogId) {
+        const blog = this.blogs.find(b => b.id === blogId);
+        if (!blog) return;
+        
+        // Increment views
+        blog.views++;
+        this.saveBlogsToStorage();
+        
+        const modal = document.getElementById('blogViewModal');
+        const title = document.getElementById('blogViewTitle');
+        const content = document.getElementById('blogViewContent');
+        const category = document.getElementById('blogViewCategory');
+        const date = document.getElementById('blogViewDate');
+        const tags = document.getElementById('blogViewTags');
+        
+        title.textContent = blog.title;
+        
+        // Format content with proper line breaks and paragraphs
+        const formattedContent = blog.content.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+        
+        content.innerHTML = `
+            <div class="mb-6">
+                <img src="${blog.image || 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500'}" 
+                     alt="${blog.title}" 
+                     class="w-full h-64 object-cover rounded-lg mb-4">
+                <div class="prose prose-lg max-w-none dark:prose-invert">
+                    <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">${formattedContent}</p>
+                </div>
+            </div>
+        `;
+        
+        category.textContent = blog.category;
+        date.textContent = new Date(blog.date).toLocaleDateString();
+        tags.innerHTML = blog.tags.map(tag => 
+            `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm">${tag}</span>`
+        ).join('');
+        
+        modal.classList.remove('hidden');
+    }
+
+    closeBlogViewModal() {
+        const modal = document.getElementById('blogViewModal');
+        modal.classList.add('hidden');
+    }
+
+    loadMoreBlogs() {
+        // Implement pagination logic here
+        this.showNotification('Load more functionality coming soon!', 'info');
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+        
+        // Set colors based on type
+        switch (type) {
+            case 'success':
+                notification.className += ' bg-green-500 text-white';
+                break;
+            case 'error':
+                notification.className += ' bg-red-500 text-white';
+                break;
+            case 'warning':
+                notification.className += ' bg-yellow-500 text-white';
+                break;
+            default:
+                notification.className += ' bg-blue-500 text-white';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+} 
