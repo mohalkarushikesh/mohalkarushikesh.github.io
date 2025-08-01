@@ -406,19 +406,16 @@ document.addEventListener('DOMContentLoaded', function() {
     loadProjects();
     loadBlogs();
     
-    // Add search and filter functionality
+    // Add search and filter functionality for projects only
     const projectsSection = document.getElementById('projects');
-    const blogsSection = document.getElementById('blogs');
     
     if (projectsSection) {
         createSearchBar(projectsSection, projects, createProjectCard);
         createFilterButtons(projectsSection, projects, createProjectCard);
     }
-    
-    if (blogsSection) {
-        createSearchBar(blogsSection, blogs, createBlogCard);
-        createFilterButtons(blogsSection, blogs, createBlogCard);
-    }
+
+    // Initialize blog manager (handles its own search/filter)
+    blogManager = new BlogManager();
 });
 
 // Export for use in other modules
