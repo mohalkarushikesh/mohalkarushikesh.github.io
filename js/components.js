@@ -419,6 +419,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize resume manager
     resumeManager = new ResumeManager();
+    
+    // Initialize project manager
+    projectManager = new ProjectManager();
 });
 
 // Export for use in other modules
@@ -528,7 +531,7 @@ class BlogManager {
             if (!adminControls.querySelector('#adminAuthBtn')) {
                 const authBtn = document.createElement('button');
                 authBtn.id = 'adminAuthBtn';
-                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mb-4';
+                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mx-auto block';
                 authBtn.innerHTML = `
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
@@ -536,7 +539,13 @@ class BlogManager {
                     ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
                 `;
                 authBtn.addEventListener('click', () => this.authenticateAdmin());
-                adminControls.insertBefore(authBtn, adminControls.firstChild);
+                
+                // Create a centered container for the login button
+                const loginContainer = document.createElement('div');
+                loginContainer.className = 'flex justify-center mb-4';
+                loginContainer.appendChild(authBtn);
+                
+                adminControls.insertBefore(loginContainer, adminControls.firstChild);
             }
             
             // Show/hide other admin buttons based on authentication status
@@ -1071,36 +1080,42 @@ class ResumeManager {
         this.addAdminAuthButton();
     }
 
-    addAdminAuthButton() {
-        const adminControls = document.getElementById('resumeAdminControls');
-        if (adminControls) {
-            // Always show the admin controls section, but hide other buttons when not authenticated
-            adminControls.classList.remove('hidden');
-            
-            if (!adminControls.querySelector('#resumeAdminAuthBtn')) {
-                const authBtn = document.createElement('button');
-                authBtn.id = 'resumeAdminAuthBtn';
-                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mb-4';
-                authBtn.innerHTML = `
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                    ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
-                `;
-                authBtn.addEventListener('click', () => this.authenticateAdmin());
-                adminControls.insertBefore(authBtn, adminControls.firstChild);
-            }
-            
-            // Show/hide other admin buttons based on authentication status
-            const uploadResumeBtn = document.getElementById('uploadResumeBtn');
-            const updateResumeBtn = document.getElementById('updateResumeBtn');
-            const deleteResumeBtn = document.getElementById('deleteResumeBtn');
-            
-            if (uploadResumeBtn) uploadResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
-            if (updateResumeBtn) updateResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
-            if (deleteResumeBtn) deleteResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
-        }
-    }
+                    addAdminAuthButton() {
+                    const adminControls = document.getElementById('resumeAdminControls');
+                    if (adminControls) {
+                        // Always show the admin controls section, but hide other buttons when not authenticated
+                        adminControls.classList.remove('hidden');
+                        
+                        if (!adminControls.querySelector('#resumeAdminAuthBtn')) {
+                            const authBtn = document.createElement('button');
+                            authBtn.id = 'resumeAdminAuthBtn';
+                            authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mx-auto block';
+                            authBtn.innerHTML = `
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                                ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
+                            `;
+                            authBtn.addEventListener('click', () => this.authenticateAdmin());
+                            
+                            // Create a centered container for the login button
+                            const loginContainer = document.createElement('div');
+                            loginContainer.className = 'flex justify-center mb-4';
+                            loginContainer.appendChild(authBtn);
+                            
+                            adminControls.insertBefore(loginContainer, adminControls.firstChild);
+                        }
+                        
+                        // Show/hide other admin buttons based on authentication status
+                        const uploadResumeBtn = document.getElementById('uploadResumeBtn');
+                        const updateResumeBtn = document.getElementById('updateResumeBtn');
+                        const deleteResumeBtn = document.getElementById('deleteResumeBtn');
+                        
+                        if (uploadResumeBtn) uploadResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+                        if (updateResumeBtn) updateResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+                        if (deleteResumeBtn) deleteResumeBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+                    }
+                }
 
     toggleAdminControls() {
         const adminControls = document.getElementById('resumeAdminControls');
@@ -1120,41 +1135,60 @@ class ResumeManager {
         return [
             {
                 id: 1,
-                title: "AI/ML Engineer Resume",
-                description: "Comprehensive resume showcasing expertise in artificial intelligence, machine learning, and deep learning technologies.",
-                version: "v2.1",
-                date: "2024-01-15",
+                title: "Rushikesh Mohalkar - AI/ML Engineer Resume",
+                description: "Passionate AI/ML Engineer with expertise in deep learning, computer vision, and natural language processing. Dedicated to developing innovative solutions and pushing the boundaries of artificial intelligence.",
+                version: "v3.0",
+                date: "2024-12-19",
                 fileUrl: null, // Will be set when file is uploaded
                 content: {
                     experience: [
                         {
-                            title: "AI Research Engineer",
-                            company: "TechCorp",
-                            period: "2022 - Present",
-                            description: "Leading research in computer vision and deep learning applications."
+                            title: "QA Engineer",
+                            company: "Cognizant",
+                            period: "2023 - Present",
+                            description: "Working as a QA Engineer at Cognizant, responsible for quality assurance and testing processes. Gained experience in software testing methodologies and quality control procedures."
                         },
                         {
-                            title: "Machine Learning Engineer",
-                            company: "DataFlow Inc",
-                            period: "2020 - 2022",
-                            description: "Developed scalable ML pipelines and recommendation systems."
+                            title: "Programmer Analyst",
+                            company: "Previous Company",
+                            period: "2022 - 2023",
+                            description: "Started as Intern, progressed to PA Trainee, and then promoted to Programmer Analyst. Developed programming skills and gained hands-on experience in software development."
+                        },
+                        {
+                            title: "PA Trainee",
+                            company: "Previous Company",
+                            period: "2021 - 2022",
+                            description: "Trained as Programmer Analyst, learning software development practices and programming fundamentals."
+                        },
+                        {
+                            title: "Intern",
+                            company: "Previous Company",
+                            period: "2020 - 2021",
+                            description: "Started career as an intern, learning basic programming concepts and software development lifecycle."
                         }
                     ],
                     education: [
                         {
-                            degree: "MSc in Computer Science",
-                            school: "AI University",
-                            period: "2018 - 2020",
-                            description: "Specialized in Artificial Intelligence and Machine Learning."
+                            degree: "Bachelor's in Computer Science",
+                            school: "University of Mumbai",
+                            period: "2020 - 2024",
+                            description: "Focused on artificial intelligence, machine learning, and software engineering. Completed projects in computer vision and deep learning."
                         },
                         {
-                            degree: "BSc in Computer Science",
-                            school: "Tech University",
-                            period: "2014 - 2018",
-                            description: "Foundation in software engineering and algorithms."
+                            degree: "AI/ML Certifications",
+                            school: "Online Platforms (Coursera, Udemy)",
+                            period: "2022 - 2024",
+                            description: "Completed multiple certifications in deep learning, computer vision, and natural language processing. Specialized in TensorFlow and PyTorch frameworks."
                         }
                     ],
-                    skills: ["Python", "TensorFlow", "PyTorch", "OpenCV", "Scikit-learn", "NLP", "Computer Vision", "Deep Learning"]
+                                                    skills: ["Python", "TensorFlow", "PyTorch", "OpenCV", "Scikit-learn", "NLP", "Computer Vision", "Deep Learning", "Neural Networks", "Machine Learning", "Data Analysis", "Git", "Docker", "AWS", "Flask", "Django"],
+                                interests: [
+                                    "Build projects (chatbots, models)",
+                                    "Join Kaggle competitions", 
+                                    "Read papers & take online courses",
+                                    "Write blogs or tutorials",
+                                    "Playing cricket"
+                                ]
                 }
             }
         ];
@@ -1218,14 +1252,23 @@ class ResumeManager {
                 </div>
             </div>
             
-            <div class="mt-8">
-                <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Skills</h4>
-                <div class="flex flex-wrap gap-2">
-                    ${resume.content.skills.map(skill => `
-                        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">${skill}</span>
-                    `).join('')}
-                </div>
-            </div>
+                                    <div class="mt-8">
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Skills</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${resume.content.skills.map(skill => `
+                                    <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm">${skill}</span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Interests</h4>
+                            <div class="flex flex-wrap gap-2">
+                                ${resume.content.interests.map(interest => `
+                                    <span class="px-3 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full text-sm">${interest}</span>
+                                `).join('')}
+                            </div>
+                        </div>
         `;
     }
 
@@ -1461,9 +1504,484 @@ ${edu.description}
 SKILLS
 ${resume.content.skills.join(', ')}
 
+INTERESTS
+${resume.content.interests.join(', ')}
+
 ---
 Generated from Rushikesh Mohalkar's Portfolio
         `.trim();
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+        
+        // Set colors based on type
+        switch (type) {
+            case 'success':
+                notification.className += ' bg-green-500 text-white';
+                break;
+            case 'error':
+                notification.className += ' bg-red-500 text-white';
+                break;
+            case 'warning':
+                notification.className += ' bg-yellow-500 text-white';
+                break;
+            default:
+                notification.className += ' bg-blue-500 text-white';
+        }
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 3000);
+    }
+}
+
+// Project Management System
+class ProjectManager {
+    constructor() {
+        this.projects = this.loadProjectsFromStorage();
+        this.currentProjectId = null;
+        this.isAdmin = false; // Start with admin mode disabled
+        this.adminPassword = "perceptron"; // Same password as other systems
+        this.init();
+    }
+
+    init() {
+        this.setupEventListeners();
+        this.loadProjects();
+        this.toggleAdminControls();
+        this.checkAdminStatus();
+    }
+
+    checkAdminStatus() {
+        // Check if admin is already authenticated
+        const isAuthenticated = sessionStorage.getItem('projectAdminAuthenticated');
+        if (isAuthenticated === 'true') {
+            this.isAdmin = true;
+            this.toggleAdminControls();
+        }
+    }
+
+    authenticateAdmin() {
+        const password = prompt("Enter admin password:");
+        if (password === this.adminPassword) {
+            this.isAdmin = true;
+            sessionStorage.setItem('projectAdminAuthenticated', 'true');
+            this.toggleAdminControls();
+            this.showNotification('Admin access granted!', 'success');
+        } else {
+            this.showNotification('Incorrect password!', 'error');
+        }
+    }
+
+    setupEventListeners() {
+        // Admin controls
+        const addProjectBtn = document.getElementById('addProjectBtn');
+        const editProjectBtn = document.getElementById('editProjectBtn');
+        const deleteProjectBtn = document.getElementById('deleteProjectBtn');
+        const projectModal = document.getElementById('projectModal');
+        const projectForm = document.getElementById('projectForm');
+        const closeProjectModal = document.getElementById('closeProjectModal');
+        const cancelProjectBtn = document.getElementById('cancelProjectBtn');
+
+        if (addProjectBtn) addProjectBtn.addEventListener('click', () => this.openProjectModal());
+        if (editProjectBtn) editProjectBtn.addEventListener('click', () => this.showProjectSelectionModal('edit'));
+        if (deleteProjectBtn) deleteProjectBtn.addEventListener('click', () => this.deleteSelectedProject());
+        if (closeProjectModal) closeProjectModal.addEventListener('click', () => this.closeProjectModal());
+        if (cancelProjectBtn) cancelProjectBtn.addEventListener('click', () => this.closeProjectModal());
+        if (projectForm) projectForm.addEventListener('submit', (e) => this.handleProjectSubmit(e));
+
+        // Close modal on outside click
+        if (projectModal) projectModal.addEventListener('click', (e) => {
+            if (e.target === projectModal) this.closeProjectModal();
+        });
+
+        // Search and filter
+        const projectSearch = document.getElementById('projectSearch');
+        const projectCategoryFilter = document.getElementById('projectCategoryFilter');
+        const projectSortBy = document.getElementById('projectSortBy');
+
+        if (projectSearch) projectSearch.addEventListener('input', () => this.filterProjects());
+        if (projectCategoryFilter) projectCategoryFilter.addEventListener('change', () => this.filterProjects());
+        if (projectSortBy) projectSortBy.addEventListener('change', () => this.filterProjects());
+
+        // Add admin authentication button
+        this.addAdminAuthButton();
+    }
+
+    addAdminAuthButton() {
+        const adminControls = document.getElementById('projectAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section, but hide other buttons when not authenticated
+            adminControls.classList.remove('hidden');
+            
+            if (!adminControls.querySelector('#projectAdminAuthBtn')) {
+                const authBtn = document.createElement('button');
+                authBtn.id = 'projectAdminAuthBtn';
+                authBtn.className = 'btn-ghost text-blue-600 hover:text-blue-700 mx-auto block';
+                authBtn.innerHTML = `
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    ${this.isAdmin ? 'Admin Mode Active' : 'Login as Admin'}
+                `;
+                authBtn.addEventListener('click', () => this.authenticateAdmin());
+                
+                // Create a centered container for the login button
+                const loginContainer = document.createElement('div');
+                loginContainer.className = 'flex justify-center mb-4';
+                loginContainer.appendChild(authBtn);
+                
+                adminControls.insertBefore(loginContainer, adminControls.firstChild);
+            }
+            
+            // Show/hide other admin buttons based on authentication status
+            const addProjectBtn = document.getElementById('addProjectBtn');
+            const editProjectBtn = document.getElementById('editProjectBtn');
+            const deleteProjectBtn = document.getElementById('deleteProjectBtn');
+            
+            if (addProjectBtn) addProjectBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (editProjectBtn) editProjectBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+            if (deleteProjectBtn) deleteProjectBtn.style.display = this.isAdmin ? 'inline-flex' : 'none';
+        }
+    }
+
+    toggleAdminControls() {
+        const adminControls = document.getElementById('projectAdminControls');
+        if (adminControls) {
+            // Always show the admin controls section
+            adminControls.classList.remove('hidden');
+            this.addAdminAuthButton();
+        }
+    }
+
+    loadProjectsFromStorage() {
+        const stored = localStorage.getItem('projects');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Default projects
+        return [
+            {
+                id: 1,
+                title: "Image Classification with CNN",
+                description: "A deep learning project using Convolutional Neural Networks for image classification.",
+                category: "Computer Vision",
+                content: "This project implements a CNN architecture for image classification using TensorFlow and Keras. The model achieves high accuracy on various datasets and can be used for real-world applications.",
+                image: "https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=CNN+Project",
+                tags: ["CNN", "Image Classification", "TensorFlow", "Deep Learning"],
+                link: "https://github.com/username/image-classification",
+                demo: "https://demo.example.com/image-classification",
+                date: "2024-01-15"
+            },
+            {
+                id: 2,
+                title: "Natural Language Processing Pipeline",
+                description: "An NLP pipeline for text processing and sentiment analysis.",
+                category: "NLP",
+                content: "This project builds a comprehensive NLP pipeline that includes text preprocessing, tokenization, and sentiment analysis. It uses state-of-the-art transformer models for better accuracy.",
+                image: "https://via.placeholder.com/400x300/10B981/FFFFFF?text=NLP+Project",
+                tags: ["NLP", "Sentiment Analysis", "Transformers", "Python"],
+                link: "https://github.com/username/nlp-pipeline",
+                demo: "https://demo.example.com/nlp-pipeline",
+                date: "2024-02-20"
+            },
+            {
+                id: 3,
+                title: "Reinforcement Learning Agent",
+                description: "A reinforcement learning agent for game playing and decision making.",
+                category: "Deep Learning",
+                content: "This project implements a reinforcement learning agent using Q-learning and Deep Q-Networks. The agent learns to play games and make optimal decisions in various environments.",
+                image: "https://via.placeholder.com/400x300/F59E0B/FFFFFF?text=RL+Project",
+                tags: ["Reinforcement Learning", "Q-Learning", "PyTorch", "Gym"],
+                link: "https://github.com/username/rl-agent",
+                demo: "https://demo.example.com/rl-agent",
+                date: "2024-03-10"
+            }
+        ];
+    }
+
+    saveProjectsToStorage() {
+        localStorage.setItem('projects', JSON.stringify(this.projects));
+    }
+
+    loadProjects() {
+        const projectGrid = document.querySelector('#projects .grid');
+        if (!projectGrid) return;
+
+        projectGrid.innerHTML = '';
+        this.projects.forEach(project => {
+            const projectCard = this.createProjectCard(project);
+            projectGrid.appendChild(projectCard);
+        });
+    }
+
+    createProjectCard(project) {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300';
+        card.setAttribute('data-aos', 'fade-up');
+        
+        card.innerHTML = `
+            <div class="relative">
+                <img src="${project.image}" alt="${project.title}" class="w-full h-48 object-cover">
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 bg-blue-500 text-white text-sm rounded-full">${project.category}</span>
+                </div>
+            </div>
+            <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">${project.title}</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">${project.description}</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    ${project.tags.map(tag => `<span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded">${tag}</span>`).join('')}
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">${new Date(project.date).toLocaleDateString()}</span>
+                    <div class="flex gap-2">
+                        ${project.link ? `<a href="${project.link}" target="_blank" class="text-blue-500 hover:text-blue-700 text-sm">Code</a>` : ''}
+                        ${project.demo ? `<a href="${project.demo}" target="_blank" class="text-green-500 hover:text-green-700 text-sm">Demo</a>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    filterProjects() {
+        const searchTerm = document.getElementById('projectSearch')?.value.toLowerCase() || '';
+        const categoryFilter = document.getElementById('projectCategoryFilter')?.value || '';
+        const sortBy = document.getElementById('projectSortBy')?.value || 'date';
+
+        let filteredProjects = this.projects.filter(project => {
+            const matchesSearch = project.title.toLowerCase().includes(searchTerm) ||
+                                project.description.toLowerCase().includes(searchTerm) ||
+                                project.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+            const matchesCategory = !categoryFilter || project.category === categoryFilter;
+            return matchesSearch && matchesCategory;
+        });
+
+        // Sort projects
+        filteredProjects.sort((a, b) => {
+            switch (sortBy) {
+                case 'title':
+                    return a.title.localeCompare(b.title);
+                case 'category':
+                    return a.category.localeCompare(b.category);
+                case 'date':
+                    return new Date(b.date) - new Date(a.date);
+                default:
+                    return 0;
+            }
+        });
+
+        // Update display
+        const projectGrid = document.querySelector('#projects .grid');
+        if (projectGrid) {
+            projectGrid.innerHTML = '';
+            filteredProjects.forEach(project => {
+                const projectCard = this.createProjectCard(project);
+                projectGrid.appendChild(projectCard);
+            });
+        }
+    }
+
+    openProjectModal(mode = 'add', projectId = null) {
+        const modal = document.getElementById('projectModal');
+        const modalTitle = document.getElementById('projectModalTitle');
+        const form = document.getElementById('projectForm');
+        
+        if (mode === 'edit' && projectId) {
+            const project = this.projects.find(p => p.id === projectId);
+            if (project) {
+                this.currentProjectId = projectId;
+                modalTitle.textContent = 'Edit Project';
+                this.populateProjectForm(project);
+            }
+        } else {
+            this.currentProjectId = null;
+            modalTitle.textContent = 'Add New Project';
+            form.reset();
+        }
+        
+        modal.classList.remove('hidden');
+    }
+
+    populateProjectForm(project) {
+        document.getElementById('projectTitle').value = project.title;
+        document.getElementById('projectCategory').value = project.category;
+        document.getElementById('projectDescription').value = project.description;
+        document.getElementById('projectContent').value = project.content;
+        document.getElementById('projectImage').value = project.image || '';
+        document.getElementById('projectTags').value = project.tags.join(', ');
+        document.getElementById('projectLink').value = project.link || '';
+        document.getElementById('projectDemo').value = project.demo || '';
+    }
+
+    closeProjectModal() {
+        const modal = document.getElementById('projectModal');
+        modal.classList.add('hidden');
+        this.currentProjectId = null;
+    }
+
+    handleProjectSubmit(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const projectData = {
+            title: formData.get('title'),
+            category: formData.get('category'),
+            description: formData.get('description'),
+            content: formData.get('content'),
+            image: formData.get('image'),
+            tags: formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag),
+            link: formData.get('link'),
+            demo: formData.get('demo'),
+            date: new Date().toISOString().split('T')[0]
+        };
+        
+        if (this.currentProjectId) {
+            // Update existing project
+            const index = this.projects.findIndex(p => p.id === this.currentProjectId);
+            if (index !== -1) {
+                this.projects[index] = { ...this.projects[index], ...projectData };
+            }
+        } else {
+            // Add new project
+            projectData.id = Math.max(...this.projects.map(p => p.id), 0) + 1;
+            this.projects.unshift(projectData);
+        }
+        
+        this.saveProjectsToStorage();
+        this.loadProjects();
+        this.closeProjectModal();
+        this.showNotification('Project saved successfully!', 'success');
+    }
+
+    deleteSelectedProject() {
+        this.showProjectSelectionModal('delete');
+    }
+
+    showProjectSelectionModal(action) {
+        // Create modal for project selection
+        const modal = document.createElement('div');
+        modal.id = 'projectSelectionModal';
+        modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+        
+        const modalContent = document.createElement('div');
+        modalContent.className = 'bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto';
+        
+        const actionText = action === 'delete' ? 'Delete' : 'Edit';
+        
+        modalContent.innerHTML = `
+            <div class="p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Select Project to ${actionText}</h3>
+                    <button id="closeProjectSelectionModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    ${this.projects.map(project => `
+                        <div class="project-selection-item border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors" data-project-id="${project.id}">
+                            <div class="flex items-center justify-between">
+                                <div class="flex-1">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${project.title}</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">${project.description}</p>
+                                    <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded">${project.category}</span>
+                                        <span>${new Date(project.date).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                                <button class="ml-4 px-4 py-2 bg-${action === 'delete' ? 'red' : 'blue'}-500 text-white rounded-lg hover:bg-${action === 'delete' ? 'red' : 'blue'}-600 transition-colors">
+                                    ${actionText}
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button id="cancelProjectSelection" class="btn-ghost">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        modal.appendChild(modalContent);
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        const closeBtn = modal.querySelector('#closeProjectSelectionModal');
+        const cancelBtn = modal.querySelector('#cancelProjectSelection');
+        const projectItems = modal.querySelectorAll('.project-selection-item');
+        
+        closeBtn.addEventListener('click', () => this.closeProjectSelectionModal());
+        cancelBtn.addEventListener('click', () => this.closeProjectSelectionModal());
+        
+        projectItems.forEach(item => {
+            const projectId = parseInt(item.getAttribute('data-project-id'));
+            const actionBtn = item.querySelector('button');
+            
+            actionBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (action === 'delete') {
+                    this.deleteProject(projectId);
+                } else {
+                    this.selectProjectForEdit(projectId);
+                }
+                this.closeProjectSelectionModal();
+            });
+        });
+        
+        // Close on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeProjectSelectionModal();
+            }
+        });
+    }
+
+    closeProjectSelectionModal() {
+        const modal = document.getElementById('projectSelectionModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    selectProjectForEdit(projectId) {
+        this.currentProjectId = projectId;
+        this.openProjectModal('edit', projectId);
+    }
+
+    deleteProject(projectId) {
+        const project = this.projects.find(p => p.id === projectId);
+        if (!project) return;
+        
+        if (confirm(`Are you sure you want to delete "${project.title}"?\n\nThis action cannot be undone.`)) {
+            this.projects = this.projects.filter(p => p.id !== projectId);
+            this.saveProjectsToStorage();
+            this.loadProjects();
+            this.currentProjectId = null;
+            this.showNotification(`Project "${project.title}" deleted successfully!`, 'success');
+        }
     }
 
     showNotification(message, type = 'info') {
