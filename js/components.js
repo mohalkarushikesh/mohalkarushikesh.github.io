@@ -431,7 +431,8 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 2, title: 'Deep Learning with Neural Networks', description: 'CNNs, RNNs, and training.', date: '2024-01-20' },
             { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', date: '2024-01-25' },
             { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', date: '2024-01-30' },
-            { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2024-02-05' }
+            { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2024-02-05' },
+            { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2024-03-05', url: 'blogs/generative-ai.html' }
         ];
         blogGridEl.innerHTML = blogs.map(b => (
             `<div class="border border-gray-300 p-3">
@@ -439,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>${b.description}</p>
                 <div class="flex justify-between items-center">
                     <span class="text-sm">${new Date(b.date).toLocaleDateString()}</span>
-                    <a class="btn-primary text-sm" href="${(b.id && b.id <= 5) ? `blogs/blog-${b.id}.html` : 'blogs/index.html'}">Read More</a>
+                    <a class="btn-primary text-sm" href="${b.url ? b.url : ((b.id && b.id <= 5) ? 'blogs/blog-' + b.id + '.html' : 'blogs/index.html')}">Read More</a>
                 </div>
             </div>`
         )).join('');
@@ -451,7 +452,8 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 2, title: 'Google Stock Price Prediction (RNN-LSTM)', description: 'Time-series forecasting with LSTM.', github: 'https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM', date: '2024-01-20' },
             { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification.', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2024-02-01' },
             { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'Medical imaging model.', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2024-02-15' },
-            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2024-02-20' }
+            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2024-02-20' },
+            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2024-03-01' }
         ];
         projectGridEl.innerHTML = projects.map(p => (
             `<div class="border border-gray-300 p-3">

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Vision Applications</title>
+    <meta name="description" content="An in-depth look at computer vision techniques, architectures, and real-world applications across industries.">
+    <meta name="keywords" content="computer vision, deep learning, image recognition, object detection, AI applications, CNN, OpenCV">
+    <meta name="author" content="Rushikesh Mohalkar">
+    <style>
+        body { 
+            font-family: "Times New Roman", Times, serif; 
+            font-size: 10pt; 
+            color: #000; 
+            background: #fff; 
+            margin: 0; 
+            padding: 12px; 
+        }
+        a { color: #000; text-decoration: underline; }
+        header, section, footer { max-width: 800px; margin: 0 auto; }
+        h1, h2, h3 { margin: 6px 0; font-weight: bold; }
+        p, li { margin: 4px 0; line-height: 1.5; }
+        ul { padding-left: 14px; }
+        hr { border: none; border-top: 1px solid #000; margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Computer Vision Applications</h1>
+        <p><a href="index.html">Back to Blogs</a> | <a href="../index.html">Home</a></p>
+        <hr>
+    </header>
+
+    <section>
+        <p>
+            Computer Vision is a key domain of Artificial Intelligence that enables computers to interpret and understand the visual world.
+            By processing digital images and videos, machines can identify objects, track movements, and make informed decisions based on visual inputs.
+            The field combines traditional image processing techniques with modern deep learning architectures to achieve near-human or even superhuman accuracy.
+        </p>
+
+        <h2>Core Techniques</h2>
+        <p>
+            Computer Vision systems typically follow a structured pipeline—acquiring images, preprocessing them, extracting features, and applying models for inference.
+            Each stage contributes to performance and reliability in real-world settings.
+        </p>
+        <ul>
+            <li>
+                <b>Image Preprocessing and Enhancement:</b> Techniques such as denoising, histogram equalization, and normalization prepare raw data for analysis by reducing artifacts caused by lighting or motion.
+            </li>
+            <li>
+                <b>Feature Extraction:</b> Earlier methods like <i>SIFT</i> (Scale-Invariant Feature Transform) and <i>HOG</i> (Histogram of Oriented Gradients) were used to capture edges and textures. 
+                Today, convolutional neural networks (CNNs) automatically learn complex visual representations from data.
+            </li>
+            <li>
+                <b>Object Detection and Localization:</b> Models such as <i>YOLO (You Only Look Once)</i> and <i>SSD (Single Shot Detector)</i> identify and locate multiple objects in real time. 
+                These systems are crucial in autonomous navigation and surveillance.
+            </li>
+            <li>
+                <b>Image Segmentation:</b> Deep architectures like <i>U-Net</i>, <i>Mask R-CNN</i>, and <i>DeepLab</i> divide images into meaningful regions, enabling pixel-level understanding for medical and industrial applications.
+            </li>
+        </ul>
+
+        <h2>Applications Across Industries</h2>
+        <p>
+            Computer Vision has moved from research labs into nearly every sector. Below are some major use cases demonstrating its transformative potential:
+        </p>
+        <ul>
+            <li>
+                <b>Healthcare:</b> Automated image analysis assists doctors in diagnosing diseases from X-rays, MRIs, and CT scans. Models can detect tumors, fractures, or infections faster and with growing accuracy.
+            </li>
+            <li>
+                <b>Autonomous Vehicles:</b> Vision-based perception systems allow self-driving cars to detect pedestrians, traffic signs, and road boundaries in real time, improving safety and navigation.
+            </li>
+            <li>
+                <b>Manufacturing:</b> High-resolution cameras coupled with AI inspect products for defects, ensuring consistent quality and reducing waste in production lines.
+            </li>
+            <li>
+                <b>Retail and Analytics:</b> Retailers use vision systems for shelf monitoring, customer behavior analysis, and checkout automation, enhancing efficiency and user experience.
+            </li>
+            <li>
+                <b>Security and Surveillance:</b> Vision algorithms enable face recognition, anomaly detection, and crowd analysis to enhance public safety.
+            </li>
+            <li>
+                <b>AR/VR and Media:</b> Vision enables augmented and virtual reality experiences by tracking gestures, mapping environments, and blending real and digital content seamlessly.
+            </li>
+        </ul>
+
+        <h2>Challenges and Future Directions</h2>
+        <p>
+            Despite impressive advancements, challenges remain. Computer Vision systems can struggle with domain shifts, poor lighting, occlusions, or biased data.
+            Ethical considerations like surveillance privacy and fairness in facial recognition are becoming increasingly important.
+        </p>
+        <p>
+            Future research focuses on multimodal understanding—combining vision with language and audio—to create more context-aware AI systems.
+            Synthetic data generation, self-supervised learning, and efficient edge inference are shaping the next generation of vision applications.
+        </p>
+
+        <p>
+            Ultimately, the goal of Computer Vision is not just to “see” but to <b>understand</b>—transforming pixels into actionable insights that augment human capability across every domain.
+        </p>
+    </section>
+
+    <hr>
+
+    <footer>
+        <p>© <span id="year"></span> Rushikesh Mohalkar</p>
+        <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+    </footer>
+</body>
+</html>
