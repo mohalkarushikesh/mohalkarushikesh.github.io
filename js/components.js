@@ -432,7 +432,10 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', date: '2024-01-25' },
             { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', date: '2024-01-30' },
             { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2024-02-05' },
-            { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2024-03-05', url: 'blogs/generative-ai.html' }
+            { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2024-03-05', url: 'blogs/generative-ai.html' },
+            { id: 7, title: 'AI Ethics and Bias', description: 'Fairness, accountability, transparency.', date: '2024-03-10', url: 'blogs/ai-ethics-and-bias.html' },
+            { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', date: '2024-03-12', url: 'blogs/ai-in-healthcare.html' },
+            { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', date: '2024-03-14', url: 'blogs/ai-in-finance.html' }
         ];
         blogGridEl.innerHTML = blogs.map(b => (
             `<div class="border border-gray-300 p-3">

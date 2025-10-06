@@ -30,7 +30,9 @@
         a { color: #000 !important; text-decoration: underline !important; }
         h1, h2, h3, h4, h5, h6 { margin: 6px 0 !important; font-weight: bold !important; color: #000 !important; }
         p, li, span, div { line-height: 1.2 !important; }
-        section { padding-top: 48px !important; padding-bottom: 48px !important; }
+        section { padding-top: 80px !important; padding-bottom: 80px !important; }
+        section + section { margin-top: 80px !important; }
+        footer { margin-top: 80px !important; }
         .max-w-7xl, .container, .max-w-4xl { max-width: 800px !important; }
         /* Remove decorative backgrounds, gradients, and animations */
         * { background-image: none !important; box-shadow: none !important; }
@@ -48,6 +50,10 @@
         #globalAdminBtn, #globalAdminBtnMobile, #adminAuthModal, #darkModeToggle, #backToTop { display: none !important; }
         /* Keep admin control wrappers invisible unless needed */
         #projectAdminControls, #blogAdminControls, #resumeAdminControls { display: none !important; }
+        /* Quote box: ensure content fits cleanly inside the border */
+        blockquote { padding: 8px 10px !important; box-sizing: border-box !important; overflow-wrap: anywhere !important; word-break: break-word !important; }
+        blockquote p { margin: 0 !important; padding: 0 !important; }
+        blockquote .absolute { display: none !important; }
         /* Neutralize color classes to black/white */
         .text-blue-600, .text-blue-400, .text-gray-600, .text-gray-300, .text-gray-500, .text-white, .text-red-600 { color: #000 !important; }
         .bg-white, .bg-gray-50, .bg-gray-800, .bg-black, .dark\:bg-black, .dark\:bg-gray-900, .bg-blue-600, .bg-blue-700, .bg-green-500, .bg-red-500, .bg-yellow-500 { background: #fff !important; }
@@ -371,6 +377,11 @@
                         </div>
         </section>
 
+        <br>
+        <br>
+        <br>
+        <br>
+
         <div class="flex justify-center items-center my-8">
             <button 
               id="loadMoreProjects" 
@@ -380,7 +391,12 @@
             </button>
           </div>
           
-          
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
+          <br>
         
         <!-- Blogs Section -->
         <section id="blogs" class="py-20 bg-white dark:bg-gray-900">
@@ -446,17 +462,30 @@
                 <!-- Blog Grid -->
                 <div id="blogGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Blog cards will be loaded here -->
-                        </div>
-                
-                <!-- Load More Button -->
-                <div class="text-center mt-12">
-                    <a id="loadMoreBlogs" class="btn-secondary" href="blogs/index.html">
-                        Load More Blogs
-                    </a>
-                            </div>
-                        </div>
+                </div>
+         
+
         </section>
+
+        <br>
+        <br>
+        <br>
+      
         
+        <!-- Load More Button -->
+        <div class="flex justify-center items-center my-8">
+            <div class="text-center">
+                <a id="loadMoreBlogs" class="btn-secondary text-2xl" href="blogs/index.html">
+                    Load More Blogs
+                </a>
+            </div>
+        </div>
+
+        <br>
+        <br>
+        <br>
+      <br>
+
         <!-- Project Modal for Add/Edit -->
         <div id="projectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -806,6 +835,18 @@
         </div>
     </section>
 
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <br>
         <!-- Resume Section -->
         <section id="resume" class="py-20 bg-gray-50 dark:bg-gray-900">
             <div class="container mx-auto px-4">
