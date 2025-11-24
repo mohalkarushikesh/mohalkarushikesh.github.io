@@ -459,7 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
             { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification.', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2025-07-20' },
             { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'Medical imaging model.', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2025-07-11' },
             { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2025-07-14' },
-            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2025-10-06' }
+            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2025-06-10' }
         ];
         projectGridEl.innerHTML = projects.map(p => (
             `<div class="border border-gray-300 p-3">
