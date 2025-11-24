@@ -14,43 +14,35 @@
             margin: 0;
             padding: 20px;
         }
-        a {
-            color: #000;
-            text-decoration: underline;
-        }
-        header, section, footer {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1, h2, h3 {
-            margin: 20px 0 10px 0;
-            font-weight: bold;
-        }
-        p, li {
-            margin: 10px 0;
-            line-height: 1.7;
-        }
-        ul {
-            padding-left: 20px;
-            margin: 12px 0;
-        }
+        a { color: #000; text-decoration: underline; }
+        header, section, footer { max-width: 800px; margin: 0 auto; }
+        h1, h2, h3 { margin: 20px 0 10px 0; font-weight: bold; }
+        p, li { margin: 10px 0; line-height: 1.7; }
+        ul { padding-left: 20px; margin: 12px 0; }
         hr {
             border: none;
             border-top: 1px solid #000;
-            margin: 20px auto;   /* centers the line */
-            width: 800px;        /* restricts to blog size */
-            max-width: 100%;     /* ensures it doesn’t overflow on smaller screens */
+            margin: 20px auto;
+            width: 800px;
+            max-width: 100%;
         }
-        section {
-            margin-bottom: 40px;
+        section { margin-bottom: 40px; }
+        footer { margin-top: 40px; text-align: center; }
+        .meta { font-size: 10pt; color: #555; }
+        blockquote {
+            border-left: 3px solid #555;
+            padding-left: 10px;
+            color: #333;
+            font-style: italic;
         }
-        footer {
-            margin-top: 40px;
-            text-align: center;
-        }
-        .meta {
-            font-size: 10pt;
-            color: #555;
+        .cta {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
         }
     </style>
 
@@ -64,6 +56,23 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://yourgithubusername.github.io/800-Days-of-Grind-The-Full-Blueprint.html">
     <meta property="og:image" content="https://yourgithubusername.github.io/images/800days.jpg">
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "800 Days of Grind: The Full Blueprint",
+      "author": { "@type": "Person", "name": "Rushikesh Mohalkar" },
+      "datePublished": "2025-11-24",
+      "dateModified": "2025-11-24",
+      "image": "https://mohalkarushikesh.github.io/images/800days.jpg",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Rushikesh Blogs"
+      }
+    }
+    </script>
 </head>
 <body>
     <header>
@@ -76,14 +85,25 @@
     <section>
         <h1>800 Days of Grind: The Full Blueprint</h1>
         <p>(The uncut, no-sugar version of what actually happens when you decide today is Day 0)</p>
-        
+
+        <!-- Table of Contents -->
+        <nav>
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#day0">Day 0</a></li>
+                <li><a href="#truth">The Brutal Truth</a></li>
+                <li><a href="#laws">The Non-Negotiable Laws</a></li>
+                <li><a href="#phases">The 800-Day Phases</a></li>
+                <li><a href="#final">The Final Image</a></li>
+                <li><a href="#yourturn">Your Turn</a></li>
+            </ul>
+        </nav>
         <h2 id="day0">Day 0 – 24 November 2025</h2>
         <p>I just locked the door, turned off notifications, and stared at the calendar like a man who finally understands the price tag on his dreams.</p>
-        <p>800 days. That’s all that separates the current version of me from the version the universe already photographed and stamped “Approved.”</p>
-        <p>800 days is not a motivational slogan. It is a prison sentence and a coronation ceremony happening at the same time.</p>
+        <blockquote>800 days is not a motivational slogan. It is a prison sentence and a coronation ceremony happening at the same time.</blockquote>
         <p>I am choosing the sentence so I can wear the crown.</p>
         
-        <h2 id="truth">The Brutal Truth Nobody Says Out Loud</h2>
+               <h2 id="truth">The Brutal Truth Nobody Says Out Loud</h2>
         <p>Most people never change because they keep negotiating with tomorrow. They treat days like infinite coins. I just counted mine and realized I have exactly 800 left in this chapter.</p>
         <p>800 is a terrifying number when you treat it like it’s infinite. 800 is a generous number when you treat it like it’s the last.</p>
         <p>So I am treating it like it’s the last.</p>
@@ -139,6 +159,10 @@
         <p>Day 0 of 800. The grind is no longer optional.</p>
         <br><br>
         <p><strong>Let’s make it happen.</strong></p>
+
+        <!-- Call-to-Action Buttons -->
+        <a href="comment.html" class="cta">Comment</a>
+        <a href="share.html" class="cta">Share</a>
     </section>
   
     <hr>
@@ -146,6 +170,10 @@
     <footer>
         <p>© 2025 Blog</p>
         <p><time datetime="2025-11-24">Last updated: November 24, 2025</time></p>
+        <p>
+            <a href="https://twitter.com/share" target="_blank">Twitter</a> · 
+            <a href="https://www.linkedin.com/shareArticle" target="_blank">LinkedIn</a>
+        </p>
     </footer>
 </body>
 </html>
