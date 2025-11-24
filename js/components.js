@@ -427,15 +427,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (blogGridEl && !hasBlogManager) {
         const blogs = [
-            { id: 1, title: 'Introduction to Machine Learning', description: 'Basics of ML and applications.', date: '2024-01-15' },
-            { id: 2, title: 'Deep Learning with Neural Networks', description: 'CNNs, RNNs, and training.', date: '2024-01-20' },
-            { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', date: '2024-01-25' },
-            { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', date: '2024-01-30' },
-            { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2024-02-05' },
-            { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2024-03-05', url: 'blogs/generative-ai.html' },
-            { id: 7, title: 'AI Ethics and Bias', description: 'Fairness, accountability, transparency.', date: '2024-03-10', url: 'blogs/ai-ethics-and-bias.html' },
-            { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', date: '2024-03-12', url: 'blogs/ai-in-healthcare.html' },
-            { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', date: '2024-03-14', url: 'blogs/ai-in-finance.html' }
+          { id: 1, title: 'Introduction to Machine Learning', description: 'Basics of ML and applications.', date: '2025-01-25', url: 'blogs/introduction-to-machine-learning.html' },
+          { id: 2, title: 'Deep Learning with Neural Networks', description: 'CNNs, RNNs, and training.', date: '2025-02-22', url: 'blogs/deep-learning-with-neural-networks.html' },
+          { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', date: '2025-03-22', url: 'blogs/computer-vision-applications.html' },
+          { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', date: '2025-04-19', url: 'blogs/natural-language-processing-revolution.html' },
+          { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2025-05-05', url: 'blogs/reinforcement-learning-fundamentals.html' },
+          { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2025-06-22', url: 'blogs/generative-ai.html' },
+          { id: 7, title: 'AI Ethics and Bias', description: 'Fairness, accountability, transparency.', date: '2025-07-12', url: 'blogs/ai-ethics-and-bias.html' },
+          { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', date: '2025-08-23', url: 'blogs/ai-in-healthcare.html' },
+          { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', date: '2025-09-14', url: 'blogs/ai-in-finance.html' },
+          { id: 10, title: 'AI in Marketing', description: 'Customer insights, personalization, and campaigns.', date: '2025-10-02', url: 'blogs/ai-in-marketing.html' },
+          { id: 11, title: '800 Days of Grind', description: 'A blueprint for discipline and transformation.', date: '2025-11-24', url: 'blogs/800-Days-of-Grind-The-Full-Blueprint.html' },
+          { id: 12, title: 'How the Human Mind Works', description: 'Layers, processes, and mysteries of cognition.', date: '2025-11-24', url: 'blogs/How-the-Human-Mind-Works.html' }
         ];
         blogGridEl.innerHTML = blogs.map(b => (
             `<div class="border border-gray-300 p-3">
@@ -451,12 +454,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (projectGridEl && !hasProjectManager) {
         const projects = [
-            { id: 1, title: 'Movie Recommender System (RBM)', description: 'Collaborative filtering with RBM.', github: 'https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM', date: '2024-01-15' },
-            { id: 2, title: 'Google Stock Price Prediction (RNN-LSTM)', description: 'Time-series forecasting with LSTM.', github: 'https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM', date: '2024-01-20' },
-            { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification.', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2024-02-01' },
-            { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'Medical imaging model.', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2024-02-15' },
-            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2024-02-20' },
-            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2024-03-01' }
+            { id: 1, title: 'Movie Recommender System (RBM)', description: 'Collaborative filtering with RBM.', github: 'https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM', date: '2025-07-27' },
+            { id: 2, title: 'Google Stock Price Prediction (RNN-LSTM)', description: 'Time-series forecasting with LSTM.', github: 'https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM', date: '2025-07-24' },
+            { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification.', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2025-07-20' },
+            { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'Medical imaging model.', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2025-07-11' },
+            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2025-07-14' },
+            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2025-10-06' }
         ];
         projectGridEl.innerHTML = projects.map(p => (
             `<div class="border border-gray-300 p-3">
