@@ -6,12 +6,17 @@
     <title>Blogs - Rushikesh Mohalkar</title>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        html, body {
+            height: 100%;          /* full height */
+            margin: 0;             /* remove default margin */
+            display: flex;         /* use flexbox */
+            flex-direction: column; /* stack header, section, footer vertically */
+        }
         body {
             font-family: "Crimson Pro", Times, serif;
             font-size: 12pt;
             color: #000;
             background: #fff;
-            margin: 0;
             padding: 12px;
         }
         a {
@@ -24,6 +29,10 @@
         header, section, footer {
             max-width: 800px;
             margin: 0 auto;
+            width: 100%;
+        }
+        section {
+            flex: 1; /* take up remaining space so footer stays at bottom */
         }
         h1, h2, h3 {
             margin: 6px 0;
@@ -53,7 +62,7 @@
             margin-left: 6px;
         }
         footer {
-            margin-top: 20px;
+            margin-top: auto; /* pushes footer to bottom */
             text-align: center;
             font-size: 10pt;
             color: #555;
