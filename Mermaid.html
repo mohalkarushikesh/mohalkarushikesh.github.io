@@ -3,60 +3,14 @@
 <head>
   <meta charset="utf-8">
   <title>Complete AI & Machine Learning Ecosystem 2025</title>
-
-  <!-- Crimson Pro Font -->
   <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Mermaid -->
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      padding: 40px;
-      background: #f8fafc;
-      font-family: 'Crimson Pro', Georgia, serif;
-      color: #000;
-    }
-    h1 {
-      text-align: center;
-      font-size: 3rem;
-      margin-bottom: 40px;
-      color: #1e293b;
-    }
-    .mermaid {
-      background: white;
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-      overflow-x: auto;
-    }
-
-    /* Main green categories – readable white text */
-    .main-category {
-      fill: #15803d !important;
-      stroke: #166534 !important;
-      stroke-width: 3px !important;
-      color: white !important;
-      font-weight: bold !important;
-    }
-
-    /* Sub-boxes – light cream background, black text (perfect readability) */
-    .sub-box {
-      fill: #fffbeb !important;   /* light cream */
-      stroke: #d97706 !important;  /* warm orange border */
-      stroke-width: 2px !important;
-      color: #000000 !important;
-      font-weight: 500 !important;
-    }
-
-    /* Force all text to black where needed */
-    .mermaid .label foreignObject, .mermaid text {
-      color: #000000 !important;
-      fill: #000000 !important;
-      font-family: 'Crimson Pro', serif !important;
-      font-size: 15px !important;
-    }
+    body { margin:0; padding:40px; background:#f8fafc; font-family:'Crimson Pro',serif; color:#000; }
+    h1 { text-align:center; font-size:3rem; margin-bottom:40px; color:#1e293b; }
+    .mermaid { background:white; padding:50px; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.12); overflow-x:auto; }
+    .mermaid .label { line-height:1.6 !important; } /* ensures one bullet per line */
   </style>
 </head>
 <body>
@@ -68,50 +22,49 @@
 
         ROOT --> P["Learning Paradigms"]:::main
         P --> SUP["Supervised Learning"]:::main
-        SUP --> CLS["Classification<br/>• Logistic Regression<br/>• SVM (Linear/RBF/Poly)<br/>• Decision Trees • Random Forest<br/>• KNN • Naive Bayes<br/>• XGBoost • LightGBM • CatBoost<br/>• Neural Networks"]:::sub
-        SUP --> REG["Regression<br/>• Linear • Polynomial<br/>• Ridge • Lasso • ElasticNet<br/>• SVR • Gradient Boosting"]:::sub
+        SUP --> CLS["Classification<br/>• Logistic Regression<br/>• SVM (Linear/RBF/Poly)<br/>• Decision Trees<br/>• Random Forest<br/>• KNN<br/>• Naive Bayes<br/>• XGBoost<br/>• LightGBM<br/>• CatBoost<br/>• Neural Networks"]:::sub
+        SUP --> REG["Regression<br/>• Linear Regression<br/>• Polynomial Regression<br/>• Ridge<br/>• Lasso<br/>• ElasticNet<br/>• Support Vector Regression<br/>• Gradient Boosting Reg."]:::sub
 
         P --> UNS["Unsupervised Learning"]:::main
-        UNS --> CLU["Clustering<br/>• K-Means • Hierarchical<br/>• DBSCAN • Gaussian Mixture<br/>• Mean Shift"]:::sub
-        UNS --> DIM["Dimensionality Reduction<br/>• PCA • t-SNE • UMAP<br/>• Autoencoders • LDA"]:::sub
+        UNS --> CLU["Clustering<br/>• K-Means<br/>• Hierarchical<br/>• DBSCAN<br/>• OPTICS<br/>• Gaussian Mixture Models<br/>• Mean Shift"]:::sub
+        UNS --> DIM["Dimensionality Reduction<br/>• PCA<br/>• Kernel PCA<br/>• t-SNE<br/>• UMAP<br/>• Autoencoders<br/>• LDA<br/>• ICA"]:::sub
 
-        P --> SEMI["Semi-Supervised Learning"]:::sub
-        P --> RL["Reinforcement Learning<br/>• Q-Learning • DQN • PPO<br/>• SAC • Actor-Critic"]:::sub
+        P --> SEMI["Semi-Supervised Learning<br/>• Self-Training<br/>• Label Propagation<br/>• Co-Training"]:::sub
+        P --> RL["Reinforcement Learning<br/>• Q-Learning<br/>• SARSA<br/>• DQN / DDQN<br/>• PPO<br/>• A2C / A3C<br/>• SAC<br/>• Actor-Critic"]:::sub
 
         ROOT --> DL["Deep Learning"]:::main
-        DL --> ANN["ANN / MLP"]:::sub
-        DL --> CNN["CNN<br/>• ResNet • YOLO • U-Net<br/>• EfficientNet • MobileNet"]:::sub
-        DL --> RNN["RNN • LSTM • GRU"]:::sub
-        DL --> TRANS["Transformers<br/>• BERT • GPT • LLaMA<br/>• Grok • Mistral • ViT • Mamba"]:::sub
-        DL --> LLM["Large Language Models<br/>• Gemini • Claude • Qwen"]:::sub
-        DL --> GNN["Graph Neural Networks"]:::sub
-        DL --> GEN["Generative Models<br/>• GANs • Diffusion<br/>• Stable Diffusion • Sora • DALL·E"]:::sub
+        DL --> ANN["ANN / MLP<br/>• Feedforward Networks<br/>• Backpropagation"]:::sub
+        DL --> CNN["CNN Architectures<br/>• LeNet<br/>• AlexNet<br/>• VGG<br/>• ResNet<br/>• EfficientNet<br/>• MobileNet<br/>• YOLO<br/>• U-Net"]:::sub
+        DL --> RNN["RNN Family<br/>• Vanilla RNN<br/>• LSTM<br/>• GRU<br/>• Bi-directional<br/>• Seq2Seq"]:::sub
+        DL --> TRANS["Transformers<br/>• BERT<br/>• GPT Series<br/>• LLaMA<br/>• Mistral<br/>• Grok<br/>• ViT<br/>• Mamba"]:::sub
+        DL --> LLM["Large Language Models<br/>• Gemini<br/>• Claude<br/>• PaLM<br/>• Qwen<br/>• Mixtral"]:::sub
+        DL --> GEN["Generative Models<br/>• GANs<br/>• Diffusion Models<br/>• Stable Diffusion<br/>• DALL·E<br/>• Sora (Video)"]:::sub
 
-        ROOT --> DOM["Domains & Applications"]:::main
-        DOM --> CV["Computer Vision"]:::sub
-        DOM --> NLP["Natural Language Processing"]:::sub
-        DOM --> AUDIO["Speech & Audio<br/>• Whisper • Wav2Vec • VALL-E"]:::sub
-        DOM --> MULTI["Multimodal<br/>• CLIP • LLaVA • Flamingo • Kosmos"]:::sub
+        ROOT --> DOM["Domains"]:::main
+        DOM --> CV["Computer Vision<br/>• Object Detection<br/>• Segmentation<br/>• Pose Estimation<br/>• OCR"]:::sub
+        DOM --> NLP["Natural Language Processing<br/>• NER<br/>• Sentiment<br/>• Translation<br/>• Summarization"]:::sub
+        DOM --> AUDIO["Audio & Speech<br/>• Whisper<br/>• Wav2Vec<br/>• HuBERT<br/>• VALL-E<br/>• AudioLM"]:::sub
+        DOM --> MULTI["Multimodal<br/>• CLIP<br/>• LLaVA<br/>• Flamingo<br/>• ImageBind<br/>• Kosmos"]:::sub
 
         ROOT --> CORE["Core Components"]:::main
-        CORE --> OPT["Optimizers<br/>• Adam • AdamW • SGD<br/>• RMSprop • Lion"]:::sub
-        CORE --> LOSS["Loss Functions<br/>• Cross-Entropy • MSE • Focal<br/>• Contrastive • CTC"]:::sub
-        CORE --> REG["Regularization<br/>• Dropout • BatchNorm<br/>• Augmentation • Mixup"]:::sub
+        CORE --> OPT["Optimizers<br/>• SGD<br/>• Adam<br/>• AdamW<br/>• RMSprop<br/>• Lion<br/>• LAMB"]:::sub
+        CORE --> LOSS["Loss Functions<br/>• Cross-Entropy<br/>• MSE<br/>• Focal Loss<br/>• Contrastive<br/>• CTC"]:::sub
+        CORE --> REG["Regularization<br/>• Dropout<br/>• BatchNorm<br/>• LayerNorm<br/>• Weight Decay<br/>• Data Augmentation"]:::sub
 
         ROOT --> ADV["Advanced Techniques"]:::main
-        ADV --> ENS["Ensemble<br/>• XGBoost • Random Forest<br/>• CatBoost • LightGBM"]:::sub
-        ADV --> TRANSF["Transfer / Few-Shot / Zero-Shot"]:::sub
+        ADV --> ENS["Ensemble Methods<br/>• Bagging<br/>• Boosting<br/>• XGBoost<br/>• LightGBM<br/>• CatBoost"]:::sub
+        ADV --> TRANSF["Transfer Learning<br/>• Fine-tuning<br/>• Prompt Tuning<br/>• Few-Shot<br/>• Zero-Shot"]:::sub
 
         ROOT --> FOUND["Foundations"]:::main
-        FOUND --> MATH["Mathematics<br/>• Linear Algebra<br/>• Calculus<br/>• Probability & Stats"]:::sub
-        FOUND --> EVAL["Evaluation<br/>• F1 • mAP • BLEU • FID<br/>• Cross-Validation"]:::sub
+        FOUND --> MATH["Mathematics<br/>• Linear Algebra<br/>• Calculus<br/>• Probability<br/>• Statistics"]:::sub
+        FOUND --> EVAL["Evaluation<br/>• Accuracy / F1<br/>• ROC-AUC<br/>• BLEU / ROUGE<br/>• FID / IS<br/>• Cross-Validation"]:::sub
 
         ROOT --> FRAME["Frameworks & Tools"]:::main
         FRAME --> SK["Scikit-learn"]:::sub
-        FRAME --> TORCH["PyTorch • Lightning"]:::sub
-        FRAME --> TF["TensorFlow • Keras"]:::sub
-        FRAME --> HF["Hugging Face"]:::sub
-        FRAME --> TOOLS["JAX • Gradio • Streamlit<br/>• OpenCV • Weights & Biases"]:::sub
+        FRAME --> TORCH["PyTorch<br/>• Lightning<br/>• TorchVision"]:::sub
+        FRAME --> TF["TensorFlow<br/>• Keras"]:::sub
+        FRAME --> HF["Hugging Face Transformers"]:::sub
+        FRAME --> TOOLS["Others<br/>• JAX<br/>• Gradio<br/>• Streamlit<br/>• OpenCV<br/>• Weights & Biases"]:::sub
 
         classDef main fill:#15803d,stroke:#166534,stroke-width:3px,color:white,font-weight:bold
         classDef sub fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:black,font-weight:500
