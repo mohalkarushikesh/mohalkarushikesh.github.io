@@ -44,6 +44,11 @@
       "publisher": { "@type": "Organization", "name": "Tech Insights Blog" }
     }
     </script>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true });
+    </script>
+
 </head>
 <body>
     <header>
@@ -95,29 +100,28 @@
         <h2 id="section4">Transformer Architecture Diagram</h2>
         <p>To better understand how Transformers process input and generate output, here’s a simplified flow diagram:</p>
 
-        <pre>
-```mermaid
-flowchart TD
-    A[Input Text] --> B[Tokenization]
-    B --> C[Embeddings + Positional Encoding]
-    C --> D[Encoder Stack]
-    D --> E[Contextual Representations]
-    E --> F[Decoder Stack]
-    F --> G[Linear Projection to Vocabulary]
-    G --> H[Softmax]
-    H --> I[Predicted Tokens]
-
-    subgraph Encoder
-        D1[Self-Attention] --> D2[Feedforward Network]
-        D2 --> D3[Residual + LayerNorm]
-    end
-
-    subgraph Decoder
-        F1[Masked Self-Attention] --> F2[Cross-Attention with Encoder Outputs]
-        F2 --> F3[Feedforward Network]
-        F3 --> F4[Residual + LayerNorm]
-    end
-</pre>
+        <div class="mermaid">
+        flowchart TD
+            A[Input Text] --> B[Tokenization]
+            B --> C[Embeddings + Positional Encoding]
+            C --> D[Encoder Stack]
+            D --> E[Contextual Representations]
+            E --> F[Decoder Stack]
+            F --> G[Linear Projection to Vocabulary]
+            G --> H[Softmax]
+            H --> I[Predicted Tokens]
+        
+            subgraph Encoder
+                D1[Self-Attention] --> D2[Feedforward Network]
+                D2 --> D3[Residual + LayerNorm]
+            end
+        
+            subgraph Decoder
+                F1[Masked Self-Attention] --> F2[Cross-Attention with Encoder Outputs]
+                F2 --> F3[Feedforward Network]
+                F3 --> F4[Residual + LayerNorm]
+            end
+        </div>
 
         <h2 id="section5">Variants of Transformers</h2> 
         <ul> 
