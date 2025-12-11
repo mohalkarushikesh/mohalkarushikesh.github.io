@@ -65,14 +65,15 @@
                 <li><a href="#section2">Core Components</a></li>
                 <li><a href="#section3">Encoder-Decoder Structure</a></li>
                 <li><a href="#section12">Transformer Architecture Diagram</a></li>
-                <li><a href="#section4">Variants of Transformers</a></li>
-                <li><a href="#section5">Training Objectives</a></li>
-                <li><a href="#section6">Challenges</a></li>
-                <li><a href="#section7">Efficiency Techniques</a></li>
-                <li><a href="#section8">Evaluation Metrics</a></li>
-                <li><a href="#section9">Applications</a></li>
-                <li><a href="#section10">Future Directions</a></li>
-                <li><a href="#section11">Conclusion</a></li>
+                <li><a href="#section4">Transformer Architecture Diagram</a></li>
+                <li><a href="#section5">Variants of Transformers</a></li>
+                <li><a href="#section6">Training Objectives</a></li>
+                <li><a href="#section7">Challenges</a></li>
+                <li><a href="#section8">Efficiency Techniques</a></li>
+                <li><a href="#section9">Evaluation Metrics</a></li>
+                <li><a href="#section10">Applications</a></li>
+                <li><a href="#section11">Future Directions</a></li>
+                <li><a href="#section12">Conclusion</a></li>
             </ul>
         </nav>
 
@@ -91,7 +92,7 @@
         <h2 id="section3">Encoder-Decoder Structure</h2>
         <p>The encoder processes input into contextual representations, while the decoder generates outputs using masked self-attention and cross-attention. This structure is ideal for tasks like machine translation.</p>
 
-        <h2 id="section12">Transformer Architecture Diagram</h2>
+        <h2 id="section4">Transformer Architecture Diagram</h2>
         <p>To better understand how Transformers process input and generate output, here’s a simplified flow diagram:</p>
 
         <pre>
@@ -118,7 +119,7 @@ flowchart TD
     end
 </pre>
 
-        <h2 id="section4">Variants of Transformers</h2> 
+        <h2 id="section5">Variants of Transformers</h2> 
         <ul> 
             <li><strong>BERT:</strong> Encoder-only, bidirectional, trained with MLM. Great for classification and QA.
             </li> <li><strong>GPT:</strong> Decoder-only, autoregressive, excels at text generation.</li> 
@@ -126,7 +127,7 @@ flowchart TD
             <li><strong>Transformer-XL:</strong> Adds recurrence for longer contexts.</li> 
             <li><strong>Longformer/Reformer:</strong> Efficient architectures for very long sequences.</li> 
         </ul>        
-        <h2 id="section5">Training Objectives</h2>
+        <h2 id="section6">Training Objectives</h2>
         <p>Transformers are trained with different objectives depending on the variant:</p>
         <ul>
             <li><strong>Masked Language Modeling (MLM):</strong> Predict masked tokens (used in BERT).</li>
@@ -134,7 +135,7 @@ flowchart TD
             <li><strong>Sequence-to-sequence objectives:</strong> Translate or summarize text (used in T5).</li>
         </ul>
 
-        <h2 id="section6">Challenges</h2>
+        <h2 id="section7">Challenges</h2>
         <p>Despite their success, Transformers face several challenges:</p>
         <ul>
             <li><strong>Computational cost:</strong> Attention scales quadratically with sequence length.</li>
@@ -143,7 +144,7 @@ flowchart TD
             <li><strong>Data privacy:</strong> Training requires massive datasets, often scraped from the web.</li>
         </ul>
         
-        <h2 id="section7">Efficiency Techniques</h2>
+        <h2 id="section8">Efficiency Techniques</h2>
         <p>To reduce computational cost and improve scalability, several techniques are used:</p>
         <ul>
             <li><strong>Pruning:</strong> Remove unnecessary weights.</li>
@@ -153,7 +154,7 @@ flowchart TD
             <li><strong>Efficient architectures:</strong> Reformer, Longformer, Performer.</li>
         </ul>
 
-        <h2 id="section8">Evaluation Metrics</h2>
+        <h2 id="section9">Evaluation Metrics</h2>
         <p>Performance of Transformers is measured using:</p>
         <ul>
             <li><strong>Perplexity:</strong> Predictive quality in language modeling.</li>
@@ -162,7 +163,7 @@ flowchart TD
             <li><strong>Human evaluation:</strong> Coherence, fluency, factuality.</li>
         </ul>
 
-        <h2 id="section9">Applications</h2>
+        <h2 id="section10">Applications</h2>
         <p>Transformers are widely used in:</p>
         <ul>
             <li>Machine translation (Google Translate).</li>
@@ -172,7 +173,7 @@ flowchart TD
             <li>Multimodal tasks (vision-language models like CLIP).</li>
         </ul>
 
-        <h2 id="section10">Future Directions</h2>
+        <h2 id="section11">Future Directions</h2>
         <p>Research continues to push Transformers further:</p>
         <ul>
             <li><strong>Scaling context windows:</strong> Handling millions of tokens.</li>
@@ -181,7 +182,7 @@ flowchart TD
             <li><strong>Integration with external knowledge:</strong> Retrieval-Augmented Generation (RAG).</li>
         </ul>
 
-        <h2 id="section11">Conclusion</h2>
+        <h2 id="section12">Conclusion</h2>
         <p>Transformers are not just a model architecture — they are the foundation of modern AI. By leveraging attention, they unlocked the ability to process language, vision, and multimodal data at unprecedented scale. As innovations like Titans and MIRAS push boundaries further, Transformers will continue to shape the future of intelligent systems.</p>
 
         <br><br>
