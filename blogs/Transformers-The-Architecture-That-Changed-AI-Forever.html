@@ -64,6 +64,7 @@
                 <li><a href="#section1">Introduction</a></li>
                 <li><a href="#section2">Core Components</a></li>
                 <li><a href="#section3">Encoder-Decoder Structure</a></li>
+                <li><a href="#section12">Transformer Architecture Diagram</a></li>
                 <li><a href="#section4">Variants of Transformers</a></li>
                 <li><a href="#section5">Training Objectives</a></li>
                 <li><a href="#section6">Challenges</a></li>
@@ -94,38 +95,38 @@
         <p>To better understand how Transformers process input and generate output, here’s a simplified flow diagram:</p>
 
         <pre>
-        ```mermaid
-        flowchart TD
-            A[Input Text] --> B[Tokenization]
-            B --> C[Embeddings + Positional Encoding]
-            C --> D[Encoder Stack]
-            D --> E[Contextual Representations]
-            E --> F[Decoder Stack]
-            F --> G[Linear Projection to Vocabulary]
-            G --> H[Softmax]
-            H --> I[Predicted Tokens]
-        
-            subgraph Encoder
-                D1[Self-Attention] --> D2[Feedforward Network]
-                D2 --> D3[Residual + LayerNorm]
-            end
-        
-            subgraph Decoder
-                F1[Masked Self-Attention] --> F2[Cross-Attention with Encoder Outputs]
-                F2 --> F3[Feedforward Network]
-                F3 --> F4[Residual + LayerNorm]
-            end
-        ```
-      
-        <h2 id="section4">Variants of Transformers</h2>
-        <ul>
-            <li><strong>BERT:</strong> Encoder-only, bidirectional, trained with MLM. Great for classification and QA.</li>
-            <li><strong>GPT:</strong> Decoder-only, autoregressive, excels at text generation.</li>
-            <li><strong>T5:</strong> Encoder-decoder, treats all tasks as text-to-text.</li>
-            <li><strong>Transformer-XL:</strong> Adds recurrence for longer contexts.</li>
-            <li><strong>Longformer/Reformer:</strong> Efficient architectures for very long sequences.</li>
-        </ul>
-              <h2 id="section5">Training Objectives</h2>
+```mermaid
+flowchart TD
+    A[Input Text] --> B[Tokenization]
+    B --> C[Embeddings + Positional Encoding]
+    C --> D[Encoder Stack]
+    D --> E[Contextual Representations]
+    E --> F[Decoder Stack]
+    F --> G[Linear Projection to Vocabulary]
+    G --> H[Softmax]
+    H --> I[Predicted Tokens]
+
+    subgraph Encoder
+        D1[Self-Attention] --> D2[Feedforward Network]
+        D2 --> D3[Residual + LayerNorm]
+    end
+
+    subgraph Decoder
+        F1[Masked Self-Attention] --> F2[Cross-Attention with Encoder Outputs]
+        F2 --> F3[Feedforward Network]
+        F3 --> F4[Residual + LayerNorm]
+    end
+</pre>
+
+        <h2 id="section4">Variants of Transformers</h2> 
+        <ul> 
+            <li><strong>BERT:</strong> Encoder-only, bidirectional, trained with MLM. Great for classification and QA.
+            </li> <li><strong>GPT:</strong> Decoder-only, autoregressive, excels at text generation.</li> 
+            <li><strong>T5:</strong> Encoder-decoder, treats all tasks as text-to-text.</li> 
+            <li><strong>Transformer-XL:</strong> Adds recurrence for longer contexts.</li> 
+            <li><strong>Longformer/Reformer:</strong> Efficient architectures for very long sequences.</li> 
+        </ul>        
+        <h2 id="section5">Training Objectives</h2>
         <p>Transformers are trained with different objectives depending on the variant:</p>
         <ul>
             <li><strong>Masked Language Modeling (MLM):</strong> Predict masked tokens (used in BERT).</li>
@@ -141,7 +142,7 @@
             <li><strong>Interpretability:</strong> Difficult to explain why predictions are made.</li>
             <li><strong>Data privacy:</strong> Training requires massive datasets, often scraped from the web.</li>
         </ul>
-
+        
         <h2 id="section7">Efficiency Techniques</h2>
         <p>To reduce computational cost and improve scalability, several techniques are used:</p>
         <ul>
@@ -203,4 +204,3 @@
     </footer>
 </body>
 </html>
-
