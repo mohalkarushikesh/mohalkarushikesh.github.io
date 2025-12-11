@@ -437,8 +437,8 @@ document.addEventListener('DOMContentLoaded', function() {
           { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', date: '2025-08-23', url: 'blogs/ai-in-healthcare.html' },
           { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', date: '2025-09-14', url: 'blogs/ai-in-finance.html' },
           { id: 10, title: 'AI in Marketing', description: 'Customer insights, personalization, and campaigns.', date: '2025-10-02', url: 'blogs/ai-in-marketing.html' },
-          { id: 11, title: '800 Days of Grind', description: 'A blueprint for discipline and transformation.', date: '2025-11-24', url: 'blogs/800-Days-of-Grind-The-Full-Blueprint.html' },
-          { id: 12, title: 'How the Human Mind Works', description: 'Layers, processes, and mysteries of cognition.', date: '2025-11-24', url: 'blogs/How-the-Human-Mind-Works.html' }
+          { id: 11, title: 'Transformers: The Architecture That Changed AI Forever', description: 'Attention, scalability, and long-term dependencies.', date: '2025-12-11', url: 'blogs/Transformers-The-Architecture-That-Changed-AI-Forever.html' },
+          { id: 12, title: 'Titans Architecture and the MIRAS Framework', description: 'Efficient memory and continuous learning in AI.', date: '2025-12-11', url: 'blogs/Titans-Architecture-and-the-MIRAS-Framework.html' }
         ];
         blogGridEl.innerHTML = blogs.map(b => (
             `<div class="border border-gray-300 p-3">
