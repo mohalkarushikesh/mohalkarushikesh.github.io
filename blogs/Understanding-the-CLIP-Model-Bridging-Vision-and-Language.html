@@ -125,11 +125,11 @@
         <!-- Mermaid Diagram -->
         <div class="mermaid">
         graph TD
-            A[Image Input] --> B[Image Encoder (ResNet/ViT)]
-            C[Text Input] --> D[Text Encoder (Transformer)]
-            B --> E[Shared Embedding Space]
+            A["Image Input"] --> B["Image Encoder (ResNet/ViT)"]
+            C["Text Input"] --> D["Text Encoder (Transformer)"]
+            B --> E["Shared Embedding Space"]
             D --> E
-            E --> F[Contrastive Loss: Align Matches]
+            E --> F["Similarity Matching"]
         </div>
 
         <p>This contrastive learning approach allows CLIP to perform <strong>zero-shot classification</strong>. For example, given an image of a dog, CLIP can classify it by comparing the image embedding with text embeddings of labels like "dog", "cat", or "car" — without explicit training on those categories.</p>
