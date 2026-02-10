@@ -15,23 +15,29 @@ body {
     background-color: #000000;
 }
 
-/* Ensure all sections are visible */
+/* Ensure all sections are visible and scroll nicely below fixed navbar */
 section {
     display: block;
     position: relative;
     width: 100%;
     min-height: auto;
     padding: 2rem 0;
+    scroll-margin-top: 5rem;
 }
 
-/* Hero section specific styling */
+/* Hero section specific styling - minimal, flat colors */
 #home {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background-color: #ffffff;
+    color: #111827;
+}
+
+.dark #home {
+    background-color: #020617;
+    color: #f9fafb;
 }
 
 /* About section styling */
@@ -198,14 +204,9 @@ section {
     justify-content: space-between;
 }
 
-/* Enhanced Typing Animation */
+/* Minimal Typing Text (single accent color) */
 .typing-text {
-    background: linear-gradient(to right, #2563eb, #7c3aed, #ec4899);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
+    color: #2563eb;
 }
 
 /* Role Animation */
@@ -257,7 +258,7 @@ section {
     }
 }
 
-/* Enhanced Social Link Hover Effects */
+/* Enhanced Social Link Hover Effects - keep subtle movement */
 .social-link-hover {
     color: #6b7280;
     transition: all 0.3s ease;
@@ -326,24 +327,10 @@ section {
     color: white;
 }
 
-/* Enhanced Button Effects */
+/* Minimal Button Effects - flat accent color */
 .btn-primary, .btn-secondary {
     position: relative;
     overflow: hidden;
-}
-
-.btn-primary::before, .btn-secondary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, #2563eb, #7c3aed);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
-}
-
-.btn-primary:hover::before, .btn-secondary:hover::before {
-    transform: scaleX(1);
 }
 
 /* Card Styles */
@@ -747,17 +734,9 @@ section {
     }
 }
 
-/* Enhanced Neural Network Background Animation */
+/* Enhanced Neural Network Background Animation - disabled for minimal design */
 .neural-network-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    overflow: hidden;
-    pointer-events: none;
-    opacity: 0.1;
+    display: none;
 }
 
 .neural-canvas {
@@ -1100,23 +1079,7 @@ input:focus, textarea:focus {
     max-height: 24rem;
 }
 
-/* Hero section gradient animation */
-@keyframes gradientShift {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-#home {
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
-}
+/* Remove hero section gradient animation for minimal design */
 
 /* Skill tags animation */
 .skill-tag {
@@ -1252,10 +1215,7 @@ section {
 
 /* Custom utility classes */
 .text-gradient {
-    background: linear-gradient(to right, #2563eb, #7c3aed);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: #2563eb;
 }
 
 .bg-glass {
@@ -1432,14 +1392,9 @@ section {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Gradient text animation */
+/* Minimal gradient text - flat accent color */
 .gradient-text {
-    background: linear-gradient(to right, #2563eb, #7c3aed, #ec4899);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
+    color: #2563eb;
 }
 
 /* Custom shadows */
@@ -1634,6 +1589,63 @@ section {
 /* Custom dark mode utilities */
 .dark-mode-toggle {
     transition: color 0.3s ease;
+}
+
+/* --- Force high-contrast text for main sections (minimal, readable) --- */
+#home h1,
+#home h2,
+#home h3,
+#home p,
+#home li,
+#home span {
+    color: #111827 !important;
+}
+
+.dark #home h1,
+.dark #home h2,
+.dark #home h3,
+.dark #home p,
+.dark #home li,
+.dark #home span {
+    color: #f9fafb !important;
+}
+
+#about h1,
+#about h2,
+#about h3,
+#about p,
+#about li,
+#about span {
+    color: #111827 !important;
+}
+
+.dark #about h1,
+.dark #about h2,
+.dark #about h3,
+.dark #about p,
+.dark #about li,
+.dark #about span {
+    color: #f9fafb !important;
+}
+
+#contact h1,
+#contact h2,
+#contact h3,
+#contact p,
+#contact li,
+#contact span,
+#contact label {
+    color: #111827 !important;
+}
+
+.dark #contact h1,
+.dark #contact h2,
+.dark #contact h3,
+.dark #contact p,
+.dark #contact li,
+.dark #contact span,
+.dark #contact label {
+    color: #f9fafb !important;
 }
 
 /* Custom animation delays */

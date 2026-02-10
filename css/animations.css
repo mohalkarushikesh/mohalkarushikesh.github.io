@@ -1,8 +1,10 @@
 /* ===== ANIMATIONS CSS - Animations, Transitions, Keyframes ===== */
 
-/* ===== AOS ANIMATIONS ===== */
+/* ===== AOS ANIMATIONS =====
+   Minimal + always-visible text: default opacity 1
+   so content is never hidden if AOS script fails. */
 [data-aos] {
-    opacity: 0;
+    opacity: 1;
     transition-property: opacity, transform;
 }
 

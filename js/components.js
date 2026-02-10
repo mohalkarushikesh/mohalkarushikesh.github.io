@@ -427,50 +427,134 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (blogGridEl && !hasBlogManager) {
         const blogs = [
-          { id: 1, title: 'Introduction to Machine Learning', description: 'Basics of ML and applications.', date: '2025-01-25', url: 'blogs/introduction-to-machine-learning.html' },
-          { id: 2, title: 'Deep Learning with Neural Networks', description: 'CNNs, RNNs, and training.', date: '2025-02-22', url: 'blogs/deep-learning-with-neural-networks.html' },
-          { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', date: '2025-03-22', url: 'blogs/computer-vision-applications.html' },
-          { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', date: '2025-04-19', url: 'blogs/natural-language-processing-revolution.html' },
-          { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', date: '2025-05-05', url: 'blogs/reinforcement-learning-fundamentals.html' },
-          { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', date: '2025-06-22', url: 'blogs/generative-ai.html' },
-          { id: 7, title: 'AI Ethics and Bias', description: 'Fairness, accountability, transparency.', date: '2025-07-12', url: 'blogs/ai-ethics-and-bias.html' },
-          { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', date: '2025-08-23', url: 'blogs/ai-in-healthcare.html' },
-          { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', date: '2025-09-14', url: 'blogs/ai-in-finance.html' },
-          { id: 10, title: 'AI in Marketing', description: 'Customer insights, personalization, and campaigns.', date: '2025-10-02', url: 'blogs/ai-in-marketing.html' },
-          { id: 11, title: 'Transformers: The Architecture That Changed AI Forever', description: 'Attention, scalability, and long-term dependencies.', date: '2025-12-11', url: 'blogs/Transformers-The-Architecture-That-Changed-AI-Forever.html' },
-          { id: 12, title: 'Titans Architecture and the MIRAS Framework', description: 'Efficient memory and continuous learning in AI.', date: '2025-12-11', url: 'blogs/Titans-Architecture-and-the-MIRAS-Framework.html' }
+          { id: 1, title: 'Introduction to Machine Learning', description: 'Basics of ML and applications.', category: 'Machine Learning', date: '2025-01-25', url: 'blogs/introduction-to-machine-learning.html' },
+          { id: 2, title: 'Deep Learning with Neural Networks', description: 'CNNs, RNNs, and training.', category: 'Deep Learning', date: '2025-02-22', url: 'blogs/deep-learning-with-neural-networks.html' },
+          { id: 3, title: 'Computer Vision Applications', description: 'Vision techniques and use cases.', category: 'Computer Vision', date: '2025-03-22', url: 'blogs/computer-vision-applications.html' },
+          { id: 4, title: 'Natural Language Processing Revolution', description: 'Transformers and LLMs.', category: 'NLP', date: '2025-04-19', url: 'blogs/natural-language-processing-revolution.html' },
+          { id: 5, title: 'Reinforcement Learning Fundamentals', description: 'Agents, rewards, algorithms.', category: 'Research', date: '2025-05-05', url: 'blogs/reinforcement-learning-fundamentals.html' },
+          { id: 6, title: 'Generative AI', description: 'Models, diffusion, and practical uses.', category: 'Generative AI', date: '2025-06-22', url: 'blogs/generative-ai.html' },
+          { id: 7, title: 'AI Ethics and Bias', description: 'Fairness, accountability, transparency.', category: 'AI Ethics', date: '2025-07-12', url: 'blogs/ai-ethics-and-bias.html' },
+          { id: 8, title: 'AI in Healthcare', description: 'Clinical AI, imaging, and operations.', category: 'Machine Learning', date: '2025-08-23', url: 'blogs/ai-in-healthcare.html' },
+          { id: 9, title: 'AI in Finance', description: 'Fraud, risk, and personalization.', category: 'Machine Learning', date: '2025-09-14', url: 'blogs/ai-in-finance.html' },
+          { id: 10, title: 'AI in Marketing', description: 'Customer insights, personalization, and campaigns.', category: 'Machine Learning', date: '2025-10-02', url: 'blogs/ai-in-marketing.html' },
+          { id: 11, title: 'Transformers: The Architecture That Changed AI Forever', description: 'Attention, scalability, and long-term dependencies.', category: 'Deep Learning', date: '2025-12-11', url: 'blogs/Transformers-The-Architecture-That-Changed-AI-Forever.html' },
+          { id: 12, title: 'Titans Architecture and the MIRAS Framework', description: 'Efficient memory and continuous learning in AI.', category: 'Research', date: '2025-12-11', url: 'blogs/Titans-Architecture-and-the-MIRAS-Framework.html' }
         ];
-        blogGridEl.innerHTML = blogs.map(b => (
-            `<div class="border border-gray-300 p-3">
-                <h3 class="font-bold">${b.title}</h3>
-                <p>${b.description}</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm">${new Date(b.date).toLocaleDateString()}</span>
-                    <a class="btn-primary text-sm" href="${b.url ? b.url : ((b.id && b.id <= 5) ? 'blogs/blog-' + b.id + '.html' : 'blogs/index.html')}">Read More</a>
-                </div>
-            </div>`
-        )).join('');
+
+        const blogSearchEl = document.getElementById('blogSearch');
+        const blogCategoryEl = document.getElementById('blogCategoryFilter');
+        const blogSortEl = document.getElementById('blogSortBy');
+
+        const renderBlogs = () => {
+            let filtered = [...blogs];
+            const query = (blogSearchEl && blogSearchEl.value || '').toLowerCase();
+            const category = blogCategoryEl && blogCategoryEl.value ? blogCategoryEl.value : '';
+            const sortBy = blogSortEl && blogSortEl.value ? blogSortEl.value : 'date';
+
+            if (query) {
+                filtered = filtered.filter(b =>
+                    b.title.toLowerCase().includes(query) ||
+                    b.description.toLowerCase().includes(query)
+                );
+            }
+
+            if (category) {
+                filtered = filtered.filter(b => (b.category || '') === category);
+            }
+
+            if (sortBy === 'title') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortBy === 'category') {
+                filtered.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+            } else {
+                // default and "date" / "popularity" both sort by latest first
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            blogGridEl.innerHTML = filtered.map(b => (
+                `<article class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-lg transition-shadow p-4 flex flex-col justify-between">
+                    <header class="mb-3">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-white line-clamp-2">${b.title}</h3>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">${b.description}</p>
+                    </header>
+                    <footer class="mt-3 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>${new Date(b.date).toLocaleDateString()}</span>
+                        <a class="btn-secondary text-xs px-3 py-1" href="${b.url ? b.url : ((b.id && b.id <= 5) ? 'blogs/blog-' + b.id + '.html' : 'blogs/index.html')}">
+                            Read article
+                        </a>
+                    </footer>
+                </article>`
+            )).join('');
+        };
+
+        if (blogSearchEl) blogSearchEl.addEventListener('input', renderBlogs);
+        if (blogCategoryEl) blogCategoryEl.addEventListener('change', renderBlogs);
+        if (blogSortEl) blogSortEl.addEventListener('change', renderBlogs);
+
+        renderBlogs();
     }
 
     if (projectGridEl && !hasProjectManager) {
         const projects = [
-            { id: 1, title: 'Movie Recommender System (RBM)', description: 'Collaborative filtering with RBM.', github: 'https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM', date: '2025-07-27' },
-            { id: 2, title: 'Google Stock Price Prediction (RNN-LSTM)', description: 'Time-series forecasting with LSTM.', github: 'https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM', date: '2025-07-24' },
-            { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification.', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2025-07-20' },
-            { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'Medical imaging model.', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2025-07-11' },
-            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'X-ray diagnosis system.', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2025-07-14' },
-            { id: 6, title: 'Self-Driving-Car-with-PPO-RL', description: 'Pygame self-driving car using PPO for autonomous navigation.', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2025-06-10' }
+            { id: 1, title: 'Movie Recommender System (RBM)', description: 'Collaborative filtering with RBM on MovieLens.', category: 'Machine Learning', github: 'https://github.com/mohalkarushikesh/Movie-Recommender-System-RBM', date: '2025-07-27' },
+            { id: 2, title: 'Google Stock Price Prediction (RNN-LSTM)', description: 'Time-series forecasting with RNN/LSTM.', category: 'Deep Learning', github: 'https://github.com/mohalkarushikesh/Google-Stock-Price-Prediction-using-RNN-LSTM', date: '2025-07-24' },
+            { id: 3, title: 'Cat vs Dog Classifier (CNN)', description: 'Binary image classification with CNN.', category: 'Computer Vision', github: 'https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN', date: '2025-07-20' },
+            { id: 4, title: 'Lung Cancer Detection (CNN)', description: 'CT-scan cancer detection using CNNs.', category: 'Computer Vision', github: 'https://github.com/mohalkarushikesh/Lung-Cancer-Detection-using-CNN', date: '2025-07-11' },
+            { id: 5, title: 'Pneumonia Detection (Deep Learning)', description: 'Chest X-ray diagnostic model.', category: 'Deep Learning', github: 'https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning', date: '2025-07-14' },
+            { id: 6, title: 'Self-Driving Car with PPO RL', description: 'PPO-based autonomous driving agent in Pygame.', category: 'Reinforcement Learning', github: 'https://github.com/mohalkarushikesh/Self-Driving-Car-with-PPO-RL', date: '2025-06-10' }
         ];
-        projectGridEl.innerHTML = projects.map(p => (
-            `<div class="border border-gray-300 p-3">
-                <h3 class="font-bold">${p.title}</h3>
-                <p>${p.description}</p>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm">${new Date(p.date).toLocaleDateString()}</span>
-                    <a class="btn-primary text-sm" target="_blank" href="${p.github}">Code</a>
-                </div>
-            </div>`
-        )).join('');
+
+        const projectSearchEl = document.getElementById('projectSearch');
+        const projectCategoryEl = document.getElementById('projectCategoryFilter');
+        const projectSortEl = document.getElementById('projectSortBy');
+
+        const renderProjects = () => {
+            let filtered = [...projects];
+            const query = (projectSearchEl && projectSearchEl.value || '').toLowerCase();
+            const category = projectCategoryEl && projectCategoryEl.value ? projectCategoryEl.value : '';
+            const sortBy = projectSortEl && projectSortEl.value ? projectSortEl.value : 'date';
+
+            if (query) {
+                filtered = filtered.filter(p =>
+                    p.title.toLowerCase().includes(query) ||
+                    p.description.toLowerCase().includes(query)
+                );
+            }
+
+            if (category) {
+                filtered = filtered.filter(p => (p.category || '') === category);
+            }
+
+            if (sortBy === 'title') {
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortBy === 'category') {
+                filtered.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+            } else {
+                // default, "date" and "popularity" => latest first
+                filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+
+            projectGridEl.innerHTML = filtered.map(p => (
+                `<article class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-lg transition-shadow p-4 flex flex-col justify-between">
+                    <header class="mb-3">
+                        <h3 class="font-semibold text-lg text-gray-900 dark:text-white">${p.title}</h3>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">${p.description}</p>
+                    </header>
+                    <footer class="mt-3 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>${new Date(p.date).toLocaleDateString()}</span>
+                        <a class="btn-secondary text-xs px-3 py-1" target="_blank" href="${p.github}">
+                            View code
+                        </a>
+                    </footer>
+                </article>`
+            )).join('');
+        };
+
+        if (projectSearchEl) projectSearchEl.addEventListener('input', renderProjects);
+        if (projectCategoryEl) projectCategoryEl.addEventListener('change', renderProjects);
+        if (projectSortEl) projectSortEl.addEventListener('change', renderProjects);
+
+        renderProjects();
     }
 });
 

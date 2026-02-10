@@ -22,51 +22,17 @@
     
     <!-- AOS Animation Library -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Minimal override: keep all content visible even if AOS JS is disabled -->
+    <style>
+        [data-aos] {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+    </style>
     
 </head>
 <body class="font-['Inter'] bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-    <style>
-        /* Minimal black & white styling while keeping all content */
-        html, body { font-family: "Crimson Pro", Times, serif !important; font-size: 12pt !important; color: #000 !important; background: #fff !important; }
-        a { color: #000 !important; text-decoration: underline !important; }
-        h1, h2, h3, h4, h5, h6 { margin: 6px 0 !important; font-weight: bold !important; color: #000 !important; }
-        p, li, span, div { line-height: 1.2 !important; }
-        section { padding-top: 80px !important; padding-bottom: 80px !important; }
-        section + section { margin-top: 80px !important; }
-        footer { margin-top: 80px !important; }
-        .max-w-7xl, .container, .max-w-4xl { max-width: 800px !important; }
-        /* Remove decorative backgrounds, gradients, and animations */
-        * { background-image: none !important; box-shadow: none !important; }
-        [data-aos] { opacity: 1 !important; transform: none !important; }
-        /* Hide images to keep text-only minimalism */
-        img, video { display: none !important; }
-        /* Compact grids and gaps */
-        .gap-8 { gap: 8px !important; }
-        .mb-16 { margin-bottom: 12px !important; }
-        .mt-12 { margin-top: 8px !important; }
-        .p-8 { padding: 8px !important; }
-        .px-4, .sm\:px-6, .lg\:px-8 { padding-left: 8px !important; padding-right: 8px !important; }
-        .py-20 { padding-top: 12px !important; padding-bottom: 12px !important; }
-        /* Hide auth, dark mode toggle, floating/back-to-top */
-        #globalAdminBtn, #globalAdminBtnMobile, #adminAuthModal, #darkModeToggle, #backToTop { display: none !important; }
-        /* Keep admin control wrappers invisible unless needed */
-        #projectAdminControls, #blogAdminControls, #resumeAdminControls { display: none !important; }
-        /* Quote box: ensure content fits cleanly inside the border */
-        blockquote { padding: 8px 10px !important; box-sizing: border-box !important; overflow-wrap: anywhere !important; word-break: break-word !important; }
-        blockquote p { margin: 0 !important; padding: 0 !important; }
-        blockquote .absolute { display: none !important; }
-        /* Neutralize color classes to black/white */
-        .text-blue-600, .text-blue-400, .text-gray-600, .text-gray-300, .text-gray-500, .text-white, .text-red-600 { color: #000 !important; }
-        .bg-white, .bg-gray-50, .bg-gray-800, .bg-black, .dark\:bg-black, .dark\:bg-gray-900, .bg-blue-600, .bg-blue-700, .bg-green-500, .bg-red-500, .bg-yellow-500 { background: #fff !important; }
-        .border, .border-gray-300, .dark\:border-gray-700, .dark\:border-gray-600, .border-gray-200 { border-color: #000 !important; }
-        /* Buttons become simple links */
-        .btn-primary, .btn-secondary, .btn-ghost { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; padding: 2px 6px !important; border-radius: 0 !important; }
-        /* Cards compact */
-        .rounded-xl, .rounded-2xl, .rounded-lg { border-radius: 0 !important; }
-        .shadow, .shadow-lg, .shadow-2xl, .hover\:shadow-xl, .hover\:shadow-2xl { box-shadow: none !important; }
-        /* Social icons: black & white */
-        .social-link svg { display: inline-block !important; width: 12px; height: 12px; fill: #000 !important; stroke: #000 !important; vertical-align: middle; margin-right: 4px; }
-    </style>
     <!-- Navigation Bar -->
     <nav id="navbar" class="fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm z-50 transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,32 +88,17 @@
     <!-- Main Content -->
     <main>
     <!-- Hero Section -->
-        <section id="home" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden pt-20">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-20">
+        <section id="home" class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 relative pt-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20">
             <div data-aos="fade-up" data-aos-duration="1000">
-                    <!-- Profile Image -->
-                <div class="mb-8 flex justify-center">
-                    <div class="relative">
-                        <div class="w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full flex items-center justify-center p-1 animate-pulse">
-                            <div class="w-30 h-30 bg-white dark:bg-gray-800 rounded-full overflow-hidden">
-                                <img src="assets/profile.jpg" alt="Rushikesh Mohalkar" class="w-full h-full object-cover">
-                            </div>
-                        </div>
-                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                
-                    <!-- Title -->
-                <h1 class="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6">
-                        Hi, I'm Rushikesh Mohalkar</span>
+                    <!-- Hero Content (centered) -->
+                <div class="space-y-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
+                        Hi, I'm Rushikesh Mohalkar
                 </h1>
                 
                     <!-- Role Display -->
-                <div class="mb-8">
+                <div class="mb-4">
                     <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-2">
                         I'm a
                     </p>
@@ -163,27 +114,50 @@
                 </div>
                 
                     <!-- Description -->
-                <p class="text-lg text-gray-500 dark:text-gray-400 mb-8 max-w-3xl mx-auto leading-relaxed">
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed text-center">
                     Passionate and curious AI/ML enthusiast transitioning into the world of software and intelligent systems. 
                     Exploring generative AI, deep learning, and reinforcement learning to make systems smarter and impactful.
                 </p>
                 
-                    <!-- Inspirational Quote -->
-                <div class="mb-12 max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="300">
-                        <blockquote class="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 dark:border-gray-700/50 shadow-lg">
-                        <div class="absolute -top-2 -left-2 text-6xl text-blue-200 dark:text-blue-800 opacity-50">"</div>
-                        <p class="text-xl md:text-2xl font-medium text-gray-700 dark:text-gray-300 italic leading-relaxed px-8 py-4">
-                                "The future of AI isn't about replacing humans—it's about amplifying human intelligence. Machine Learning teaches us patterns, Deep Learning reveals hidden insights, and Reinforcement Learning shows us how to adapt and improve. Together, they're not just algorithms; they're the building blocks of tomorrow's intelligent world."
-                        </p>
-                        <div class="absolute -bottom-2 -right-2 text-6xl text-blue-200 dark:text-blue-800 opacity-50">"</div>
-                        <footer class="text-right mt-4">
-                            <cite class="text-lg font-semibold text-blue-600 dark:text-blue-400">— Rushikesh Mohalkar</cite>
-                        </footer>
-                    </blockquote>
-                </div>
+                <section class="w-full py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950">
+                    <div class="w-full max-w-6xl mx-auto px-6 text-center" data-aos="fade-up">
+                
+                        <!-- Quote -->
+                        <blockquote class="relative">
+                            
+                            <!-- Big Decorative Quotes -->
+                            <span class="absolute -top-10 left-1/2 -translate-x-1/2 text-[120px] font-serif text-blue-100 dark:text-blue-900 opacity-40 select-none">
+                                "
+                            </span>
+                
+                            <!-- Main Text -->
+                            <p class="text-2xl md:text-4xl font-semibold leading-relaxed text-gray-800 dark:text-gray-200">
+                                The future of AI isn't about replacing humans — it's about 
+                                <span class="text-blue-600 dark:text-blue-400">amplifying human intelligence</span>. 
+                                Machine Learning teaches patterns, Deep Learning reveals hidden insights, 
+                                and Reinforcement Learning shows us how to adapt and improve.
+                            </p>
+                
+                            <!-- Sub Line -->
+                            <p class="mt-6 text-lg md:text-xl text-gray-600 dark:text-gray-400">
+                                Together, they're the building blocks of tomorrow’s intelligent world.
+                            </p>
+                
+                        </blockquote>
+                
+                        <!-- Author -->
+                        <div class="mt-10">
+                            <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                                — Rushikesh Mohalkar
+                            </p>
+                        </div>
+                
+                    </div>
+                </section>
+                
                 
                     <!-- Call-to-Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <div class="flex flex-col sm:flex-row gap-4 items-center justify-center">
                         <a href="#projects" class="btn-primary">
                             View My Projects
                         </a>
@@ -196,7 +170,7 @@
                 </div>
                 
                 <!-- Social Links -->
-                <div class="mt-12 flex justify-center space-x-6">
+                <div class="mt-8 flex space-x-4 justify-center">
                         <a href="https://github.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer" class="social-link">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.840 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
@@ -212,14 +186,15 @@
                             <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.130 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.710.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.210 0-.420-.015-.630A9.935 9.935 0 0024 4.59z"/>
                         </svg>
                     </a>
-                </div>
-            </div>
-                 </div>
+                </div> <!-- end hero text wrapper -->
+            </div> <!-- end data-aos wrapper -->
+        </div> <!-- end hero container -->
     </section>
 
     <!-- About Section -->
     <section id="about" class="py-20 bg-white dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="w-full max-w-[1600px] mx-auto px-6">
+
             <div class="text-center mb-16" data-aos="fade-up">
                 <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">About Me</h2>
                 <p class="text-xl text-gray-600 dark:text-gray-300">Get to know me better</p>
@@ -227,50 +202,30 @@
             
             <div class="grid gap-12 items-start">
                 <!-- About Content -->
-                <div data-aos="fade-up" data-aos-delay="200">
+                    <div data-aos="fade-up" data-aos-delay="200" class="max-w-6xl mx-auto">
                         <h3 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">
                             The AI Odyssey: From Curiosity to Passion
                     </h3>
                         
                         <div class="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed">
                             <p>
-                                <strong class="text-blue-600 dark:text-blue-400">Picture this:</strong> A wide-eyed teenager, sitting in front of a computer at 2 AM, 
-                                watching YouTube videos about neural networks while the rest of the world slept. That was me, 
-                                and little did I know that those sleepless nights would shape my entire future.
+                                I'm an <strong class="text-blue-600 dark:text-blue-400">AI/ML engineer in the making</strong> who loves turning math, code, and GPUs into real systems. 
+                                Most of my work lives at the intersection of <strong>deep learning, reinforcement learning, and generative models</strong>.
                             </p>
                             
                             <p>
-                                My journey into the world of AI started with a simple yet profound question: 
-                                <em>"What if machines could think like humans?"</em> This wasn't just curiosity—it was an obsession. 
-                                I spent countless hours reading research papers, experimenting with algorithms, and building my first 
-                                neural network (which, spoiler alert, didn't work at all on the first try!).
+                                I’ve built and shipped models for <strong>recommendation (RBMs)</strong>, <strong>time‑series forecasting (RNN/LSTM)</strong>, 
+                                and <strong>medical imaging (CNN‑based diagnostic models)</strong>, along with agents that learn to drive in simulators using PPO.
                             </p>
                             
                             <p>
-                                <strong>The turning point?</strong> When I built my first image classifier. 
-                                Watching a computer correctly identify whether an image was a cat or a dog felt like magic. 
-                                That moment of pure joy and wonder—that's what keeps me going. It's not just about the code; 
-                                it's about creating something that can learn, adapt, and surprise you.
+                                Recently, I’ve been exploring <strong>LLM tooling</strong>—from retrieval‑augmented generation and evaluation pipelines to small 
+                                autonomous agents that can plan, critique themselves, and iterate toward a goal.
                             </p>
                             
                             <p>
-                                <strong>Fast forward to today:</strong> I'm diving deep into the fascinating world of 
-                                reinforcement learning, exploring how AI can learn through trial and error—just like humans do. 
-                                From understanding the fundamentals of neural networks to building systems that can play games 
-                                better than humans, every day brings new challenges and discoveries.
-                            </p>
-                            
-                            <p>
-                                <strong>But here's the real story:</strong> I'm not just a tech enthusiast; 
-                                I'm someone who believes that AI has the power to transform our world for the better. 
-                                Whether it's helping doctors diagnose diseases, making education more accessible, 
-                                or solving complex environmental challenges, I see AI as humanity's greatest tool for progress.
-                            </p>
-                            
-                            <p>
-                                <strong class="text-red-600 dark:text-red-400">The future?</strong> I'm excited about exploring generative AI, 
-                                understanding how machines can create art, music, and literature. It's not about replacing human creativity— 
-                                it's about amplifying it, working together to create things we never thought possible.
+                                Long‑term, my goal is to work on <strong>robust, production‑grade AI systems</strong> that are explainable, reliable, and actually useful for people—
+                                especially in domains like healthcare, finance, and tools for engineers.
                             </p>
                         </div>
                         
@@ -381,12 +336,7 @@
                         </div>
         </section>
 
-        <br>
-        <br>
-        <br>
-        <br>
-
-        <div class="flex justify-center items-center my-8">
+        <div class="flex justify-center items-center py-12">
             <button 
               id="loadMoreProjects" 
               class="btn-secondary px-6 py-3 bg-gray-900 text-white rounded-2xl hover:bg-gray-700 transition duration-300"
@@ -394,13 +344,6 @@
               <h2 class="text-2xl font-bold text-white">Check out my GitHub</h2>
             </button>
           </div>
-          
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
-          <br>
         
         <!-- Blogs Section -->
         <section id="blogs" class="py-20 bg-white dark:bg-gray-900">
@@ -470,11 +413,6 @@
          
 
         </section>
-
-        <br>
-        <br>
-        <br>
-      
         
         <!-- Load More Button -->
         <div class="flex justify-center items-center my-8">
@@ -484,11 +422,6 @@
                 </a>
             </div>
         </div>
-
-        <br>
-        <br>
-        <br>
-      <br>
 
         <!-- Project Modal for Add/Edit -->
         <div id="projectModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
@@ -760,9 +693,9 @@
 
     <!-- Contact Section -->
         <section id="contact" class="py-20 bg-gray-50 dark:bg-gray-800">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16" data-aos="fade-up">
-                <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Get In Touch</h2>
+                <h2 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">Get In Touch</h2>
                 <p class="text-xl text-gray-600 dark:text-gray-300">Let's work together on your next AI project</p>
             </div>
             
@@ -839,23 +772,11 @@
         </div>
     </section>
 
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-
-    <br>
         <!-- Resume Section -->
         <section id="resume" class="py-20 bg-gray-50 dark:bg-gray-900">
             <div class="container mx-auto px-4">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4" data-aos="fade-up">
+                    <h2 class="text-6xl font-bold text-gray-900 dark:text-white mb-4" data-aos="fade-up">
                         Resume & Experience
                     </h2>
                     <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="200">
@@ -938,7 +859,7 @@
                 </div>
                 
                 <!-- Resume Display -->
-                <div id="resumeDisplay" class="max-w-4xl mx-auto">
+                <div id="resumeDisplay" class="max-w-6xl mx-auto">
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8" data-aos="fade-up">
                         <div class="flex items-center justify_between mb-6">
                             <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Current Resume</h3>
@@ -1044,14 +965,12 @@
     
         <!-- Rabbit GIF above footer -->
         <div class="text-center mb-6">
-          <a href="https://www.animatedimages.org/cat-rabbits-327.htm">
-            <img src="https://www.animatedimages.org/data/media/327/animated-rabbit-image-0108.gif" 
-                 alt="animated rabbit" 
-                 class="mx-auto" 
-                 style="transform: scaleX(-1); display:inline-block;" />
-          </a>
-        </div>
-        
+            <img src="assets/horse.gif"
+                 alt="animated horse"
+                 class="mx-auto w-65"
+                 style="transform: scaleX(1);" />
+          </div>
+                  
         <!-- Footer -->
         <footer class="bg-gray-900 dark:bg-black text-white py-16">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1080,8 +999,71 @@
 
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="js/main.js"></script>
     <script src="js/components.js"></script>
-    <script src="js/animations.js"></script>
+    <script>
+      // Minimal, modern JS for dark mode, nav, and back-to-top
+      (function () {
+        const root = document.documentElement;
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          root.classList.add('dark');
+        }
+
+        const darkToggle = document.getElementById('darkModeToggle');
+        if (darkToggle) {
+          darkToggle.addEventListener('click', () => {
+            const isDark = root.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+          });
+        }
+
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileBtn && mobileMenu) {
+          mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+          });
+        }
+
+        // Smooth scroll for in-page links
+        document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+          link.addEventListener('click', e => {
+            const href = link.getAttribute('href') || '';
+            if (href.startsWith('#')) {
+              e.preventDefault();
+              const target = document.querySelector(href);
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+              if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+              }
+            }
+          });
+        });
+
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        if (backToTop) {
+          window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+              backToTop.classList.remove('opacity-0', 'invisible');
+              backToTop.classList.add('opacity-100', 'visible');
+            } else {
+              backToTop.classList.add('opacity-0', 'invisible');
+              backToTop.classList.remove('opacity-100', 'visible');
+            }
+          });
+          backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+
+        // Optional: initialize AOS if available
+        if (window.AOS) {
+          AOS.init({ duration: 700, once: true });
+        }
+      })();
+    </script>
 </body>
 </html>
