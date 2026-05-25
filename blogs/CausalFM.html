@@ -7,148 +7,149 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-# 🧠 What is **CausalFM (Foundation Models for Causal Inference)?**
-
-👉 **CausalFM is a new type of AI model designed to learn *cause‑effect relationships*, not just patterns.**
-
-***
-
-# 🧩 Simple definition
-
-> ✅ **CausalFM = a foundation model that can answer “what causes what?”**
-
-***
-
-# 🔍 What problem it solves
-
-### ❌ Traditional AI (LLMs, deep learning)
-
-* Learns:
-  ```
-  patterns (correlations)
-  ```
-* Example:
-  ```
-  Smoking ↔ Cancer (they occur together)
-  ```
-
-👉 But it doesn’t truly understand:
-
-* Does smoking *cause* cancer?
-
-***
-
-### ✅ CausalFM
-
-* Learns:
-  ```
-  cause → effect relationships
-  ```
-* Example:
-  ```
-  Smoking → causes → cancer
-  ```
-
-***
-
-# ⚙️ How it works (simplified)
-
-CausalFM builds on **transformers**, but adds a major idea:
-
-### 1. Train on “simulated worlds”
-
-* Uses **synthetic data generated from causal models**
-* Learns different scenarios like:
-  ```
-  If A changes → what happens to B?
-  ```
-
-***
-
-### 2. Uses **Prior‑Data Fitted Networks (PFNs)**
-
-* Model is trained using:
-  ```
-  defined cause-effect rules (priors)
-  ```
-* Then learns to generalize
-
-***
-
-### 3. Performs **in-context causal reasoning**
-
-* Given input, it can answer:
-  * “What caused this?”
-  * “What if we change X?”
-
-👉 This is called:
-
-```
-counterfactual reasoning
-```
-
-***
-
-# 🔥 Example
-
-### Input:
-
-```
-A patient took drug A and recovered
-```
-
-### CausalFM can answer:
-
-* Did the drug cause recovery?
-* What if the patient didn’t take it?
-* What if we change dosage?
-
-👉 Normal LLM CANNOT reliably do this.
-
-***
-
-# 💡 Why it’s a breakthrough
-
-### ✅ 1. Moves AI beyond correlation
-
-AI can reason about **why things happen**
-
-***
-
-### ✅ 2. Works in critical domains
-
-* Medicine
-* Economics
-* Policy decisions
-
-***
-
-### ✅ 3. General framework
-
-* Can solve:
-  * back-door, front-door causal problems
-  * instrumental variable analysis
-
- [\[smartaiblog.in\]](https://smartaiblog.in/what-is-sarvam-ai-indias-breakthrough-in-vernacular-generative-ai/)
-
-***
-
-# ⚖️ Comparison (important for understanding)
-
-| Model type   | What it learns             |
-| ------------ | -------------------------- |
-| GPT / LLM    | Patterns (correlation)     |
-| DeepSeek     | Reasoning (step-by-step)   |
-| **CausalFM** | ✅ Cause-effect (causality) |
-
-***
-
-# 🧠 One-line intuition
-
-👉 **CausalFM tries to make AI think like a scientist, not just a pattern recognizer.**
-
-***
-
+    <pre>
+    # 🧠 What is **CausalFM (Foundation Models for Causal Inference)?**
+    
+    👉 **CausalFM is a new type of AI model designed to learn *cause‑effect relationships*, not just patterns.**
+    
+    ***
+    
+    # 🧩 Simple definition
+    
+    > ✅ **CausalFM = a foundation model that can answer “what causes what?”**
+    
+    ***
+    
+    # 🔍 What problem it solves
+    
+    ### ❌ Traditional AI (LLMs, deep learning)
+    
+    * Learns:
+      ```
+      patterns (correlations)
+      ```
+    * Example:
+      ```
+      Smoking ↔ Cancer (they occur together)
+      ```
+    
+    👉 But it doesn’t truly understand:
+    
+    * Does smoking *cause* cancer?
+    
+    ***
+    
+    ### ✅ CausalFM
+    
+    * Learns:
+      ```
+      cause → effect relationships
+      ```
+    * Example:
+      ```
+      Smoking → causes → cancer
+      ```
+    
+    ***
+    
+    # ⚙️ How it works (simplified)
+    
+    CausalFM builds on **transformers**, but adds a major idea:
+    
+    ### 1. Train on “simulated worlds”
+    
+    * Uses **synthetic data generated from causal models**
+    * Learns different scenarios like:
+      ```
+      If A changes → what happens to B?
+      ```
+    
+    ***
+    
+    ### 2. Uses **Prior‑Data Fitted Networks (PFNs)**
+    
+    * Model is trained using:
+      ```
+      defined cause-effect rules (priors)
+      ```
+    * Then learns to generalize
+    
+    ***
+    
+    ### 3. Performs **in-context causal reasoning**
+    
+    * Given input, it can answer:
+      * “What caused this?”
+      * “What if we change X?”
+    
+    👉 This is called:
+    
+    ```
+    counterfactual reasoning
+    ```
+    
+    ***
+    
+    # 🔥 Example
+    
+    ### Input:
+    
+    ```
+    A patient took drug A and recovered
+    ```
+    
+    ### CausalFM can answer:
+    
+    * Did the drug cause recovery?
+    * What if the patient didn’t take it?
+    * What if we change dosage?
+    
+    👉 Normal LLM CANNOT reliably do this.
+    
+    ***
+    
+    # 💡 Why it’s a breakthrough
+    
+    ### ✅ 1. Moves AI beyond correlation
+    
+    AI can reason about **why things happen**
+    
+    ***
+    
+    ### ✅ 2. Works in critical domains
+    
+    * Medicine
+    * Economics
+    * Policy decisions
+    
+    ***
+    
+    ### ✅ 3. General framework
+    
+    * Can solve:
+      * back-door, front-door causal problems
+      * instrumental variable analysis
+    
+     [\[smartaiblog.in\]](https://smartaiblog.in/what-is-sarvam-ai-indias-breakthrough-in-vernacular-generative-ai/)
+    
+    ***
+    
+    # ⚖️ Comparison (important for understanding)
+    
+    | Model type   | What it learns             |
+    | ------------ | -------------------------- |
+    | GPT / LLM    | Patterns (correlation)     |
+    | DeepSeek     | Reasoning (step-by-step)   |
+    | **CausalFM** | ✅ Cause-effect (causality) |
+    
+    ***
+    
+    # 🧠 One-line intuition
+    
+    👉 **CausalFM tries to make AI think like a scientist, not just a pattern recognizer.**
+    
+    ***
+    </pre>pre>
   </body>
 </html>
 
