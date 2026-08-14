@@ -1,0 +1,50 @@
+title: Rushikesh Mohalkar
+tagline: AI/ML Engineer & Software Developer
+description: >-
+  Portfolio of Rushikesh Mohalkar — AI/ML engineer specializing in deep learning,
+  reinforcement learning, computer vision, and generative AI.
+author: Rushikesh Mohalkar
+email: rushikeshmohalkar2001@gmail.com
+lang: en
+
+# Update these two if the repo/domain changes.
+url: "https://mohalkarushikesh.github.io"
+baseurl: ""
+
+# Clean, grouped blog URLs: /blogs/my-post-title/
+permalink: /blogs/:title/
+
+social:
+  github: mohalkarushikesh
+  linkedin: rushikesh-mohalkar
+  x: mohalkrushikesh
+
+# GitHub Pages–supported plugins (build server-side → static HTML, zero client JS on the home page).
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Every post defaults to the shared post layout.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      author: Rushikesh Mohalkar
+
+# Keep build output lean and don't publish source docs / office files.
+exclude:
+  - Instructions.md
+  - DEPLOYMENT.md
+  - PROJECT_STRUCTURE.md
+  - PREVIEW.md
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - preview_build.py
+  - "resume/*.docx"
+
+sass:
+  style: compressed

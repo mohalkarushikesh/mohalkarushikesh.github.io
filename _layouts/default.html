@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: 'en' }}" data-base="{{ '/' | relative_url }}">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <!-- No-FOUC theme + JS marker: runs before paint -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // light by default
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#f3f1ea" />
+  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}" />
+
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}" />
+
+  {% seo %}
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- Page background image -->
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <div class="wrap">
+      <a href="{{ '/' | relative_url }}#home" class="brand">
+        <span class="mark">R</span>
+        <span>Rushikesh<span class="grad-text">.</span></span>
+      </a>
+
+      <div class="nav-menu">
+        <a class="link" href="{{ '/' | relative_url }}#home">Home</a>
+        <a class="link" href="{{ '/' | relative_url }}#about">About</a>
+        <a class="link" href="{{ '/' | relative_url }}#projects">Projects</a>
+        <a class="link" href="{{ '/blogs/' | relative_url }}">Blogs</a>
+        <a class="link" href="{{ '/' | relative_url }}#resume">Resume</a>
+        <a class="link" href="{{ '/' | relative_url }}#contact">Contact</a>
+      </div>
+
+      <div class="nav-tools">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    {{ content }}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="{{ '/' | relative_url }}#home">Home</a>
+        <a href="{{ '/' | relative_url }}#about">About</a>
+        <a href="{{ '/' | relative_url }}#projects">Projects</a>
+        <a href="{{ '/blogs/' | relative_url }}">Blogs</a>
+        <a href="{{ '/' | relative_url }}#resume">Resume</a>
+        <a href="{{ '/' | relative_url }}#contact">Contact</a>
+      </nav>
+      <p class="copy">© {{ site.time | date: "%Y" }} Rushikesh Mohalkar. All rights reserved. · Built with <span class="heart">❤</span> for AI/ML — Jekyll &amp; vanilla JS.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="{{ '/assets/js/app.js' | relative_url }}?v={{ site.time | date: '%Y%m%d%H%M%S' }}" defer></script>
+</body>
+</html>

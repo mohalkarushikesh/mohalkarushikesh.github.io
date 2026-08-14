@@ -1,0 +1,16 @@
+# Résumé data rendered on the home page. The downloadable PDF lives at resume/Resume.pdf.
+experience:
+  - role: "QA Engineer"
+    org: "Cognizant"
+    when: "July 2024 — Present"
+    detail: "Ensuring software quality through testing, automation, and process improvements while deepening my AI/ML foundations on the side."
+  - role: "AI/ML Engineer"
+    org: "Independent & Project-Based"
+    when: "Ongoing"
+    detail: "Building AI/ML systems with a focus on deep learning, reinforcement learning, and production-grade intelligent systems."
+
+education:
+  - degree: "BE in Electronics & Telecommunication"
+    org: "AISSMS IOIT, Pune • SPPU"
+    when: "2019 — 2023"
+    detail: "Foundation in electronics, communication systems, and software engineering."

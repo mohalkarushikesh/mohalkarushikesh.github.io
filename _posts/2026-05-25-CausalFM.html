@@ -1,0 +1,75 @@
+---
+layout: post
+title: "Foundation Models for Causal Inference (CausalFM)"
+date: 2026-05-25
+category: "Research"
+tags: [CausalFM, Causal Inference, Foundation Models, Transformers, Counterfactuals]
+description: "CausalFM is a transformer-based foundation model trained on causal data so it can reason about cause and effect rather than mere correlation."
+---
+<p><strong>CausalFM</strong> is a new type of AI model designed to learn <em>cause–effect relationships</em>, not just statistical patterns. Where most models answer <em>“what usually goes together?”</em>, CausalFM aims to answer <em>“what causes what?”</em> — a key step toward AI that reasons like a scientist.</p>
+
+<blockquote>CausalFM = a foundation model that can answer “what causes what?” and “what happens if we change something?”</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#problem">The problem it solves</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#example">A worked example</a></li>
+    <li><a href="#why">Why it's a breakthrough</a></li>
+    <li><a href="#compare">How it compares</a></li>
+  </ul>
+</nav>
+
+<h2 id="problem">The problem it solves</h2>
+<p>Traditional AI — including large language models and most deep-learning systems — learns
+<strong>correlations</strong>: it notices that things occur together. For example, it learns that
+<em>smoking</em> and <em>cancer</em> appear together in data, but it doesn't truly understand whether
+smoking <em>causes</em> cancer.</p>
+<p>CausalFM instead learns <strong>cause → effect</strong> relationships, so it can distinguish
+"these happen together" from "this one produces that one."</p>
+
+<h2 id="how">How it works</h2>
+<p>CausalFM builds on the <strong>transformer</strong> architecture but adds a few key ideas:</p>
+<ul>
+  <li><strong>Trained on simulated worlds.</strong> It uses synthetic data generated from causal
+  models, learning scenarios of the form “if A changes, what happens to B?”</li>
+  <li><strong>Prior-Data Fitted Networks (PFNs).</strong> The model is trained on defined
+  cause-effect rules (priors) and then learns to generalize beyond them.</li>
+  <li><strong>In-context causal reasoning.</strong> Given an input, it can answer “what caused this?”
+  and “what if we change X?” — a form of <em>counterfactual reasoning</em>.</li>
+</ul>
+
+<h2 id="example">A worked example</h2>
+<p><strong>Input:</strong> a patient took drug A and recovered.</p>
+<p>Unlike a standard LLM, CausalFM can reason about questions such as:</p>
+<ul>
+  <li>Did the drug actually <em>cause</em> the recovery?</li>
+  <li>What would have happened if the patient hadn't taken it?</li>
+  <li>What if we changed the dosage?</li>
+</ul>
+
+<h2 id="why">Why it's a breakthrough</h2>
+<ul>
+  <li><strong>Moves AI beyond correlation</strong> — it can reason about <em>why</em> things happen.</li>
+  <li><strong>Works in critical domains</strong> — medicine, economics, and policy decisions, where
+  acting on a spurious correlation is costly.</li>
+  <li><strong>A general framework</strong> — it can address back-door and front-door causal problems
+  and instrumental-variable analysis within one model.</li>
+</ul>
+
+<h2 id="compare">How it compares</h2>
+<table>
+  <thead>
+    <tr><th>Model type</th><th>What it primarily learns</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>GPT / LLM</td><td>Patterns (correlation)</td></tr>
+    <tr><td>Reasoning models</td><td>Step-by-step problem solving</td></tr>
+    <tr><td><strong>CausalFM</strong></td><td>Cause-and-effect (causality)</td></tr>
+  </tbody>
+</table>
+
+<p><strong>One-line intuition:</strong> CausalFM tries to make AI think like a scientist, not just a
+pattern recognizer — a transformer-based foundation model trained on causal data so it can perform
+cause-effect reasoning and answer “what happens if we change something?”</p>

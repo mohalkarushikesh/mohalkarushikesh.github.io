@@ -1,0 +1,459 @@
+---
+layout: default
+title: Rushikesh Mohalkar — AI/ML Engineer & Software Developer
+description: >-
+  Portfolio of Rushikesh Mohalkar — AI/ML engineer specializing in deep learning,
+  reinforcement learning, computer vision, and generative AI. Built with Jekyll and pure CSS.
+---
+
+<!-- ===================== HERO ===================== -->
+<header id="home" class="hero">
+  <div class="wrap">
+    <!-- rotating sticker badge -->
+    <div class="spin-badge" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <path id="badgeCircle" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0" />
+        </defs>
+        <text><textPath href="#badgeCircle" startOffset="0">★ AI / ML ENGINEER ★ OPEN&nbsp;TO&nbsp;WORK&nbsp;&nbsp;</textPath></text>
+      </svg>
+      <span class="badge-core">✦</span>
+    </div>
+
+    <span class="avail"><span class="dot"></span> Open to AI/ML opportunities</span>
+
+    <h1>
+      <span class="hi">Hi, I'm</span>
+      Rushikesh <span class="grad-text">Mohalkar</span>
+    </h1>
+
+    <div class="role-wrap">
+      <div class="role-line">
+        <span class="static">I build&nbsp;</span>
+        <span class="roll">
+          <span>AI/ML Systems</span>
+          <span>Deep Learning Models</span>
+          <span>Computer Vision</span>
+          <span>RL Agents</span>
+          <span>Generative AI</span>
+          <span>AI/ML Systems</span>
+        </span>
+      </div>
+    </div>
+  
+    <p class="blurb">
+      A curious AI/ML engineer turning math, code, and GPUs into intelligent systems —
+      exploring deep learning, reinforcement learning, and generative models that amplify human intelligence.
+    </p>
+
+    <div class="cta">
+      <a href="#projects" class="btn btn-primary">
+        View My Projects
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+        Download Résumé
+      </a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+
+    <div class="socials">
+      <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
+      </a>
+      <a href="https://x.com/{{ site.social.x }}" target="_blank" rel="noopener noreferrer" aria-label="X">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2H21.5l-7.19 8.21L22.7 22h-6.6l-5.17-6.76L4.99 22H1.73l7.69-8.79L1.4 2h6.7l4.68 6.16L18.24 2z"/></svg>
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat reveal"><div class="num grad-text">{{ site.data.projects | size }}+</div><div class="lbl">ML Projects</div></div>
+      <div class="stat reveal"><div class="num grad-text">{{ site.posts | size }}+</div><div class="lbl">Articles Written</div></div>
+      <div class="stat reveal"><div class="num grad-text">10+</div><div class="lbl">Frameworks & Tools</div></div>
+      <div class="stat reveal"><div class="num grad-text">∞</div><div class="lbl">Curiosity</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== SKILLS TICKER ===================== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <div class="grp">
+      <span class="ticker-item">Python</span>
+      <span class="ticker-item">PyTorch</span>
+      <span class="ticker-item">TensorFlow</span>
+      <span class="ticker-item">Deep Learning</span>
+      <span class="ticker-item">Reinforcement Learning</span>
+      <span class="ticker-item">Computer Vision</span>
+      <span class="ticker-item">NLP</span>
+      <span class="ticker-item">Generative AI</span>
+      <span class="ticker-item">Transformers</span>
+      <span class="ticker-item">RAG</span>
+      <span class="ticker-item">LLMs</span>
+      <span class="ticker-item">Scikit-learn</span>
+    </div>
+    <div class="grp">
+      <span class="ticker-item">Python</span>
+      <span class="ticker-item">PyTorch</span>
+      <span class="ticker-item">TensorFlow</span>
+      <span class="ticker-item">Deep Learning</span>
+      <span class="ticker-item">Reinforcement Learning</span>
+      <span class="ticker-item">Computer Vision</span>
+      <span class="ticker-item">NLP</span>
+      <span class="ticker-item">Generative AI</span>
+      <span class="ticker-item">Transformers</span>
+      <span class="ticker-item">RAG</span>
+      <span class="ticker-item">LLMs</span>
+      <span class="ticker-item">Scikit-learn</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MANIFESTO ===================== -->
+<section class="manifesto">
+  <div class="wrap reveal">
+    <p class="q">
+      The future of AI isn't about replacing humans — it's about
+      <span class="grad-text">amplifying human intelligence</span>.
+      Machine learning teaches patterns, deep learning reveals hidden insights,
+      and reinforcement learning shows us how to adapt.
+    </p>
+    <p class="sub">Together, they're the building blocks of tomorrow's intelligent world.</p>
+    <p class="by">— Rushikesh Mohalkar</p>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section id="about">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">About Me</span>
+      <h2 class="title">The AI Odyssey — <span class="grad-text">from curiosity to craft</span></h2>
+    </div>
+
+    <div class="bento">
+      <!-- A · intro -->
+      <div class="card bento-tile bento-intro reveal">
+        <span class="tile-tag">✦ the story</span>
+        <h3>Turning math, code &amp; GPUs into <span class="grad-text">real systems</span>.</h3>
+        <p>I'm an <strong>AI/ML engineer</strong> working at the intersection of <strong>deep learning,
+          reinforcement learning, and generative models</strong>. I've shipped models for recommendation,
+          time-series forecasting, and medical imaging — plus agents that learn to drive in simulators with PPO.</p>
+        <p>Lately I've been deep in <strong>LLM tooling</strong>: RAG from scratch, eval harnesses, and small
+          autonomous agents that plan, critique themselves, and iterate toward a goal.</p>
+      </div>
+
+      <!-- B · stat -->
+      <div class="card bento-tile bento-stat reveal">
+        <span class="big grad-text">{{ site.data.projects | size }}+</span>
+        <span class="lbl">Projects shipped</span>
+      </div>
+
+      <!-- C · stat -->
+      <div class="card bento-tile bento-stat reveal">
+        <span class="big grad-text">{{ site.posts | size }}</span>
+        <span class="lbl">Articles written</span>
+      </div>
+
+      <!-- D · now exploring -->
+      <div class="card bento-tile reveal">
+        <span class="tile-tag">🎯 currently exploring</span>
+        <div class="chips">
+          <span class="chip">RAG Pipelines</span>
+          <span class="chip">Autonomous Agents</span>
+          <span class="chip">LLM Evaluation</span>
+          <span class="chip">Model Deployment</span>
+        </div>
+      </div>
+
+      <!-- E · status (accent) -->
+      <div class="card bento-tile bento-accent reveal">
+        <span class="status-dot"></span>
+        <h4>Open to AI/ML roles</h4>
+        <p>📍 Bengaluru, India · remote-friendly</p>
+      </div>
+
+      <!-- F · tech arsenal -->
+      <div class="card bento-tile bento-tech reveal">
+        <span class="tile-tag">🧠 technical arsenal</span>
+        <div class="chips">
+          <span class="chip">Python</span>
+          <span class="chip">PyTorch</span>
+          <span class="chip">TensorFlow</span>
+          <span class="chip">Deep Learning</span>
+          <span class="chip">Reinforcement Learning</span>
+          <span class="chip">Computer Vision</span>
+          <span class="chip">NLP</span>
+          <span class="chip">Generative AI</span>
+          <span class="chip">Transformers</span>
+          <span class="chip">RAG</span>
+          <span class="chip">LangChain</span>
+          <span class="chip">FAISS</span>
+          <span class="chip">Scikit-learn</span>
+          <span class="chip">NumPy</span>
+          <span class="chip">Pandas</span>
+          <span class="chip">Flask</span>
+          <span class="chip">Git</span>
+        </div>
+      </div>
+
+      <!-- G · fun fact -->
+      <div class="card bento-tile reveal">
+        <span class="tile-tag">☕ fun fact</span>
+        <p>Once spent <strong>48 hours straight</strong> debugging a neural net — only to find a typo in the
+          loss function. AI teaches patience, persistence, and a healthy respect for coffee.</p>
+      </div>
+
+      <!-- H · links -->
+      <div class="card bento-tile bento-cta reveal">
+        <p>Want the full picture? Grab the résumé or dig through the code.</p>
+        <div class="tile-actions">
+          <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+            Résumé
+          </a>
+          <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">GitHub ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROJECTS ===================== -->
+<section id="projects">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Featured Work</span>
+      <h2 class="title">Projects that <span class="grad-text">learn & adapt</span></h2>
+      <p class="lead">A selection of AI/ML systems I've designed, trained, and shipped.</p>
+    </div>
+
+    <div class="filter-scope">
+      <input type="radio" name="pfilter" id="f-all" checked />
+      <input type="radio" name="pfilter" id="f-llm" />
+      <input type="radio" name="pfilter" id="f-dl" />
+      <input type="radio" name="pfilter" id="f-cv" />
+      <input type="radio" name="pfilter" id="f-nlp" />
+      <input type="radio" name="pfilter" id="f-rl" />
+      <input type="radio" name="pfilter" id="f-ml" />
+
+      <div class="filter">
+        <label for="f-all">All</label>
+        <label for="f-llm">LLM &amp; Agents</label>
+        <label for="f-dl">Deep Learning</label>
+        <label for="f-cv">Computer Vision</label>
+        <label for="f-nlp">NLP</label>
+        <label for="f-rl">Reinforcement Learning</label>
+        <label for="f-ml">Machine Learning</label>
+      </div>
+
+      <div class="grid-cards">
+        {% for project in site.data.projects %}
+        <article class="card p-card reveal" data-cat="{{ project.cat }}">
+          <div class="card-thumb{% if project.logo %} has-img{% endif %}"{% if project.logo %} style="background-image:url('{{ '/assets/img/' | append: project.logo | relative_url }}')"{% endif %}>
+            {% unless project.logo %}
+            <span class="thumb-icon">
+              {% case project.cat %}
+              {% when 'llm' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              {% when 'nlp' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 20h6M12 5v15"/></svg>
+              {% when 'cv' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              {% when 'rl' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l1-5a3 3 0 013-3h4a3 3 0 013 3l1 5"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
+              {% when 'ml' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+              {% else %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              {% endcase %}
+            </span>
+            {% endunless %}
+            <span class="cat">{{ project.category }}</span>
+          </div>
+          <div class="p-body">
+            <h3>{{ project.title }}</h3>
+            <p>{{ project.description }}</p>
+            <div class="tags">{% for t in project.tags %}<span>{{ t }}</span>{% endfor %}</div>
+            <div class="foot">
+              <a class="repo" href="{{ project.repo }}" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="center-cta reveal">
+      <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        Explore all repositories on GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BLOGS ===================== -->
+<section id="blogs">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Writing</span>
+      <h2 class="title">Notes on <span class="grad-text">AI & intelligence</span></h2>
+      <p class="lead">Deep dives on architectures, research, and the ideas shaping modern AI.</p>
+    </div>
+
+    <div class="grid-cards">
+      {% for post in site.posts limit: 6 %}
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">{{ post.category | default: 'Article' }}</span>
+          <span>{{ post.date | date: "%b %Y" }}</span>
+        </div>
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.description | default: post.excerpt | strip_html | truncate: 130 }}</p>
+        <a class="more" href="{{ post.url | relative_url }}">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      {% endfor %}
+    </div>
+
+    <div class="center-cta reveal">
+      <a href="{{ '/blogs/' | relative_url }}" class="btn btn-primary">
+        Browse all {{ site.posts | size }} articles
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESUME ===================== -->
+<section id="resume">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Journey</span>
+      <h2 class="title">Résumé &amp; <span class="grad-text">Experience</span></h2>
+      <p class="lead">My professional path, education, and the skills I'm building on.</p>
+    </div>
+
+    <div class="resume-grid">
+      <div class="reveal">
+        <h3 class="sub">💼 Experience</h3>
+        <div class="timeline">
+          {% for item in site.data.resume.experience %}
+          <div class="card tl-item">
+            <span class="when">{{ item.when }}</span>
+            <h4>{{ item.role }}</h4>
+            <span class="org">{{ item.org }}</span>
+            <p>{{ item.detail }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="reveal">
+        <h3 class="sub">🎓 Education</h3>
+        <div class="timeline">
+          {% for item in site.data.resume.education %}
+          <div class="card tl-item">
+            <span class="when">{{ item.when }}</span>
+            <h4>{{ item.degree }}</h4>
+            <span class="org">{{ item.org }}</span>
+            <p>{{ item.detail }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="center-cta reveal">
+      <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
+        Download Full Résumé
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONTACT ===================== -->
+<section id="contact">
+  <div class="wrap">
+    <div class="section-head center reveal">
+      <span class="eyebrow">Contact</span>
+      <h2 class="title">Let's build something <span class="grad-text">intelligent</span></h2>
+      <p class="lead">Have a project, a question, or just want to talk AI? I'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="card contact-card reveal">
+        <h3>Reach out directly</h3>
+        <p>The fastest ways to get in touch — no forms, no scripts, just a message away.</p>
+        <div class="contact-list">
+          <a href="mailto:{{ site.email }}">
+            <span class="ic"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
+            <span class="txt"><small>Email</small><b>{{ site.email }}</b></span>
+          </a>
+          <div class="row">
+            <span class="ic"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg></span>
+            <span class="txt"><small>Location</small><b>Bengaluru, Karnataka, India</b></span>
+          </div>
+          <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></span>
+            <span class="txt"><small>GitHub</small><b>@{{ site.social.github }}</b></span>
+          </a>
+        </div>
+        <div class="socials" style="justify-content:flex-start; margin-top:4px;">
+          <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
+          </a>
+          <a href="https://x.com/{{ site.social.x }}" target="_blank" rel="noopener noreferrer" aria-label="X">
+            <svg viewBox="0 0 24 24"><path d="M18.244 2H21.5l-7.19 8.21L22.7 22h-6.6l-5.17-6.76L4.99 22H1.73l7.69-8.79L1.4 2h6.7l4.68 6.16L18.24 2z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Working contact form → posts to Web3Forms (no JS, no backend needed) -->
+      <!-- SETUP: get a free access key at https://web3forms.com (enter your email, -->
+      <!-- the key is emailed instantly) and paste it into access_key below.        -->
+      <form class="card contact-form reveal"
+            action="https://api.web3forms.com/submit"
+            method="POST">
+        <h3>Send a message</h3>
+        <p class="intro">Fill this out and it lands straight in my inbox — I'll reply as soon as I can.</p>
+
+        <!-- Web3Forms configuration -->
+        <input type="hidden" name="access_key" value="REPLACE_WITH_YOUR_WEB3FORMS_ACCESS_KEY">
+        <input type="hidden" name="from_name" value="Portfolio Contact Form">
+        <input type="hidden" name="redirect" value="{{ '/thanks/' | absolute_url }}">
+        <!-- Honeypot: bots tick this, humans never see it -->
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
+
+        <div class="form-row two">
+          <div class="field">
+            <label for="cf-name">Name <span class="req">*</span></label>
+            <input id="cf-name" type="text" name="name" required placeholder="Your name">
+          </div>
+          <div class="field">
+            <label for="cf-email">Email <span class="req">*</span></label>
+            <input id="cf-email" type="email" name="email" required placeholder="you@example.com">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cf-subject">Subject</label>
+          <input id="cf-subject" type="text" name="subject" placeholder="What's this about?">
+        </div>
+
+        <div class="field">
+          <label for="cf-message">Message <span class="req">*</span></label>
+          <textarea id="cf-message" name="message" required placeholder="Tell me about your project, a role, or a curious question about AI…"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Send Message
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+        <p class="form-note">Prefer email? Write to <a href="mailto:{{ site.email }}" style="color:var(--brand-2)">{{ site.email }}</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
