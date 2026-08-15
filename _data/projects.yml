@@ -61,7 +61,7 @@
   description: "An RNN with LSTM layers that forecasts Google stock prices from historical time-series data with a rolling lookback window."
   tags: [RNN, LSTM, Time-Series, TensorFlow]
   repo: "https://github.com/mohalkarushikesh/StockLSTM"
-  logo: pexels-apple-1834328.jpg
+  logo: stock-price.jpg
   date: 2026-06-13
 
 - title: "RAG App — PDF Q&A"
@@ -70,7 +70,7 @@
   description: "A RAG-based PDF question-answering system that retrieves relevant document chunks with FAISS and generates answers using a FLAN-T5 LLM — semantic embeddings, efficient retrieval, and a Gradio UI."
   tags: [RAG, FAISS, FLAN-T5, LangChain, Gradio]
   repo: "https://github.com/mohalkarushikesh/RAG-app"
-  logo: firmbee-laptop-6062423.jpg
+  logo: ragapp.jpg
   date: 2026-08-11
 
 - title: "Movie Recommender (RBM)"
@@ -79,5 +79,5 @@
   description: "A movie recommendation system using Restricted Boltzmann Machines for collaborative filtering, learning latent factors from user–movie interactions."
   tags: [RBM, Recommender, Collaborative Filtering]
   repo: "https://github.com/mohalkarushikesh/MovieRBM"
-  logo: theglassdesk-turntable-1337986.jpg
+  logo: movie-recommender.jpg
   date: 2026-08-11
