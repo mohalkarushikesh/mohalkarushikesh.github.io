@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6a2cff"/><stop offset="0.5" stop-color="#00c2d4"/><stop offset="1" stop-color="#ff2e8b"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" fill="url(#g)"/>
+  <text x="50" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="bold" fill="#0a0a12" text-anchor="middle" dominant-baseline="central">R</text>
+</svg>

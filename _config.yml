@@ -8,7 +8,7 @@ email: rushikeshmohalkar2001@gmail.com
 lang: en
 
 # Update these two if the repo/domain changes.
-url: "https://mohalkarushikesh.github.io"
+url: "https://rushikesh-cts.github.io"
 baseurl: ""
 
 # Clean, grouped blog URLs: /blogs/my-post-title/
@@ -24,8 +24,13 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
 
-# Every post defaults to the shared post layout.
+# Default social-share image for jekyll-seo-tag (og:image + twitter:card).
 defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/img/og.png
+  # Every post defaults to the shared post layout.
   - scope:
       path: ""
       type: posts

@@ -1,6 +1,6 @@
 # Projects shown on the home page (fetched from github.com/mohalkarushikesh).
 # cat: one of llm | dl | cv | nlp | rl | ml  (drives the filter + icon)
-# image: file in assets/img/ used as the card header
+# logo: file in assets/img/ used as the card header (gradient + icon fallback if omitted)
 - title: "microGPT-X"
   cat: llm
   category: "LLM & Agents"
@@ -25,7 +25,7 @@
   description: "A privacy-first AI chat app that runs Qwen LLMs locally via Ollama — a minimal Python backend, a simple web UI, and optional Docker, for fast offline conversations with no cloud APIs."
   tags: [LLM, Ollama, Qwen, Local, Docker]
   repo: "https://github.com/mohalkarushikesh/Oryza"
-  logo: monoar_cgi_artist-laptop-1483974.jpg
+  logo: chatbot.avif
   date: 2026-06-29
 
 - title: "Bhashantar — Neural Machine Translation"

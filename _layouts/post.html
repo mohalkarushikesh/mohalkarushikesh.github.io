@@ -38,6 +38,43 @@ layout: default
            href="https://www.linkedin.com/sharing/share-offsite/?url={{ page.url | absolute_url | url_encode }}">Share on LinkedIn</a>
       </div>
     </div>
+
+    {% if page.previous or page.next %}
+    <nav class="post-nav" aria-label="More articles">
+      {% if page.previous %}
+      <a class="post-nav-card prev" href="{{ page.previous.url | relative_url }}">
+        <span class="pn-dir">← Previous</span>
+        <span class="pn-title">{{ page.previous.title }}</span>
+      </a>
+      {% else %}<span></span>{% endif %}
+      {% if page.next %}
+      <a class="post-nav-card next" href="{{ page.next.url | relative_url }}">
+        <span class="pn-dir">Next →</span>
+        <span class="pn-title">{{ page.next.title }}</span>
+      </a>
+      {% else %}<span></span>{% endif %}
+    </nav>
+    {% endif %}
+
+    {% assign related = site.posts | where: "category", page.category %}
+    {% if related.size > 1 %}
+    <section class="related">
+      <h2 class="related-head">Related reading</h2>
+      <div class="related-grid">
+        {% assign shown = 0 %}
+        {% for post in related %}
+          {% if post.url != page.url and shown < 3 %}
+          <a class="related-card" href="{{ post.url | relative_url }}">
+            {% if post.category %}<span class="eyebrow">{{ post.category }}</span>{% endif %}
+            <h3>{{ post.title }}</h3>
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time>
+          </a>
+          {% assign shown = shown | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
   </div>
 </article>
 
