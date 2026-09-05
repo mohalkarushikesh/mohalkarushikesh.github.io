@@ -1,6 +1,22 @@
 # Projects shown on the home page (fetched from github.com/mohalkarushikesh).
 # cat: one of llm | dl | cv | nlp | rl | ml  (drives the filter + icon)
 # logo: file in assets/img/ used as the card header (gradient + icon fallback if omitted)
+- title: "Custodian — Governed AP AI Agents"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A production-style multi-agent accounts-payable platform that ingests invoices, scores fraud and risk, routes approvals, and auto-pays safe invoices through six governance layers with audit trails, PII protection, OCR, and real LLM providers via LiteLLM."
+  tags: [Multi-Agent, LiteLLM, FastAPI, Governance, Docker]
+  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/custodian-ap"
+  date: 2026-09-06
+
+- title: "Enterprise Advanced RAG"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A production-grade LangGraph RAG system for Kubernetes operations with hybrid retrieval, reranking, HyDE, CRAG, Self-RAG, Text2SQL approval gates, semantic caching, and a nine-layer guardrails pipeline."
+  tags: [LangGraph, RAG, Qdrant, FastAPI, Guardrails]
+  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG"
+  date: 2026-09-06
+
 - title: "microGPT-X"
   cat: llm
   category: "LLM & Agents"
