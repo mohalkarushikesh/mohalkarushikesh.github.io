@@ -40,11 +40,11 @@ defaults:
 
 # Keep build output lean and don't publish source docs / office files.
 exclude:
+  - deployment.md
   - Instructions.md
-  - DEPLOYMENT.md
-  - PROJECT_STRUCTURE.md
+  - project_structure.md
   - PREVIEW.md
-  - README.md
+  - Readme.md
   - Gemfile
   - Gemfile.lock
   - vendor
