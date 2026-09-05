@@ -1,0 +1,126 @@
+---
+layout: post
+title: "Agent Harnesses: The Engineering System Around Reliable AI Agents"
+date: 2026-09-06
+category: "Agents"
+tags: [AI Agents, Agent Harness, LLM Systems, Tool Use, Evaluation, Reliability]
+description: "A technical guide to building agent harnesses: the runtime, state, tools, policies, evaluation, and observability that turn an LLM loop into a dependable system."
+---
+<p>An LLM call is not an agent. An agent is a policy-driven system that observes state, chooses an action, invokes a tool or produces an answer, and then updates its state. The <strong>agent harness</strong> is the engineering layer that makes that loop bounded, inspectable, recoverable, and testable.</p>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#definition">What an agent harness controls</a></li>
+    <li><a href="#loop">The execution loop</a></li>
+    <li><a href="#state">State, memory, and context</a></li>
+    <li><a href="#tools">Tools as typed capabilities</a></li>
+    <li><a href="#safety">Budgets, policy, and approvals</a></li>
+    <li><a href="#eval">Evaluation and observability</a></li>
+    <li><a href="#architecture">A practical architecture</a></li>
+  </ul>
+</nav>
+
+<h2 id="definition">What an agent harness controls</h2>
+<p>The model supplies a probabilistic decision. The harness supplies the contract around that decision. At minimum, it owns:</p>
+<ul>
+  <li><strong>Execution:</strong> retries, timeouts, cancellation, concurrency, and step limits.</li>
+  <li><strong>State:</strong> the run identifier, messages, tool results, intermediate artifacts, and checkpoint history.</li>
+  <li><strong>Capabilities:</strong> the tools the model may call, their schemas, permissions, and side effects.</li>
+  <li><strong>Policy:</strong> what is allowed, what needs human approval, and what must be blocked.</li>
+  <li><strong>Evidence:</strong> traces, inputs, outputs, citations, tool calls, and cost data.</li>
+</ul>
+<p>This separation matters. Prompt instructions are not an access-control system, and a tool description is not a transaction boundary. The harness must enforce invariants outside the model.</p>
+
+<h2 id="loop">The execution loop</h2>
+<p>A useful abstraction is a state machine rather than an unconstrained while-loop:</p>
+<pre><code>RUNNING -> MODEL_DECISION -> TOOL_PENDING -> TOOL_RESULT -> RUNNING
+                 |                                  |
+                 +------------ FINAL ---------------+
+                 +------------ BLOCKED / APPROVAL --+
+                 +------------ FAILED --------------+</code></pre>
+<p>At each step, the harness sends a bounded view of state to the model. The model can either return a final message or a structured tool call. The harness validates the call, checks policy, executes the tool, records the result, and continues.</p>
+<p>A simplified control flow looks like this:</p>
+<pre><code>async def run_agent(run, request):
+    state = await store.load(run.id)
+    for step in range(run.max_steps):
+        context = context_builder.build(state, token_budget=run.context_budget)
+        decision = await model.decide(context, tools=policy.allowed_tools(state))
+        audit.record_decision(run.id, step, decision)
+
+        if decision.final_answer is not None:
+            return finalize(decision.final_answer, state)
+
+        call = tool_registry.validate(decision.tool_call)
+        policy.check(call, state)                 # may return APPROVAL_REQUIRED
+        result = await executor.invoke(call, timeout=call.timeout)
+        state = state.apply(call, result)
+        await store.checkpoint(run.id, state)
+
+    raise StepBudgetExceeded(run.id)</code></pre>
+<p>The important detail is not the syntax. It is that every transition is explicit and durable. A process crash after a payment tool succeeds must not cause the harness to repeat the payment blindly.</p>
+
+<h2 id="state">State, memory, and context</h2>
+<p>Agent state should be divided by lifetime and trust level:</p>
+<ul>
+  <li><strong>Run state:</strong> the current task, plan, tool outputs, and status. It belongs to one execution.</li>
+  <li><strong>Conversation memory:</strong> user-approved facts that may be reused in later runs.</li>
+  <li><strong>Knowledge:</strong> retrieved documents or database records. These are evidence, not instructions.</li>
+  <li><strong>Control state:</strong> budgets, approvals, idempotency keys, policy decisions, and checkpoint versions.</li>
+</ul>
+<p>Do not concatenate all of these into one undifferentiated prompt. Retrieved text may contain prompt injection. A safer context builder gives each source a separate envelope and tells the model what it is allowed to influence. The harness still validates the result independently.</p>
+<p>Context is a constrained resource. A practical policy is to reserve tokens for the answer and tool arguments, then allocate the remainder across recent turns, task state, retrieved evidence, and summaries. Summarization should preserve decisions, unresolved questions, identifiers, and citations; deleting those fields makes the agent appear coherent while silently losing state.</p>
+
+<h2 id="tools">Tools as typed capabilities</h2>
+<p>A tool should look more like a small API than a paragraph of instructions. Its schema should define required fields, ranges, enums, and whether the operation is read-only or mutating. The executor should apply server-side authorization using the run identity, not a user-provided argument.</p>
+<pre><code>approve_invoice(
+    invoice_id: UUID,
+    approval_reason: str,
+    idempotency_key: str
+) -> ApprovalReceipt</code></pre>
+<p>Tool design follows a useful risk gradient:</p>
+<ul>
+  <li>Pure reads can often execute automatically.</li>
+  <li>Reversible writes should be logged and rate-limited.</li>
+  <li>Irreversible or financial actions need an approval state and an idempotency key.</li>
+</ul>
+<p>Idempotency is essential. A retry after a network timeout must resolve to the original receipt, not create a second side effect. Store the key with the operation result and make the database constraint enforce uniqueness.</p>
+
+<h2 id="safety">Budgets, policy, and approvals</h2>
+<p>Reliable agents fail closed at the boundaries. Use several independent budgets:</p>
+<ul>
+  <li><strong>Step budget:</strong> prevents loops and runaway planning.</li>
+  <li><strong>Wall-clock budget:</strong> bounds user-visible latency.</li>
+  <li><strong>Token budget:</strong> controls context growth and spend.</li>
+  <li><strong>Tool budget:</strong> limits expensive or sensitive capabilities.</li>
+  <li><strong>Money and rate budgets:</strong> limits cumulative side effects per run.</li>
+</ul>
+<p>Policies should be deterministic wherever possible. For example, a payment above a threshold should always enter <code>APPROVAL_REQUIRED</code>, regardless of how persuasive the model's reasoning sounds. The approval record should include the exact arguments, evidence references, policy version, and the identity of the approver.</p>
+<p>Prompt injection defense is layered: isolate untrusted content, strip or mark instructions from retrieved documents, restrict tool permissions, validate output schemas, and require confirmation for high-impact actions. No single classifier can replace these controls.</p>
+
+<h2 id="eval">Evaluation and observability</h2>
+<p>Agent evaluation must measure more than final-answer similarity. Track:</p>
+<ul>
+  <li><strong>Task success:</strong> did the requested outcome occur?</li>
+  <li><strong>Tool correctness:</strong> were the right tools called with valid arguments?</li>
+  <li><strong>Trajectory efficiency:</strong> steps, retries, latency, and tokens.</li>
+  <li><strong>Grounding:</strong> can claims be traced to retrieved evidence or tool results?</li>
+  <li><strong>Safety:</strong> did the run violate a policy or attempt an unauthorized side effect?</li>
+</ul>
+<p>Every run should produce a trace with a stable run ID, model version, prompt-template version, tool calls, input and output hashes, latency, token counts, policy outcomes, and checkpoint IDs. Redact secrets before traces leave the trust boundary. Sampling alone is not enough for high-impact tools; log every decision that can change external state.</p>
+<p>Build replayable tests from recorded states. A deterministic fake tool layer lets you test planning and policy without calling production systems. For model changes, compare success, cost, latency, unsafe-action rate, and trajectory shape against a fixed evaluation set.</p>
+
+<h2 id="architecture">A practical architecture</h2>
+<p>A production harness commonly contains these components:</p>
+<ul>
+  <li><strong>Run manager:</strong> creates runs, enforces budgets, and exposes cancellation.</li>
+  <li><strong>Context builder:</strong> selects and labels state, memories, and evidence.</li>
+  <li><strong>Model gateway:</strong> handles routing, structured output, timeouts, retries, and fallbacks.</li>
+  <li><strong>Tool registry and executor:</strong> validates schemas, checks permissions, and invokes isolated capabilities.</li>
+  <li><strong>Policy engine:</strong> evaluates deterministic rules and creates approval requests.</li>
+  <li><strong>Checkpoint store:</strong> persists state transitions and idempotency records.</li>
+  <li><strong>Trace and evaluation pipeline:</strong> records evidence and turns runs into regression tests.</li>
+</ul>
+<p>The design goal is not to make the model deterministic. It is to make the system's consequences deterministic enough to govern. Once state, tools, policies, and evidence have explicit contracts, model improvements become measurable engineering changes instead of prompt folklore.</p>
+
+<p><strong>An agent harness is the difference between an LLM that can act and an AI system that can be trusted to act.</strong></p>

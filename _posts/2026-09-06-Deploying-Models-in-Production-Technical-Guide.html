@@ -1,0 +1,138 @@
+---
+layout: post
+title: "Deploying Models in Production: A Technical Guide from Artifact to SLO"
+date: 2026-09-06
+category: "MLOps"
+tags: [MLOps, Model Deployment, Kubernetes, Inference, Observability, CI/CD]
+description: "A practical deep dive into production model deployment: packaging, serving, scaling, rollout strategies, observability, and the failure modes that matter after training."
+---
+<p>A trained model is an artifact, not a product. Production deployment adds an interface, a runtime, resource limits, security controls, rollout mechanics, and an operating contract. The central question is not only whether the model is accurate, but whether it produces useful predictions within a latency and cost budget while the data and infrastructure keep changing.</p>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#contract">Start with the inference contract</a></li>
+    <li><a href="#artifact">Build a reproducible artifact</a></li>
+    <li><a href="#serving">Choose the serving pattern</a></li>
+    <li><a href="#performance">Optimize the inference path</a></li>
+    <li><a href="#scaling">Scale for real traffic</a></li>
+    <li><a href="#rollouts">Release safely</a></li>
+    <li><a href="#observability">Observe quality and reliability</a></li>
+    <li><a href="#security">Secure the model service</a></li>
+  </ul>
+</nav>
+
+<h2 id="contract">Start with the inference contract</h2>
+<p>Define the contract before choosing a framework. It should specify the input schema, output schema, preprocessing version, model version, error behavior, maximum payload, timeout, and whether the endpoint is synchronous or asynchronous.</p>
+<pre><code>POST /v1/predict
+{
+  "model": "fraud-risk",
+  "model_version": "2026-09-06.3",
+  "request_id": "uuid",
+  "features": { "amount": 12500, "vendor_age_days": 420 }
+}
+
+200 OK
+{
+  "request_id": "uuid",
+  "prediction": 0.87,
+  "decision": "review",
+  "model_version": "2026-09-06.3"
+}</code></pre>
+<p>Record the model version in every response and downstream event. Without it, an incident investigator cannot distinguish a model regression from a data or client regression. Version preprocessing and feature definitions with the model; changing normalization or category mappings is a model change even when the weights are untouched.</p>
+
+<h2 id="artifact">Build a reproducible artifact</h2>
+<p>The deployable unit should contain or reference immutable model weights, a locked runtime, preprocessing code, tokenizer or feature assets, and a health check. A typical container image includes:</p>
+<ul>
+  <li>A minimal base image with the exact Python or runtime version.</li>
+  <li>Locked dependencies and system libraries, including CUDA libraries when required.</li>
+  <li>Model files addressed by a digest rather than a mutable branch or latest tag.</li>
+  <li>An unprivileged service user and a read-only filesystem where possible.</li>
+  <li>Startup code that validates the artifact before accepting traffic.</li>
+</ul>
+<p>Separate build-time and runtime secrets. API keys, database credentials, and signing keys must not be baked into the image or serialized beside the weights. Generate a software bill of materials and scan the image before promotion.</p>
+<p>A useful release manifest includes:</p>
+<pre><code>model_name: fraud-risk
+model_version: 2026-09-06.3
+weights_sha256: "..."
+preprocess_version: features-18
+training_data_snapshot: warehouse://fraud/2026-08-31
+framework: pytorch-2.8.0
+metrics:
+  validation_auc: 0.94
+  calibration_error: 0.021
+limits:
+  p95_latency_ms: 80
+  max_batch_size: 32</code></pre>
+<p>The manifest connects training evidence to the serving artifact and makes promotion auditable.</p>
+
+<h2 id="serving">Choose the serving pattern</h2>
+<h3>Online synchronous inference</h3>
+<p>Use a synchronous HTTP or gRPC endpoint when the caller needs a prediction within the request lifecycle. gRPC and protobuf can reduce serialization overhead for high-throughput typed workloads; HTTP and JSON are often simpler at the edge. Always set deadlines at the client and server. A request with no deadline can consume every worker during a downstream stall.</p>
+<h3>Asynchronous inference</h3>
+<p>For large documents, video, batch scoring, or long-running generative requests, put jobs on a durable queue. Return a job ID, persist status transitions, and make workers idempotent. This avoids holding open connections and lets the system apply backpressure when GPU capacity is full.</p>
+<h3>Batch inference</h3>
+<p>Batch jobs are often cheaper and more reproducible than online inference. Store an input snapshot, schema version, artifact digest, and output location. Write outputs atomically so a failed job cannot appear complete with a partial file.</p>
+<h3>Streaming generation</h3>
+<p>For language models, streaming reduces time to first token but does not remove total compute. The service needs a cancellation path that stops generation when the client disconnects, a maximum output-token budget, and queueing that accounts for both prompt length and expected generation length.</p>
+
+<h2 id="performance">Optimize the inference path</h2>
+<p>Measure the full path, not only model forward-pass time. End-to-end latency commonly decomposes into queue wait, network transport, deserialization, preprocessing, model execution, postprocessing, and response serialization. Export each component separately.</p>
+<ul>
+  <li><strong>Batching:</strong> dynamic batching increases utilization but adds queue delay. Bound the batching window.</li>
+  <li><strong>Quantization:</strong> INT8 or lower precision can reduce memory and improve throughput, but validate calibration, outliers, and task quality.</li>
+  <li><strong>Compilation:</strong> graph capture or ahead-of-time compilation can reduce overhead for stable shapes; dynamic shapes may trigger recompilation.</li>
+  <li><strong>Warmup:</strong> run representative shapes before readiness so the first real request does not pay compilation or memory-allocation costs.</li>
+  <li><strong>Caching:</strong> cache only when the key includes every input that affects the output and the business rules permit reuse.</li>
+</ul>
+<p>For GPU services, monitor memory allocation, kernel utilization, host-to-device copies, and synchronization points. A model with low GPU utilization may be bottlenecked by tokenization, Python orchestration, or small unbatched requests rather than by the neural network.</p>
+
+<h2 id="scaling">Scale for real traffic</h2>
+<p>CPU-based autoscaling on request count is insufficient for variable-cost inference. Scale on queue depth, in-flight requests, estimated tokens, GPU utilization, and tail latency. A single long context can consume more GPU time than many short requests.</p>
+<p>Apply backpressure deliberately:</p>
+<ul>
+  <li>Bound the queue and return a useful overload response when it is full.</li>
+  <li>Use separate pools for latency-sensitive and bulk traffic.</li>
+  <li>Set concurrency limits per tenant or API key.</li>
+  <li>Reserve capacity for health checks and control-plane operations.</li>
+  <li>Prefer graceful degradation, such as a smaller model or cached result, to unbounded waiting.</li>
+</ul>
+<p>On Kubernetes, a deployment commonly includes a readiness probe that confirms the model is loaded, a liveness probe that detects a wedged process, resource requests and limits, a pod disruption budget, and topology rules for spreading replicas. Readiness must become false before shutdown so the load balancer stops sending new traffic while existing requests drain.</p>
+
+<h2 id="rollouts">Release safely</h2>
+<p>Model releases should use the same discipline as software releases, with model-specific checks. A robust progression is:</p>
+<ol>
+  <li>Validate the artifact and offline evaluation suite.</li>
+  <li>Run shadow traffic without exposing predictions to users or side effects.</li>
+  <li>Canary a small percentage with automatic rollback thresholds.</li>
+  <li>Expand gradually while comparing latency, errors, cost, and quality.</li>
+  <li>Retain the previous artifact until the new version is operationally proven.</li>
+</ol>
+<p>Shadow inference is useful for comparing predictions, but it can double compute and may expose sensitive inputs to a second model. Sample carefully and apply the same privacy controls as production traffic. For online A/B tests, randomize by stable entity rather than by request so one user does not see inconsistent model behavior.</p>
+<p>Rollback must be a pointer change to a known-good immutable artifact. Rebuilding an old commit during an incident is slower and may produce a subtly different binary.</p>
+
+<h2 id="observability">Observe quality and reliability</h2>
+<p>Traditional service metrics are necessary but incomplete. A model service needs four observability layers:</p>
+<ul>
+  <li><strong>Golden signals:</strong> request rate, errors, latency, and saturation.</li>
+  <li><strong>Inference metrics:</strong> batch size, token counts, queue time, GPU memory, and cost per request.</li>
+  <li><strong>Data health:</strong> missingness, ranges, category coverage, drift, and schema violations.</li>
+  <li><strong>Model health:</strong> calibration, confidence distribution, class balance, delayed labels, and business outcomes.</li>
+</ul>
+<p>Log structured metadata, not raw sensitive payloads by default. Use request IDs to correlate gateway, feature service, model server, and downstream records. Trace sampling should be higher for errors, timeouts, policy blocks, and unexpected confidence values.</p>
+<p>Drift is not automatically a problem. A changed feature distribution matters when it changes model behavior or business outcomes. Monitor population stability, prediction drift, and performance on delayed labels. Define alert thresholds with a baseline window and a minimum sample count to avoid reacting to noise.</p>
+
+<h2 id="security">Secure the model service</h2>
+<p>Model endpoints are data-processing systems. Authenticate callers, authorize model and tenant access, validate payload size and types, and rate-limit expensive operations. Protect against prompt injection and data exfiltration for generative models, and treat retrieved documents as untrusted input.</p>
+<p>For high-impact predictions, preserve an explanation record that includes the model version, input feature snapshot or feature references, policy decisions, and human overrides. The record must be privacy-aware and have a retention policy. Security and compliance requirements should be part of the deployment contract, not a final checklist.</p>
+
+<h2>Closing checklist</h2>
+<ul>
+  <li>Can you reproduce the exact artifact from its digest?</li>
+  <li>Does every prediction carry a model and preprocessing version?</li>
+  <li>Are timeouts, concurrency, queue limits, and cancellation enforced?</li>
+  <li>Can the service roll back without rebuilding?</li>
+  <li>Do dashboards show tail latency, saturation, cost, data health, and delayed quality?</li>
+  <li>Can an incident responder reconstruct what the model saw and why it responded?</li>
+</ul>
+<p>Production deployment is the point where machine learning meets systems engineering. The model is only one component. Reliability comes from the contracts around it: immutable artifacts, bounded execution, controlled rollouts, observable behavior, and an operating team that can explain and reverse every important change.</p>
