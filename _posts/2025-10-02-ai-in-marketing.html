@@ -6,6 +6,12 @@ category: "AI in Marketing"
 tags: [Marketing, Personalization, Predictive Analytics, Creative Automation]
 description: "Explore how AI transforms marketing through personalization, predictive analytics, and creative automation."
 ---
+        <h2>Technical Deep Dive: Ranking, Uplift, and Recommendation</h2>
+        <p>Personalization is usually a ranking problem. A candidate-generation stage retrieves feasible items, then a ranking model estimates utility under context, inventory, and policy constraints. Pairwise losses such as Bayesian Personalized Ranking optimize relative preference, while listwise objectives target the ordering of the complete slate. Offline metrics such as NDCG and recall@k are useful, but they do not measure incremental business impact.</p>
+        <pre><code>score(user, item, context) = f(embedding_user, embedding_item,
+                     recent_events, price, position, constraints)</code></pre>
+        <p>Historical click data is biased by the old ranking policy: an item cannot be clicked if it was never shown. Counterfactual evaluation needs propensities or randomized exploration to correct this exposure bias. For campaign decisions, uplift modeling estimates the difference between treatment and control outcomes, which is more actionable than predicting response probability alone.</p>
+        <p>Use entity-level and time-based splits, guard against repeated-user leakage, and evaluate long-term retention rather than only short-term clicks. Online experiments should randomize at a stable user or household level, pre-register primary metrics, and watch for interference between users and recommendation surfaces.</p>
         <p>
             Artificial Intelligence (AI) is revolutionizing marketing by enabling businesses to understand customers at scale, deliver personalized experiences, and optimize campaigns with data-driven insights.
             By leveraging AI tools, marketers can move beyond intuition and react faster to market trends, customer behavior, and competitive dynamics.

@@ -83,7 +83,13 @@ description: "In-depth guide to deep learning — neural networks, architectures
             Once validated, scale the data and model size to improve real-world performance.
         </p>
 
-        <h2>4. The Future of Deep Learning</h2>
+        <h2>4. Modern Training Mechanics</h2>
+        <p>For transformer-scale training, the practical bottleneck is often memory rather than arithmetic. Mixed precision stores activations in lower precision while retaining numerically sensitive reductions in higher precision. Gradient accumulation increases the effective batch size, and gradient checkpointing trades extra forward passes for lower activation memory. AdamW decouples weight decay from the gradient update, making the regularization coefficient easier to reason about.</p>
+        <pre><code>theta = theta - lr * m_hat / (sqrt(v_hat) + epsilon)
+    theta = theta - lr * weight_decay * theta</code></pre>
+        <p>Distributed training adds another axis: data parallelism replicates the model, tensor parallelism splits matrix operations, and pipeline parallelism splits layers. The correct choice depends on parameter size, activation volume, interconnect bandwidth, and the ratio of communication to computation. Always profile synchronization time instead of assuming more GPUs produce linear speedup.</p>
+
+        <h2>5. The Future of Deep Learning</h2>
         <p>
             Deep learning continues to evolve, with breakthroughs in multimodal models, self-supervised learning, and neural architecture search.
             Emerging paradigms like <b>foundation models</b> and <b>generative AI</b> are pushing the boundaries of what machines can understand and create.

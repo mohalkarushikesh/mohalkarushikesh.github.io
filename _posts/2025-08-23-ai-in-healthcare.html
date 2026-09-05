@@ -34,6 +34,11 @@ description: "Explore how AI revolutionizes healthcare through diagnostics, pred
             <li><strong>Integration into Workflows:</strong> AI tools must complement existing healthcare systems and empower clinicians — not replace them.</li>
         </ul>
 
+        <h2>Technical Deep Dive: Medical Imaging in the Real World</h2>
+        <p>Medical imaging models must be evaluated at the patient level, not the image level. If slices from one patient appear in both train and test, the model can memorize acquisition and anatomy signals and produce an inflated score. Split by patient, preserve the clinical timeline, and report sensitivity, specificity, AUROC, AUPRC, calibration, and operating-point performance.</p>
+        <p>For volumetric CT or MRI, a 2D slice model is cheaper but loses cross-slice context. A 3D convolution or patch-based Vision Transformer captures volume at a higher memory cost. Practical systems often use coarse-to-fine inference: a fast detector proposes candidate regions, then a higher-resolution model classifies or segments them. Post-processing must be included in validation because connected components, thresholding, and contour rules affect the final clinical output.</p>
+        <p>Deployment requires monitoring scanner vendors, protocols, demographic groups, and referral patterns. Confidence alone is not uncertainty; use calibration, ensembles, test-time augmentation, or conformal methods when the workflow needs a coverage guarantee. The model should abstain when the input is out of distribution and route the case to a qualified clinician rather than silently producing a low-confidence answer.</p>
+
         <h2>Future Outlook</h2>
         <p>As technology evolves, AI will increasingly serve as a trusted partner to healthcare professionals. The next decade will likely see more AI-driven clinical decision support systems, robotic-assisted surgeries, and personalized health monitoring devices. Success will depend on transparent validation, continuous monitoring, and human-centered design that prioritizes patient safety and ethical use.</p>
 

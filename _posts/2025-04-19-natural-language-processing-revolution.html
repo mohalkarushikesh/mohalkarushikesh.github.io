@@ -108,7 +108,11 @@ mermaid: true
             <li>Adhering to compliance standards in regulated industries like healthcare and finance.</li>
         </ul>
 
-        <h2 id="section6">Future Outlook</h2>
+        <h2 id="section6">Technical Foundations of Modern NLP Systems</h2>
+        <p>Transformer language models compute token representations with causal self-attention, where each query attends only to earlier keys. Retrieval-augmented generation moves changing knowledge out of the weights: documents are chunked, embedded, retrieved, optionally reranked, and passed to a generator with citations. The retrieval layer should be evaluated separately from generation using recall@k, precision@k, and answer faithfulness.</p>
+        <p>Fine-tuning is not always the best adaptation method. LoRA trains low-rank updates while freezing the base weights, reducing optimizer memory and making multiple domain adapters practical. Quantization-aware validation is required after INT8 or weight-only quantization because perplexity changes do not always predict task accuracy, tool-call reliability, or long-context behavior.</p>
+
+        <h2 id="section7">Future Outlook</h2>
         <p>The NLP revolution continues to expand the boundaries of human-computer interaction. Future directions include:</p>
         <ul>
             <li><strong>Multimodal integration:</strong> Combining text with vision, audio, and structured data for richer understanding.</li>

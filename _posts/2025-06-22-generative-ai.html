@@ -48,6 +48,10 @@ description: "Explore generative AI, how models like GPT, DALL·E, and diffusion
             <li><strong>Job Transformation:</strong> While automation may replace some roles, it also creates new opportunities in AI development, oversight, and creativity.</li>
         </ul>
 
+        <h2>From Generation to Systems</h2>
+        <p>Generative applications are increasingly built as systems around a model. A production pipeline needs model routing, structured outputs, retrieval, tool permissions, caching, evaluation, and a policy layer. For image generation, diffusion models learn to reverse a noise process; for language, autoregressive decoding repeatedly samples or selects the next token. In both cases, inference controls such as temperature, classifier-free guidance, top-p, and token budgets alter quality, diversity, and cost.</p>
+        <p>Evaluation should separate capability from reliability. Test factuality against a held-out knowledge set, refusal behavior against adversarial prompts, latency under realistic concurrency, and output schema validity. Log model and prompt versions, but redact user content and secrets before traces leave the trust boundary.</p>
+
         <h2>The Future of Generative AI</h2>
         <p>
             The next wave of generative AI will bring deeper multimodal capabilities — seamlessly combining text, speech, vision, and action.

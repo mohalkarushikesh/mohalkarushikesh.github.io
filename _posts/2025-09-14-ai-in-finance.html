@@ -85,7 +85,13 @@ description: "Explore how artificial intelligence transforms finance through fra
             <li><b>Ethical Oversight:</b> Implement fairness checks and transparency dashboards to ensure AI systems align with both business objectives and ethical standards.</li>
         </ul>
 
-        <h2>4. The Future of AI in Finance</h2>
+        <h2>4. Technical Deep Dive: Fraud Graphs and Temporal Evaluation</h2>
+        <p>Fraud is relational. A transaction may look normal alone but suspicious when the account, device, IP range, merchant, and beneficiary form a dense ring. Construct a heterogeneous graph with typed nodes and edges, then derive temporal aggregations or use a graph neural network. Do not let future edges leak into a historical training snapshot.</p>
+        <pre><code>risk_t = f(transaction_t, account_history[:t], graph_snapshot[:t])</code></pre>
+        <p>Random cross-validation over transactions is usually invalid because the same entities recur. Use forward-chaining evaluation, embargo periods around label windows, and metrics that reflect severe class imbalance: precision at investigation capacity, recall at a fixed alert rate, PR-AUC, expected loss, and calibration. A model with a strong AUROC can still be useless if its top 1 percent of alerts is poorly ranked.</p>
+        <p>Real-time scoring also requires feature freshness, idempotent event processing, replayable decisions, and a reason code that an investigator can inspect. Keep detection separate from the final action policy so a risk score can trigger review, step-up authentication, or a block according to current controls.</p>
+
+        <h2>5. The Future of AI in Finance</h2>
         <p>
             The future of AI in finance will focus on <b>autonomous decision-making</b> combined with <b>human oversight</b>.
             Generative AI will play a larger role in risk scenario simulations, personalized financial planning, and regulatory documentation.

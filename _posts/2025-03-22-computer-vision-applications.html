@@ -59,6 +59,10 @@ description: "An in-depth look at computer vision techniques, architectures, and
             </li>
         </ul>
 
+        <h2>Modern Vision Systems</h2>
+        <p>Modern perception stacks often combine a backbone, a feature pyramid, and task-specific heads. Vision Transformers replace fixed local convolutions with patch tokens and self-attention, while detectors such as DETR-style models learn object queries instead of relying on hand-designed anchor matching. For deployment, the choice is governed by input resolution, latency budget, memory bandwidth, and the cost of false negatives.</p>
+        <p>Self-supervised pretraining is especially useful when labels are expensive. Contrastive learning pulls augmented views of the same image together and pushes unrelated examples apart; masked image modeling reconstructs or predicts hidden patch representations. Fine-tuning should use a domain-specific validation split because camera, lighting, and sensor changes can dominate architecture improvements.</p>
+
         <h2>Challenges and Future Directions</h2>
         <p>
             Despite impressive advancements, challenges remain. Computer Vision systems can struggle with domain shifts, poor lighting, occlusions, or biased data.

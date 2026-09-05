@@ -62,7 +62,15 @@ description: "Explore AI ethics — understanding bias, accountability, transpar
             Regulatory frameworks like the <b>EU AI Act</b> and emerging standards from <b>IEEE</b> and <b>OECD</b> are also guiding global efforts toward accountability and transparency.
         </p>
 
-        <h2>4. The Future of Responsible AI</h2>
+        <h2>4. Measuring Fairness as an Engineering Constraint</h2>
+        <p>Fairness metrics must be selected with the decision context. Demographic parity compares positive prediction rates, while equal opportunity compares true-positive rates across groups. Calibration asks whether a score of 0.8 means the same observed outcome frequency for every group. These objectives can conflict when base rates differ, so reporting one metric as a universal definition of fairness is technically incomplete.</p>
+        <pre><code>TPR_g = TP_g / (TP_g + FN_g)
+    FPR_g = FP_g / (FP_g + TN_g)
+    equal_opportunity_gap = max_g(TPR_g) - min_g(TPR_g)</code></pre>
+        <p>Measure metrics with confidence intervals and sample counts, not only point estimates. Slice by intersectional groups, geography, language, and missingness patterns. For generative systems, add prompt suites for stereotyping, refusal consistency, privacy leakage, and instruction hierarchy attacks.</p>
+        <p>Mitigation can occur before training through sampling and label review, during training through reweighting or constrained optimization, and after training through thresholding or human review. Every mitigation changes another property, so compare accuracy, calibration, utility, and subgroup performance together. A model card should record the intended use, excluded use, evaluation population, known failure modes, and rollback owner.</p>
+
+        <h2>5. The Future of Responsible AI</h2>
         <p>
             The next frontier in AI ethics lies in combining human values with machine intelligence.
             Future models will increasingly rely on self-supervised learning, federated privacy-preserving architectures, and explainable AI systems.
