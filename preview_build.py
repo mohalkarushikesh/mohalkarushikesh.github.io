@@ -120,7 +120,29 @@ def render_with_layouts(page_fm, content, is_liquid_body, raw_body):
         layout = lfm.get("layout")
     return content
 
+def fix_relative_paths(content, rel_path):
+    parts = [p for p in rel_path.strip("/").split("/") if p]
+    depth = max(0, len(parts) - 1)
+    prefix = "../" * depth if depth > 0 else ""
+    
+    # Replace asset links
+    content = content.replace('href="assets/', f'href="{prefix}assets/')
+    content = content.replace('src="assets/', f'src="{prefix}assets/')
+    content = content.replace("url('assets/", f"url('{prefix}assets/")
+    content = content.replace('href="/assets/', f'href="{prefix}assets/')
+    content = content.replace('src="/assets/', f'src="{prefix}assets/')
+    content = content.replace("url('/assets/", f"url('{prefix}assets/")
+    
+    # Replace navigation links
+    content = content.replace('href="/#', f'href="{prefix}#')
+    content = content.replace('href="/blogs/"', f'href="{prefix}blogs/"')
+    content = content.replace('href="/aiml-tree-structure.html"', f'href="{prefix}aiml-tree-structure.html"')
+    content = content.replace('href="/favicon', f'href="{prefix}favicon')
+    
+    return content
+
 def write(rel, text):
+    text = fix_relative_paths(text, rel)
     dest = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     with open(dest, "w", encoding="utf-8") as f:
