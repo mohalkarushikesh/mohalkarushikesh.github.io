@@ -1,17 +1,5 @@
-# Projects shown on the home page (fetched from github.com/mohalkarushikesh).
-# cat: one of llm | dl | cv | nlp | rl | ml  (drives the filter + icon)
-# logo: file in assets/img/ used as the card header (gradient + icon fallback if omitted)
-- title: "Advanced RAG — Enterprise Pipeline"
-  cat: llm
-  category: "LLM & Agents"
-  description: "An enterprise-grade Retrieval-Augmented Generation system for Kubernetes IT operations — hybrid search, cross-encoder reranking, HyDE, corrective and self-RAG loops, and Text2SQL, all orchestrated with LangGraph and guarded by a nine-layer safety framework."
-  tags: [RAG, LangGraph, Qdrant, Guardrails]
-  metric: "9-layer safety framework"
-  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG"
-  logo: pexels-apple-1834328.jpg
-  date: 2026-08-14
-
-- title: "Custodian — Agentic AP Automation"
+# Main Highlighted Projects (custoap, AdvacedRAG, NanoChat-X, RAGApp, TaxPilot, finetune-forge, oryza)
+- title: "Custodian — Agentic AP Automation (custoap)"
   cat: llm
   category: "LLM & Agents"
   description: "A multi-agent AI system for banking accounts-payable that autonomously reads invoices, scores them for fraud and risk, routes approvals, and auto-pays safe transactions — wrapped in six governance layers for full auditability and provenance."
@@ -21,14 +9,73 @@
   logo: stock-price.jpg
   date: 2026-08-13
 
-- title: "microGPT-X"
+- title: "Advanced RAG — Enterprise Pipeline (AdvacedRAG)"
   cat: llm
   category: "LLM & Agents"
-  description: "A minimal GPT built from scratch to demystify how transformer language models really work — every moving part, no black boxes."
+  description: "An enterprise-grade Retrieval-Augmented Generation system for Kubernetes IT operations — hybrid search, cross-encoder reranking, HyDE, corrective and self-RAG loops, and Text2SQL, all orchestrated with LangGraph and guarded by a nine-layer safety framework."
+  tags: [RAG, LangGraph, Qdrant, Guardrails]
+  metric: "9-layer safety framework"
+  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG"
+  logo: pexels-apple-1834328.jpg
+  date: 2026-08-14
+
+- title: "NanoChat-X — Lightweight AI Chat Engine"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A minimal, highly performant chat model architecture and inference harness built from scratch in PyTorch — designed for low-latency local execution and custom instruction tuning without black boxes."
   tags: [GPT, Transformers, PyTorch, From-Scratch]
+  metric: "Low-latency local inference"
   repo: "https://github.com/mohalkarushikesh/microgpt-x"
   logo: microgpt.jpg
   date: 2026-03-08
+
+- title: "RAGApp — Intelligent PDF Question Answering"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A RAG-based document intelligence system that ingests PDFs, indexes vector embeddings using FAISS, and performs context-aware question answering with FLAN-T5 and Gradio UI."
+  tags: [RAG, FAISS, FLAN-T5, LangChain, Gradio]
+  metric: "FAISS vector retrieval"
+  repo: "https://github.com/mohalkarushikesh/RAG-app"
+  logo: ragapp.jpg
+  date: 2026-08-11
+
+- title: "TaxPilot — AI Property Tax Assistant"
+  cat: llm
+  category: "LLM & Agents"
+  description: "An AI-powered property tax copilot built with Google Gemini API, Flask, and Tailwind CSS for real-time tax calculations, regulatory compliance guidance, and automated payment deadline tracking."
+  tags: [Gemini API, Flask, Property Tax, Copilot]
+  metric: "Real-time tax calculations"
+  repo: "https://github.com/mohalkarushikesh/Taxly"
+  date: 2026-08-27
+
+- title: "finetune-forge — LLM Fine-Tuning Workbench"
+  cat: llm
+  category: "LLM & Agents"
+  description: "An end-to-end LLM fine-tuning workbench and Flask deployment service using Hugging Face Transformers for domain-specific model adaptation, LoRA parameter tuning, and evaluation."
+  tags: [Fine-Tuning, LoRA, Hugging Face, Transformers]
+  metric: "Domain adaptation pipeline"
+  repo: "https://github.com/mohalkarushikesh/TextWiz"
+  date: 2026-08-27
+
+- title: "Oryza — Private Local LLM Chat (oryza)"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A privacy-first AI chat app that runs Qwen LLMs locally via Ollama — a minimal Python backend, a simple web UI, and optional Docker, for fast offline conversations with no cloud APIs."
+  tags: [Ollama, Qwen, Local LLM, Docker]
+  metric: "100% offline & private"
+  repo: "https://github.com/mohalkarushikesh/Oryza"
+  logo: chatbot.avif
+  date: 2026-06-29
+
+# Additional Projects
+- title: "Job Application Agent — Agentic RAG"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters and fit scores."
+  tags: [LangChain, RAG, FAISS, FastAPI]
+  metric: "0–100 fit scoring + gap analysis"
+  repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
+  date: 2026-08-27
 
 - title: "RAG Pipeline from Scratch"
   cat: llm
@@ -38,42 +85,6 @@
   repo: "https://github.com/mohalkarushikesh/RAG-Pipeline-From-Scrach"
   logo: rag.webp
   date: 2026-08-12
-
-- title: "Oryza — Private Local LLM Chat"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A privacy-first AI chat app that runs Qwen LLMs locally via Ollama — a minimal Python backend, a simple web UI, and optional Docker, for fast offline conversations with no cloud APIs."
-  tags: [LLM, Ollama, Qwen, Local, Docker]
-  repo: "https://github.com/mohalkarushikesh/Oryza"
-  logo: chatbot.avif
-  date: 2026-06-29
-
-- title: "Job Application Agent — Agentic RAG"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters, resume bullets, and 0-100 fit scores with gap analysis — served through a FastAPI backend and Streamlit UI."
-  tags: [LangChain, RAG, FAISS, FastAPI]
-  metric: "0–100 fit scoring + gap analysis"
-  repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
-  date: 2026-08-27
-
-- title: "Taxly — AI Property Tax Assistant"
-  cat: llm
-  category: "LLM & Agents"
-  description: "An AI-powered property tax assistant built with Google Gemini API, Flask, and Tailwind CSS for real-time tax calculations, regulatory compliance guidance, and automated payment deadline tracking."
-  tags: [Gemini API, Flask, AI Chatbot, Property Tax]
-  metric: "Real-time tax calculations"
-  repo: "https://github.com/mohalkarushikesh/Taxly"
-  date: 2026-08-27
-
-- title: "TextWiz — Fine-Tuned LLM Platform"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A fine-tuned Flask-based LLM application using Hugging Face Transformers (GPT-2) for context-aware text generation, domain fine-tuning, and customizable NLP workflows."
-  tags: [Transformers, GPT-2, Hugging Face, Flask]
-  metric: "Context-aware generation"
-  repo: "https://github.com/mohalkarushikesh/TextWiz"
-  date: 2026-08-27
 
 - title: "Bhashantar — Neural Machine Translation"
   cat: nlp
