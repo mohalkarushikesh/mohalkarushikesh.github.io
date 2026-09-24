@@ -9,10 +9,10 @@
 
   var root = document.documentElement;
 
-  /* ---------------- Theme (persistent) ---------------- */
+  /* ---------------- Theme (persistent default light) ---------------- */
   var themeBtn = document.getElementById('themeToggle');
   var themeMeta = document.querySelector('meta[name="theme-color"]');
-  function syncMeta() { if (themeMeta) themeMeta.setAttribute('content', root.classList.contains('dark') ? '#0b1524' : '#112e51'); }
+  function syncMeta() { if (themeMeta) themeMeta.setAttribute('content', root.classList.contains('dark') ? '#0f172a' : '#f8fafc'); }
   syncMeta();
   if (themeBtn) {
     themeBtn.addEventListener('click', function () {
