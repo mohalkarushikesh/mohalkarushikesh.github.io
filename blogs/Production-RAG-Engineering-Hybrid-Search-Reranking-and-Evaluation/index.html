@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#f8fafc" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png" />
+
+  <!-- Montserrat Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+
+  <title>Production RAG Engineering: Hybrid Search, Reranking & Evaluation</title>
+<meta name="description" content="An end-to-end technical deep dive into moving beyond naive vector RAG: dense+sparse hybrid search, cross-encoder reranking, chunking strategies, and automated evaluation metrics.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <div class="wrap nav-container">
+      <a href="../../#home" class="brand">
+        <div class="ai-seal-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-name">Rushikesh Mohalkar</span>
+          <span class="brand-agency">AI &amp; ML Engineer</span>
+        </div>
+      </a>
+
+      <div class="nav-menu">
+        <a class="link" href="../../#home">Home</a>
+        <a class="link" href="/#about">About</a>
+        <a class="link" href="/#projects">Projects</a>
+        <a class="link" href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a class="link" href="../../blogs/">Blogs</a>
+        <a class="link" href="/#resume">Resume</a>
+        <a class="link" href="/#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="../../blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">RAG & Retrieval</span>
+      <h1 class="post-title" style="margin-top: 16px;">Production RAG Engineering: Hybrid Search, Reranking & Evaluation</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">An end-to-end technical deep dive into moving beyond naive vector RAG: dense+sparse hybrid search, cross-encoder reranking, chunking strategies, and automated evaluation metrics.</p>
+      <div class="post-meta">
+        <time datetime="2026-09-24">Sep 24, 2026</time>
+        <span>·</span>
+        <span>5 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">RAG</span><span class="pill">Hybrid Search</span><span class="pill">BM25</span><span class="pill">Vector DB</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>Naive retrieval-augmented generation (RAG) — embedding text chunks with an OpenAI model and querying cosine similarity in a vector database — fails frequently in real-world enterprise deployments. Out-of-vocabulary acronyms, domain jargon, exact serial numbers, and complex multi-paragraph semantics expose the limitations of pure dense vector search. Building <strong>production-grade RAG</strong> requires a multi-stage architecture: hybrid retrieval (BM25 + Dense Vectors), cross-encoder reranking, dynamic chunking, and automated quantitative evaluation metrics (the RAG Triad).</p>
+
+<blockquote>Dense vector search understands intent; sparse BM25 search captures exact tokens; rerankers bridge them; evaluations ensure confidence.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#naive-vs-prod">Why naive RAG fails in production</a></li>
+    <li><a href="#chunking">Semantic & hierarchical chunking strategies</a></li>
+    <li><a href="#hybrid-search">Hybrid search: Reciprocal Rank Fusion (RRF)</a></li>
+    <li><a href="#reranking">Cross-Encoder reranking for precision</a></li>
+    <li><a href="#evaluation">The RAG Triad: Groundedness, Answer Relevance, Context Relevance</a></li>
+    <li><a href="#python-pipeline">Complete Python pipeline with BM25, FAISS & Reranker</a></li>
+    <li><a href="#takeaways">Production checklist</a></li>
+  </ul>
+</nav>
+
+<h2 id="naive-vs-prod">Why naive RAG fails in production</h2>
+<p>In simple RAG setups, vector retrieval suffers from three major structural vulnerabilities:</p>
+<ul>
+  <li><strong>The Out-of-Vocabulary (OOV) Gap:</strong> Dense vector embeddings project words into high-dimensional semantic spaces. When a user searches for an exact alphanumeric part number like <code>ERR_0x8004210B</code>, vector distance metrics often match unrelated error logs with similar syntactic structure rather than the exact error code.</li>
+  <li><strong>Lost in the Middle Effect:</strong> LLMs attend strongly to the very beginning and end of long context prompts, often ignoring critical information stuffed into the middle 60% of retrieved chunks.</li>
+  <li><strong>No Retrieval Quality Signal:</strong> The pipeline generates answers blindly regardless of whether the retrieved distance score was 0.95 or 0.35.</li>
+</ul>
+
+<h2 id="chunking">Semantic & hierarchical chunking strategies</h2>
+<p>Fixed-size character chunking (e.g. 500 characters with 50 overlap) breaks sentences mid-thought and severs contextual headers. Production systems utilize:</p>
+
+<h3>1. Parent-Child (Hierarchical) Chunking</h3>
+<p>Small chunks (128 tokens) are indexed for precise vector matching, but when a match occurs, the larger parent document (1024 tokens) is retrieved and passed to the LLM for full contextual comprehension.</p>
+
+<h3>2. Semantic Chunking</h3>
+<p>Splits text dynamically by computing consecutive sentence embedding distance spikes. When the semantic distance between sentence <em>N</em> and sentence <em>N+1</em> exceeds a threshold percentile, a chunk boundary is created.</p>
+
+<h2 id="hybrid-search">Hybrid search: Reciprocal Rank Fusion (RRF)</h2>
+<p>Hybrid search combines sparse BM25 term matching with dense vector distance matching. To combine scores from two completely different mathematical spaces without manual weight tuning, we apply <strong>Reciprocal Rank Fusion (RRF)</strong>:</p>
+
+<pre><code>def reciprocal_rank_fusion(dense_results, sparse_results, k=60):
+    rrf_scores = {}
+    
+    # Process dense vector rankings
+    for rank, doc_id in enumerate(dense_results):
+        if doc_id not in rrf_scores:
+            rrf_scores[doc_id] = 0.0
+        rrf_scores[doc_id] += 1.0 / (k + rank + 1)
+        
+    # Process sparse BM25 rankings
+    for rank, doc_id in enumerate(sparse_results):
+        if doc_id not in rrf_scores:
+            rrf_scores[doc_id] = 0.0
+        rrf_scores[doc_id] += 1.0 / (k + rank + 1)
+        
+    # Sort documents by accumulated RRF score
+    sorted_docs = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)
+    return sorted_docs
+</code></pre>
+
+<h2 id="reranking">Cross-Encoder reranking for precision</h2>
+<p>Bi-encoders (standard vector embeddings) compute document vectors independently of the query vector to enable fast approximate nearest neighbor (ANN) search. However, this independent computation limits fine-grained attention across words.</p>
+
+<p>A <strong>Cross-Encoder (Reranker)</strong> feeds the query and document simultaneously through a Transformer cross-attention layer, computing an exact relevance score. While too computationally expensive to run against millions of documents, running a cross-encoder on the top-50 hybrid search candidates filters noisy results down to the top-5 highest-relevance contexts.</p>
+
+<h2 id="evaluation">The RAG Triad: Groundedness, Answer Relevance, Context Relevance</h2>
+<p>To measure RAG quality quantitatively without relying on human annotations, production pipelines track the three core metrics of the <strong>RAG Triad</strong>:</p>
+
+<ul>
+  <li><strong>Context Relevance:</strong> Is the retrieved context relevant to the query? (Filters out retrieval noise).</li>
+  <li><strong>Groundedness (Faithfulness):</strong> Is the LLM's response strictly supported by the retrieved context? (Detects hallucinations).</li>
+  <li><strong>Answer Relevance:</strong> Does the generated response directly answer the user's question? (Detects evasive responses).</li>
+</ul>
+
+<h2 id="python-pipeline">Complete Python pipeline with BM25, FAISS & Reranker</h2>
+
+<pre><code>from rank_bm25 import BM25Okapi
+import numpy as np
+import torch
+from sentence_transformers import CrossEncoder, SentenceTransformer
+
+# 1. Initialize models
+embedder = SentenceTransformer('all-MiniLM-L6-v2')
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+corpus = [
+    "Error 0x8004210B occurs when Outlook times out waiting for response from sending SMTP server.",
+    "RAG systems combine dense vector retrieval with LLM generation for grounded QA.",
+    "Hybrid search utilizes Reciprocal Rank Fusion to merge BM25 lexical scores with vector embeddings."
+]
+
+# Tokenize corpus for BM25
+tokenized_corpus = [doc.lower().split() for doc in corpus]
+bm25 = BM25Okapi(tokenized_corpus)
+
+# Generate dense embeddings
+corpus_embeddings = embedder.encode(corpus)
+
+def search(query, top_k=2):
+    # Dense retrieval
+    query_emb = embedder.encode([query])
+    scores = np.dot(corpus_embeddings, query_emb.T).squeeze()
+    dense_top = np.argsort(scores)[::-1]
+    
+    # Sparse retrieval
+    bm25_scores = bm25.get_scores(query.lower().split())
+    sparse_top = np.argsort(bm25_scores)[::-1]
+    
+    # RRF Merger
+    candidates = list(set(list(dense_top[:5]) + list(sparse_top[:5])))
+    
+    # Reranking pass
+    pairs = [[query, corpus[i]] for i in candidates]
+    rerank_scores = reranker.predict(pairs)
+    
+    ranked_indices = [candidates[i] for i in np.argsort(rerank_scores)[::-1]]
+    return [corpus[i] for i in ranked_indices[:top_k]]
+
+# Test query with exact alphanumeric term
+results = search("What causes error 0x8004210B?")
+print("Top Context:", results[0])
+</code></pre>
+
+<h2 id="takeaways">Production checklist</h2>
+<ol>
+  <li><strong>Never rely on pure vector search alone:</strong> Combine dense embeddings with BM25 lexical search using Reciprocal Rank Fusion (RRF).</li>
+  <li><strong>Always add a reranking stage:</strong> Use a cross-encoder model to prune candidates down to the highest quality context window.</li>
+  <li><strong>Implement semantic chunking:</strong> Avoid cutting sentences mid-thought by chunking along natural semantic embedding shifts.</li>
+  <li><strong>Automate quantitative evaluation:</strong> Track Context Relevance, Groundedness, and Answer Relevance on every deploy.</li>
+</ol>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=Production+RAG+Engineering%3A+Hybrid+Search%2C+Reranking+%26+Evaluation&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FProduction-RAG-Engineering-Hybrid-Search-Reranking-and-Evaluation%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FProduction-RAG-Engineering-Hybrid-Search-Reranking-and-Evaluation%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="footer-brand">
+          <div class="logo-mark">RM</div>
+          <div>
+            <strong>Rushikesh Mohalkar</strong>
+            <p>AI &amp; Machine Learning Engineering Portfolio</p>
+          </div>
+        </div>
+        <div class="footer-badge-tag">AI &amp; ML ENGINEERING PORTFOLIO</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="../../#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a href="../../blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+</body>
+</html>
+

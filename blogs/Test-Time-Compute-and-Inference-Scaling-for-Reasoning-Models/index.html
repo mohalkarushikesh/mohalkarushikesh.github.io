@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#f8fafc" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png" />
+
+  <!-- Montserrat Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+
+  <title>Test-Time Compute & Inference Scaling for Reasoning Models</title>
+<meta name="description" content="A deep technical analysis of the shift from pre-training compute scaling to inference-time scaling: Monte Carlo Tree Search (MCTS), Process Reward Models (PRMs), and self-correction loops.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <div class="wrap nav-container">
+      <a href="../../#home" class="brand">
+        <div class="ai-seal-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-name">Rushikesh Mohalkar</span>
+          <span class="brand-agency">AI &amp; ML Engineer</span>
+        </div>
+      </a>
+
+      <div class="nav-menu">
+        <a class="link" href="../../#home">Home</a>
+        <a class="link" href="/#about">About</a>
+        <a class="link" href="/#projects">Projects</a>
+        <a class="link" href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a class="link" href="../../blogs/">Blogs</a>
+        <a class="link" href="/#resume">Resume</a>
+        <a class="link" href="/#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="../../blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">Reasoning & Research</span>
+      <h1 class="post-title" style="margin-top: 16px;">Test-Time Compute & Inference Scaling for Reasoning Models</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A deep technical analysis of the shift from pre-training compute scaling to inference-time scaling: Monte Carlo Tree Search (MCTS), Process Reward Models (PRMs), and self-correction loops.</p>
+      <div class="post-meta">
+        <time datetime="2026-09-24">Sep 24, 2026</time>
+        <span>·</span>
+        <span>4 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">Test-Time Compute</span><span class="pill">Reasoning Models</span><span class="pill">Monte Carlo Tree Search</span><span class="pill">MCTS</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>For years, frontier AI progress was driven almost exclusively by pre-training compute scaling laws (more parameters, more GPUs, more tokens). But as high-quality web text data reaches saturation, the frontier of AI research has shifted to <strong>Test-Time Compute Scaling</strong> — trading latency and inference FLOPs for higher accuracy on complex math, coding, and reasoning tasks. Paradigm shifts demonstrated by models like OpenAI o1 and DeepSeek R1 prove that allocating extra compute budget during generation enables smaller models to match or exceed frontier pre-trained giants.</p>
+
+<blockquote>Pre-training scales knowledge; test-time compute scales thinking depth.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#scaling-laws">The shift from pre-training to test-time scaling laws</a></li>
+    <li><a href="#test-time-mechanisms">Core mechanisms of test-time compute</a></li>
+    <li><a href="#prm-vs-orm">Outcome Reward Models (ORM) vs Process Reward Models (PRM)</a></li>
+    <li><a href="#tree-search">Monte Carlo Tree Search (MCTS) & Beam Search in LLM generation</a></li>
+    <li><a href="#self-correction">Self-correction & chain-of-thought verification loops</a></li>
+    <li><a href="#python-mcts">Python implementation of MCTS with Process Reward Verification</a></li>
+    <li><a href="#takeaways">The future of inference scaling</a></li>
+  </ul>
+</nav>
+
+<h2 id="scaling-laws">The shift from pre-training to test-time scaling laws</h2>
+<p>Traditional autoregressive generation samples tokens sequentially using greedy decoding or top-<code>p</code> sampling. If the model makes a logical mistake at step 3 of a 50-step mathematical proof, all subsequent tokens compound that initial hallucination.</p>
+
+<p>Test-time compute scaling alters this dynamic by allowing the system to explore multiple candidate reasoning trajectories, critique intermediate steps, backtrack from dead ends, and verify conclusions before returning the final response to the user.</p>
+
+<h2 id="test-time-mechanisms">Core mechanisms of test-time compute</h2>
+
+<h3>1. Parallel Sampling (Majority Voting / Best-of-N)</h3>
+<p>Generates <em>N</em> independent responses in parallel, scores each response using an evaluation model or verifier, and selects the highest-scoring candidate (or returns the majority consensus).</p>
+
+<h3>2. Sequential Refinement & Chain-of-Thought (CoT)</h3>
+<p>Encourages the model to output explicit internal reasoning tokens (e.g. <code>&lt;think&gt; ... &lt;/think&gt;</code>) to break down multi-step problems, reflect on potential errors, and refine draft answers before producing output.</p>
+
+<h3>3. Search Tree Exploration (MCTS / Beam Search)</h3>
+<p>Frames text generation as a search tree over intermediate thoughts. A Process Reward Model evaluates every candidate step, allowing search algorithms to prune unpromising branches early.</p>
+
+<h2 id="prm-vs-orm">Outcome Reward Models (ORM) vs Process Reward Models (PRM)</h2>
+<p>The reliability of test-time search depends heavily on the reward signal used to guide exploration:</p>
+
+<ul>
+  <li><strong>Outcome Reward Models (ORM):</strong> Evaluate only the final answer (e.g., +1 if the final code passes unit tests, 0 if it fails). ORMs provide sparse feedback and fail to pinpoint which step caused the failure.</li>
+  <li><strong>Process Reward Models (PRM):</strong> Evaluate every step in the step-by-step reasoning process (e.g., step 1: 0.98, step 2: 0.95, step 3: 0.12 [flagged error]). PRMs enable precise step-level credit assignment and early tree pruning.</li>
+</ul>
+
+<h2 id="tree-search">Monte Carlo Tree Search (MCTS) & Beam Search in LLM generation</h2>
+
+<pre><code>                     [Root Prompt]
+                          |
+             +------------+------------+
+             |                         |
+       [Step 1A (0.95)]          [Step 1B (0.30)]
+             |                         x (Pruned)
+     +-------+-------+
+     |               |
+[Step 2A (0.92)] [Step 2B (0.88)]
+     |               |
+  [Final A]       [Final B]
+</code></pre>
+
+<h2 id="python-mcts">Python implementation of MCTS with Process Reward Verification</h2>
+
+<pre><code>import math
+import random
+from typing import List, Optional
+
+class ReasoningNode:
+    def __init__(self, thought_step: str, parent: Optional['ReasoningNode'] = None):
+        self.thought_step = thought_step
+        self.parent = parent
+        self.children: List['ReasoningNode'] = []
+        self.visits = 0
+        self.value = 0.0
+        self.prm_score = 0.0 # Process Reward Model score
+
+    def uct_score(self, c_param: float = 1.414) -> float:
+        if self.visits == 0:
+            return float('inf')
+        return (self.value / self.visits) + c_param * math.sqrt(math.log(self.parent.visits) / self.visits)
+
+class MCTSSearch:
+    def __init__(self, root_prompt: str, prm_evaluator, llm_generator):
+        self.root = ReasoningNode(thought_step=root_prompt)
+        self.prm = prm_evaluator
+        self.llm = llm_generator
+
+    def select(self, node: ReasoningNode) -> ReasoningNode:
+        while node.children:
+            node = max(node.children, key=lambda n: n.uct_score())
+        return node
+
+    def expand(self, node: ReasoningNode, num_candidates: int = 3):
+        candidates = self.llm.generate_candidate_steps(node.thought_step, n=num_candidates)
+        for cand in candidates:
+            child = ReasoningNode(thought_step=cand, parent=node)
+            child.prm_score = self.prm.score_step(node.thought_step, cand)
+            node.children.append(child)
+
+    def backpropagate(self, node: ReasoningNode, score: float):
+        curr = node
+        while curr is not None:
+            curr.visits += 1
+            curr.value += score
+            curr = curr.parent
+
+    def run_search(self, iterations: int = 20) -> ReasoningNode:
+        for _ in range(iterations):
+            leaf = self.select(self.root)
+            if leaf.visits > 0:
+                self.expand(leaf)
+                if leaf.children:
+                    leaf = leaf.children[0]
+            
+            # Simulate and score rollout
+            reward = leaf.prm_score
+            self.backpropagate(leaf, reward)
+
+        # Select best trajectory path
+        best_child = max(self.root.children, key=lambda n: n.visits)
+        return best_child
+</code></pre>
+
+<h2 id="takeaways">The future of inference scaling</h2>
+<ol>
+  <li><strong>Inference compute is the new scaling frontier:</strong> Models can be made smaller during pre-training if given compute budget to think during inference.</li>
+  <li><strong>Process Reward Models are key:</strong> Step-level verification enables search algorithms (MCTS / Beam Search) to prune hallucinated branches early.</li>
+  <li><strong>Self-Correction requires explicit reasoning tokens:</strong> Training models on synthetic chain-of-thought data with reflection tags (<code>&lt;think&gt; ... &lt;/think&gt;</code>) dramatically boosts zero-shot problem solving.</li>
+</ol>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=Test-Time+Compute+%26+Inference+Scaling+for+Reasoning+Models&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FTest-Time-Compute-and-Inference-Scaling-for-Reasoning-Models%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FTest-Time-Compute-and-Inference-Scaling-for-Reasoning-Models%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="footer-brand">
+          <div class="logo-mark">RM</div>
+          <div>
+            <strong>Rushikesh Mohalkar</strong>
+            <p>AI &amp; Machine Learning Engineering Portfolio</p>
+          </div>
+        </div>
+        <div class="footer-badge-tag">AI &amp; ML ENGINEERING PORTFOLIO</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="../../#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a href="../../blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+</body>
+</html>
+

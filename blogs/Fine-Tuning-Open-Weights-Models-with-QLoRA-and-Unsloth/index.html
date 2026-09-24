@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#f8fafc" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="../../assets/img/apple-touch-icon.png" />
+
+  <!-- Montserrat Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+
+  <title>Fine-Tuning Open-Weights Models with QLoRA & Unsloth</title>
+<meta name="description" content="A practical hands-on guide to parameter-efficient fine-tuning (PEFT): 4-bit quantization, Low-Rank Adaptation (LoRA), Memory footprint management, and 2x faster training with Unsloth.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <div class="wrap nav-container">
+      <a href="../../#home" class="brand">
+        <div class="ai-seal-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-name">Rushikesh Mohalkar</span>
+          <span class="brand-agency">AI &amp; ML Engineer</span>
+        </div>
+      </a>
+
+      <div class="nav-menu">
+        <a class="link" href="../../#home">Home</a>
+        <a class="link" href="/#about">About</a>
+        <a class="link" href="/#projects">Projects</a>
+        <a class="link" href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a class="link" href="../../blogs/">Blogs</a>
+        <a class="link" href="/#resume">Resume</a>
+        <a class="link" href="/#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="../../blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">Fine-Tuning & LLMs</span>
+      <h1 class="post-title" style="margin-top: 16px;">Fine-Tuning Open-Weights Models with QLoRA & Unsloth</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A practical hands-on guide to parameter-efficient fine-tuning (PEFT): 4-bit quantization, Low-Rank Adaptation (LoRA), Memory footprint management, and 2x faster training with Unsloth.</p>
+      <div class="post-meta">
+        <time datetime="2026-09-24">Sep 24, 2026</time>
+        <span>·</span>
+        <span>4 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">Fine-Tuning</span><span class="pill">QLoRA</span><span class="pill">LoRA</span><span class="pill">Unsloth</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>While prompting and RAG solve many context-grounding tasks, adapting open-weights LLMs (such as Llama 3.1 8B or Qwen 2.5 7B) for custom JSON output schemas, specialized domain nomenclature, or unique tone requires <strong>fine-tuning</strong>. Full parameter fine-tuning of an 8-billion parameter model requires over 80GB of VRAM just to store optimizer states. <strong>QLoRA (Quantized Low-Rank Adaptation)</strong> combined with <strong>Unsloth</strong> makes it possible to fine-tune state-of-the-art open models on a single consumer GPU (16GB VRAM) with zero accuracy degradation.</p>
+
+<blockquote>Full fine-tuning updates 100% of weights; LoRA freezes base weights and trains lightweight low-rank matrices; QLoRA quantizes the base model to 4-bit NormalFloat while preserving gradient precision.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#math-lora">The mathematics of LoRA and QLoRA</a></li>
+    <li><a href="#memory-calc">GPU VRAM breakdown: Full vs LoRA vs QLoRA</a></li>
+    <li><a href="#unsloth-acceleration">Why Unsloth? Manual CUDA kernel optimization</a></li>
+    <li><a href="#dataset-prep">Dataset formatting: ShareGPT & Instruction formats</a></li>
+    <li><a href="#code-walkthrough">Complete Python implementation with Unsloth & SFTTrainer</a></li>
+    <li><a href="#gguf-export">Exporting fine-tuned models to GGUF / Ollama for local inference</a></li>
+    <li><a href="#takeaways">Best practices for production fine-tuning</a></li>
+  </ul>
+</nav>
+
+<h2 id="math-lora">The mathematics of LoRA and QLoRA</h2>
+<p>For a linear layer with weight matrix <code>W0</code> of shape <code>(d x k)</code>, standard gradient updates modify <code>W0</code> directly. Low-Rank Adaptation (LoRA) freezes <code>W0</code> and decomposes the update matrix <code>dW</code> into two low-rank matrices <code>A</code> and <code>B</code>:</p>
+
+<pre><code>W = W0 + dW = W0 + (B x A)
+where B is (d x r), A is (r x k), and rank r << min(d, k)
+</code></pre>
+
+<p>By choosing a rank <code>r = 16</code> or <code>r = 32</code>, the number of trainable parameters is reduced by over <strong>99%</strong> (e.g. from 8,000,000,000 parameters to just 20,000,000 parameters).</p>
+
+<p><strong>QLoRA</strong> extends this by introduce three key innovations:</p>
+<ol>
+  <li><strong>4-bit NormalFloat (NF4):</strong> An information-theoretically optimal quantile quantization data type for normally distributed weights.</li>
+  <li><strong>Double Quantization (DQ):</strong> Quantizes the quantization constants themselves, saving 0.37 bits per parameter.</li>
+  <li><strong>Paged Optimizers:</strong> Uses CUDA Unified Memory to automatically page memory spikes between GPU VRAM and CPU RAM during gradient updates.</li>
+</ol>
+
+<h2 id="memory-calc">GPU VRAM breakdown: Full vs LoRA vs QLoRA</h2>
+
+<pre><code>+-----------------------+-------------------+--------------------+
+| Training Approach     | Base Weight VRAM  | Optimizer/Grad VRAM| Total VRAM (8B)  |
++-----------------------+-------------------+--------------------+------------------+
+| Full 16-bit Fine-tune | 16 GB             | 64 GB              | ~80 GB VRAM      |
+| Standard 16-bit LoRA  | 16 GB             | 2 GB               | ~24 GB VRAM      |
+| 4-bit QLoRA           | 5.5 GB            | 1.5 GB             | ~9.5 GB VRAM     |
+| QLoRA + Unsloth       | 5.5 GB            | 0.8 GB             | ~7.2 GB VRAM     |
++-----------------------+-------------------+--------------------+------------------+
+</code></pre>
+
+<h2 id="unsloth-acceleration">Why Unsloth? Manual CUDA kernel optimization</h2>
+<p>Standard HuggingFace <code>peft</code> and <code>trl</code> implementations suffer from overhead during cross-entropy loss computation and RoPE embedding calculations. Unsloth rewrites these inner loops in custom <strong>Triton / CUDA kernels</strong>, yielding:</p>
+<ul>
+  <li><strong>2x-5x faster training speeds</strong> compared to standard HuggingFace PEFT.</li>
+  <li><strong>60% reduction in VRAM overhead</strong>, allowing batch size doubling.</li>
+  <li><strong>Exact zero loss accuracy trade-off</strong> (uses identical math, just faster execution).</li>
+</ul>
+
+<h2 id="code-walkthrough">Complete Python implementation with Unsloth & SFTTrainer</h2>
+
+<pre><code>import torch
+from unsloth import FastLanguageModel
+from trl import SFTTrainer
+from transformers import TrainingArguments
+from datasets import load_dataset
+
+# 1. Configuration
+max_seq_length = 2048
+dtype = None # Auto detection (Float16 or Bfloat16)
+load_in_4bit = True # 4-bit QLoRA Quantization
+
+# 2. Load Base Model & Tokenizer
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name="unsloth/Meta-Llama-3.1-8B-Instruct",
+    max_seq_length=max_seq_length,
+    dtype=dtype,
+    load_in_4bit=load_in_4bit,
+)
+
+# 3. Add LoRA Adapters
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj",
+                    "gate_proj", "up_proj", "down_proj"],
+    lora_alpha=16,
+    lora_dropout=0, # Optimized for 0 dropout in Unsloth
+    bias="none",
+    use_gradient_checkpointing="unsloth", # 30% VRAM savings
+)
+
+# 4. Prepare Instruction Dataset
+dataset = load_dataset("philschmid/dolly-15k-curated-multilingual", split="train")
+
+# 5. Initialize Trainer
+trainer = SFTTrainer(
+    model=model,
+    tokenizer=tokenizer,
+    train_dataset=dataset,
+    dataset_text_field="text",
+    max_seq_length=max_seq_length,
+    dataset_num_proc=2,
+    packing=False, # Packs multiple short sequences for speed
+    args=TrainingArguments(
+        per_device_train_batch_size=2,
+        gradient_accumulation_steps=4,
+        warmup_steps=5,
+        max_steps=60,
+        learning_rate=2e-4,
+        fp16=not torch.cuda.is_bf16_supported(),
+        bf16=torch.cuda.is_bf16_supported(),
+        logging_steps=1,
+        optim="adamw_8bit",
+        weight_decay=0.01,
+        lr_scheduler_type="linear",
+        seed=3407,
+        output_dir="outputs",
+    ),
+)
+
+# 6. Execute Fine-Tuning Run
+trainer_stats = trainer.train()
+
+# 7. Save Model LoRA Adapters
+model.save_pretrained("llama3_custom_lora")
+tokenizer.save_pretrained("llama3_custom_lora")
+</code></pre>
+
+<h2 id="gguf-export">Exporting fine-tuned models to GGUF / Ollama for local inference</h2>
+<p>Once fine-tuning is completed, Unsloth allows 1-click export directly to <code>GGUF</code> format for local deployment via Ollama or <code>llama.cpp</code>:</p>
+
+<pre><code># Export to 16-bit GGUF or quantized Q4_K_M GGUF
+model.save_pretrained_gguf(
+    "llama3_custom_gguf", 
+    tokenizer, 
+    quantization_method="q4_k_m"
+)
+</code></pre>
+
+<h2 id="takeaways">Best practices for production fine-tuning</h2>
+<ol>
+  <li><strong>Start with quality data over quantity:</strong> 1,000 high-quality, human-verified instruction pairs outperform 50,000 noisy scraped samples.</li>
+  <li><strong>Use Target Modules for all linear projections:</strong> Apply LoRA adapters to both attention weights (<code>q, k, v, o</code>) and MLP layers (<code>gate, up, down</code>).</li>
+  <li><strong>Monitor loss curve plateau:</strong> If evaluation loss starts increasing while training loss decreases, stop immediately to avoid overfitting.</li>
+  <li><strong>Export to GGUF for edge deployment:</strong> Quantize fine-tuned models to 4-bit or 5-bit GGUF for low-latency local execution.</li>
+</ol>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=Fine-Tuning+Open-Weights+Models+with+QLoRA+%26+Unsloth&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FFine-Tuning-Open-Weights-Models-with-QLoRA-and-Unsloth%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FFine-Tuning-Open-Weights-Models-with-QLoRA-and-Unsloth%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="footer-brand">
+          <div class="logo-mark">RM</div>
+          <div>
+            <strong>Rushikesh Mohalkar</strong>
+            <p>AI &amp; Machine Learning Engineering Portfolio</p>
+          </div>
+        </div>
+        <div class="footer-badge-tag">AI &amp; ML ENGINEERING PORTFOLIO</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="../../#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="../../aiml-tree-structure.html">AI/ML Map</a>
+        <a href="../../blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+</body>
+</html>
+
