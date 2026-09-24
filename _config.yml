@@ -50,6 +50,7 @@ exclude:
   - vendor
   - preview_build.py
   - "resume/*.docx"
+  - assets/mathjax
 
 sass:
   style: compressed
