@@ -70,9 +70,11 @@ env = Environment(autoescape=False)
 
 def relative_url(v):
     v = str(v)
-    if not v.startswith("/"):
-        v = "/" + v
-    return (SITE["baseurl"] + v) or "/"
+    if v.startswith("/"):
+        v = v[1:]
+    if not v:
+        return "."
+    return v
 
 def absolute_url(v):
     return SITE["url"] + relative_url(v)
