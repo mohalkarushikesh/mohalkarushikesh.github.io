@@ -1009,15 +1009,92 @@ html.dark .nav-container {
 }
 
 /* Footer */
-footer.site { background: var(--surface-solid); border-top: 1px solid var(--border); padding: 60px 0 40px; text-align: center; }
-.footer-top-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 32px; }
-.fed-footer-brand { display: flex; align-items: center; gap: 14px; text-align: left; }
-.usa-badge-tag { font-size: 0.75rem; font-weight: 800; background: var(--bg-2); border: 1px solid var(--border); color: var(--text-dim); padding: 6px 14px; border-radius: var(--radius-pill); }
-.fquote { font-style: italic; font-weight: 600; color: var(--text-faint); margin-bottom: 24px; }
-.fnav { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 28px; }
-.fnav a { font-weight: 600; font-size: 0.9rem; color: var(--text-dim); }
-.fnav a:hover { color: var(--brand); }
-.copy { font-size: 0.85rem; color: var(--text-faint); }
+footer.site {
+  background: var(--bg-2);
+  border-top: 1px solid var(--border);
+  padding: 60px 0 40px;
+  text-align: center;
+}
+.footer-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.footer-brand .logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.1rem;
+  box-shadow: var(--shadow-glow);
+}
+.footer-brand strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+  display: block;
+}
+.footer-brand p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  margin: 0;
+}
+.footer-badge-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--brand);
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+}
+.fquote {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--text-dim);
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+.fnav {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.fnav a {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-dim);
+  transition: color 0.2s;
+}
+.fnav a:hover {
+  color: var(--brand);
+}
+.copy {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-faint);
+}
 
 /* Mobile Menu Drawer */
 .hamburger { display: none; cursor: pointer; width: 22px; height: 16px; position: relative; }
