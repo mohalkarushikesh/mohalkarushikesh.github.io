@@ -70,14 +70,12 @@ env = Environment(autoescape=False)
 
 def relative_url(v):
     v = str(v)
-    if v.startswith("/"):
-        v = v[1:]
-    if not v:
-        return "."
+    if not v or v == "/":
+        return "/"
     return v
 
 def absolute_url(v):
-    return SITE["url"] + relative_url(v)
+    return SITE["url"] + str(v)
 
 def date_to_xmlschema(v):
     if isinstance(v, (datetime, date)):
@@ -123,7 +121,8 @@ def render_with_layouts(page_fm, content, is_liquid_body, raw_body):
 def fix_relative_paths(content, rel_path):
     parts = [p for p in rel_path.strip("/").split("/") if p]
     depth = max(0, len(parts) - 1)
-    prefix = "../" * depth if depth > 0 else ""
+    prefix = "../" * depth if depth > 0 else "./"
+    home_prefix = "../" * depth if depth > 0 else ""
     
     # Replace asset links
     content = content.replace('href="assets/', f'href="{prefix}assets/')
@@ -134,7 +133,15 @@ def fix_relative_paths(content, rel_path):
     content = content.replace("url('/assets/", f"url('{prefix}assets/")
     
     # Replace navigation links
-    content = content.replace('href="/#', f'href="{prefix}#')
+    if depth > 0:
+        content = content.replace('href="#home"', f'href="{home_prefix}#home"')
+        content = content.replace('href="/#home"', f'href="{home_prefix}#home"')
+        content = content.replace('href=".#home"', f'href="{home_prefix}#home"')
+        content = content.replace('href="/"', f'href="{home_prefix}"')
+    else:
+        content = content.replace('href=".#home"', 'href="#home"')
+        content = content.replace('href="/#home"', 'href="#home"')
+
     content = content.replace('href="/blogs/"', f'href="{prefix}blogs/"')
     content = content.replace('href="/aiml-tree-structure.html"', f'href="{prefix}aiml-tree-structure.html"')
     content = content.replace('href="/favicon', f'href="{prefix}favicon')
