@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>AI in Healthcare</title>
+<meta name="description" content="How AI is reshaping healthcare across diagnostics, predictive analytics, and workflow automation — with the technical depth an ML engineer needs: model types, data pipelines, evaluation, regulation, and the 2025-2026 shift toward medical foundation models and ambient clinical documentation.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="/blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">AI in Healthcare</span>
+      <h1 class="post-title" style="margin-top: 16px;">AI in Healthcare</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">How AI is reshaping healthcare across diagnostics, predictive analytics, and workflow automation — with the technical depth an ML engineer needs: model types, data pipelines, evaluation, regulation, and the 2025-2026 shift toward medical foundation models and ambient clinical documentation.</p>
+      <div class="post-meta">
+        <time datetime="2025-08-23">Aug 23, 2025</time>
+        <span>·</span>
+        <span>11 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">Healthcare</span><span class="pill">Diagnostics</span><span class="pill">Predictive Analytics</span><span class="pill">Medical Imaging</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>Artificial Intelligence (AI) is transforming the healthcare industry by enhancing accuracy, efficiency, and accessibility across the entire medical ecosystem. From assisting radiologists in identifying complex anomalies to predicting patient deterioration in real time, AI enables data-driven decision-making that supports both clinicians and patients. This piece keeps that human-centered framing while going a layer deeper — into the model families, the data plumbing, the evaluation discipline, and the regulatory reality that decide whether a promising model ever reaches the bedside.</p>
+
+        <blockquote>AI in healthcare is not about replacing doctors — it is about giving them superpowers while keeping a human accountable for every decision.</blockquote>
+
+        <nav aria-label="Table of Contents">
+          <h2>Table of Contents</h2>
+          <ul>
+            <li><a href="#landscape">The clinical AI landscape</a></li>
+            <li><a href="#applications">Key applications of AI in healthcare</a></li>
+            <li><a href="#imaging">Medical imaging and diagnostics, in depth</a></li>
+            <li><a href="#predictive">Predictive analytics and early warning</a></li>
+            <li><a href="#nlp">Clinical NLP and ambient documentation</a></li>
+            <li><a href="#foundation">Foundation models and generative AI in medicine</a></li>
+            <li><a href="#pipeline">A reference clinical ML pipeline</a></li>
+            <li><a href="#evaluation">Evaluation, validation, and metrics</a></li>
+            <li><a href="#benefits">Benefits of AI adoption</a></li>
+            <li><a href="#challenges">Challenges and ethical considerations</a></li>
+            <li><a href="#regulation">Regulation and deployment reality</a></li>
+            <li><a href="#future">Future outlook</a></li>
+            <li><a href="#takeaways">Takeaways</a></li>
+          </ul>
+        </nav>
+
+        <h2 id="landscape">The clinical AI landscape</h2>
+        <p>It helps to place the many "AI in healthcare" stories on a single map before diving in. Clinical AI spans perception (reading images and signals), prediction (forecasting risk from structured records), language (reading and writing clinical text), and discovery (finding molecules and understanding biology). Each layer has different data, different failure modes, and a different regulatory burden.</p>
+
+        <div class="mermaid">
+        flowchart TD
+          A[Clinical AI] --> B[Perception]
+          A --> C[Prediction]
+          A --> D[Language]
+          A --> E[Discovery]
+          B --> B1[Radiology / pathology imaging]
+          B --> B2[ECG / EEG / waveform signals]
+          C --> C1[Risk scores: sepsis, readmission]
+          C --> C2[Deterioration early warning]
+          D --> D1[Clinical note understanding]
+          D --> D2[Ambient documentation]
+          E --> E1[Drug discovery]
+          E --> E2[Protein structure / genomics]
+        </div>
+
+        <h2 id="applications">Key applications of AI in healthcare</h2>
+        <ul>
+            <li><strong>Medical Imaging &amp; Diagnostics:</strong> AI algorithms trained on thousands of medical images can detect abnormalities such as tumors, fractures, or infections faster and often more accurately than traditional methods. Work from labs such as <em>Google DeepMind</em> (for example, retinal disease and mammography research) and vendors formerly grouped under <em>IBM Watson Health</em> helped popularize the idea; today the field is dominated by hundreds of FDA-cleared, task-specific imaging tools.</li>
+            <li><strong>Predictive Analytics:</strong> By analyzing patient data, AI can forecast disease risks such as heart failure, sepsis, or diabetes progression. Hospitals use predictive models to identify high-risk patients and intervene early, potentially saving lives.</li>
+            <li><strong>Operational Optimization:</strong> AI streamlines administrative workflows — from scheduling and inventory management to resource allocation — allowing healthcare staff to focus more on patient care and less on paperwork.</li>
+            <li><strong>Drug Discovery and Genomics:</strong> Machine learning accelerates the discovery of new drugs by identifying promising compounds and simulating how they interact with human cells, significantly reducing research timelines and costs. Structure-prediction systems such as <em>AlphaFold</em> reshaped how researchers reason about protein targets.</li>
+            <li><strong>Personalized Medicine:</strong> AI integrates genetic, clinical, and lifestyle data to tailor treatments to individual patients, improving therapeutic outcomes and minimizing side effects.</li>
+            <li><strong>Ambient Clinical Documentation:</strong> A fast-growing 2025-2026 category in which speech and language models listen to a visit and draft the clinical note, letting clinicians face the patient instead of the keyboard.</li>
+        </ul>
+
+        <h2 id="imaging">Medical imaging and diagnostics, in depth</h2>
+        <p>Medical imaging was the first area where deep learning clearly beat classical computer vision, because the task — mapping pixels to a label or a segmentation mask — matches what convolutional and, more recently, transformer-based vision models do well.</p>
+
+        <h3>Model families used in imaging</h3>
+        <table>
+          <thead>
+            <tr><th>Task</th><th>Typical architecture</th><th>Output</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Classification (disease present / absent)</td><td>CNN (ResNet, EfficientNet) or Vision Transformer</td><td>Probability per class</td></tr>
+            <tr><td>Detection (locate a nodule or fracture)</td><td>Detection heads (e.g. RetinaNet, DETR-style)</td><td>Bounding boxes + scores</td></tr>
+            <tr><td>Segmentation (outline an organ or tumor)</td><td>U-Net, nnU-Net, or promptable models (SAM-style)</td><td>Per-pixel mask</td></tr>
+            <tr><td>Report generation</td><td>Vision encoder + language decoder</td><td>Draft radiology report text</td></tr>
+          </tbody>
+        </table>
+
+        <p>A minimal training loop for an imaging classifier looks familiar to any ML engineer, but the details around it — patient-level splits, calibration, and class imbalance — are what make it clinically safe.</p>
+        <pre><code># Pseudo-PyTorch: patient-level split matters more than the model
+train_ids, val_ids = split_by_patient(patients)  # never leak a patient across splits
+model = vision_backbone(pretrained=True)
+for images, labels in loader(train_ids):
+    logits = model(images)
+    loss = weighted_cross_entropy(logits, labels, class_weights)  # handle rare positives
+    loss.backward(); optimizer.step(); optimizer.zero_grad()
+
+# Report probabilities, then calibrate (temperature scaling) before thresholding
+probs = temperature_scale(model(val_images))</code></pre>
+
+        <h3>Why "accuracy" is the wrong headline metric</h3>
+        <p>In a screening population where disease prevalence is low, a model can be 99% accurate by predicting "healthy" for everyone and still be clinically useless. That is why imaging models are judged on sensitivity, specificity, and area under the ROC or precision-recall curve, and why the operating threshold is chosen deliberately based on whether a missed positive (false negative) or a false alarm (false positive) is more harmful in that specific workflow.</p>
+
+        <h2 id="predictive">Predictive analytics and early warning</h2>
+        <p>Predictive models work on structured electronic health record (EHR) data: vitals, labs, medications, and demographics, usually as a time series. Classic gradient-boosted trees (XGBoost, LightGBM) remain extremely strong baselines here and are often preferred over deep nets because they are robust to missing values and easier to explain to a clinical governance board.</p>
+
+        <div class="mermaid">
+        flowchart TD
+          A[EHR event stream] --> B[Feature engineering: windows, trends, deltas]
+          B --> C[Risk model: gradient boosting or sequence model]
+          C --> D{Risk above threshold?}
+          D -->|Yes| E[Alert care team]
+          D -->|No| F[Continue monitoring]
+          E --> G[Clinician review and action]
+          G --> H[Outcome logged]
+          H --> B
+        </div>
+
+        <h3>The alert-fatigue trap</h3>
+        <p>The hardest part of deploying an early-warning score such as a sepsis predictor is not the model — it is the alert budget. If a model fires too often, clinicians learn to ignore it, and a technically accurate model becomes clinically worthless. Real deployments tune the threshold to a sustainable number of alerts per unit per shift and measure the positive predictive value at that operating point, not just the AUROC on a retrospective dataset.</p>
+
+        <h2 id="nlp">Clinical NLP and ambient documentation</h2>
+        <p>A large share of medical value is locked in free text: progress notes, discharge summaries, and pathology reports. Clinical natural language processing extracts structure from that text — diagnoses coded to ICD, medications, and problem lists — and increasingly generates text as well.</p>
+        <p>The 2025-2026 breakout application is <strong>ambient clinical documentation</strong>: a system captures the patient-clinician conversation, transcribes it with a speech model, and uses a large language model (LLM) to draft a structured note that the clinician edits and signs. Done well, it reduces the documentation burden that drives clinician burnout. The engineering pattern is retrieval-augmented and tightly guarded:</p>
+        <ul>
+          <li><strong>Grounding:</strong> the note is generated only from the transcript and the patient's chart, not from the model's parametric memory, to reduce fabrication.</li>
+          <li><strong>Human sign-off:</strong> the clinician remains the legal author; the model produces a draft, never the final record.</li>
+          <li><strong>Traceability:</strong> generated statements should be traceable back to a source utterance for audit.</li>
+        </ul>
+
+        <h2 id="foundation">Foundation models and generative AI in medicine</h2>
+        <p>The most important architectural shift of the last few years is the move from narrow, single-task models to <strong>medical foundation models</strong> — large models pretrained on broad data (text, images, or both) and then adapted to specific tasks. Google's <em>Med-PaLM</em> and <em>Med-Gemini</em> lines, and open medical LLMs, showed that a general model fine-tuned and evaluated on medical question answering can perform strongly on standardized exams. Multimodal variants can jointly reason over an image and its accompanying text.</p>
+
+        <table>
+          <thead>
+            <tr><th>Dimension</th><th>Narrow task model</th><th>Medical foundation model</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Training data</td><td>One curated labeled task</td><td>Broad pretraining, then task adaptation</td></tr>
+            <tr><td>Data efficiency to add a task</td><td>Needs a full labeled dataset</td><td>Few-shot or light fine-tuning</td></tr>
+            <tr><td>Failure mode</td><td>Silent on out-of-distribution input</td><td>Confident hallucination</td></tr>
+            <tr><td>Validation burden</td><td>Per-task, well understood</td><td>Broad surface, harder to bound</td></tr>
+            <tr><td>Best fit</td><td>High-stakes, narrow decisions</td><td>Drafting, triage, summarization with human review</td></tr>
+          </tbody>
+        </table>
+
+        <p>The practical caution: a model that scores well on a medical exam is not thereby safe for clinical decisions. Exam questions are cleanly framed; real patients are not. Generative models can hallucinate a plausible but wrong dose or citation, which is why current safe deployments keep them in assistive, human-reviewed roles rather than autonomous ones.</p>
+
+        <h2 id="pipeline">A reference clinical ML pipeline</h2>
+        <p>Whatever the model, a production clinical system shares the same backbone. The model is a small box inside a much larger MLOps and governance system.</p>
+
+        <div class="mermaid">
+        flowchart TD
+          A[Raw clinical data: EHR, PACS, devices] --> B[De-identification and consent checks]
+          B --> C[Data validation and quality gates]
+          C --> D[Feature store / preprocessing]
+          D --> E[Model training and versioning]
+          E --> F[Offline evaluation: subgroup metrics, calibration]
+          F --> G{Passes safety bar?}
+          G -->|No| E
+          G -->|Yes| H[Silent / shadow deployment]
+          H --> I[Prospective clinical validation]
+          I --> J[Live deployment with human in the loop]
+          J --> K[Monitoring: drift, fairness, outcomes]
+          K --> E
+        </div>
+
+        <p>Two stages distinguish healthcare from ordinary ML products. <strong>Shadow (silent) deployment</strong> runs the model on live data without showing predictions to clinicians, so its behavior can be checked against reality with no patient risk. <strong>Prospective validation</strong> then measures real outcomes, because retrospective performance routinely overstates real-world performance.</p>
+
+        <h2 id="evaluation">Evaluation, validation, and metrics</h2>
+        <p>Choosing the right metric is a clinical decision disguised as a technical one. The table below maps common metrics to when they matter.</p>
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>What it captures</th><th>When it dominates</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Sensitivity (recall)</td><td>Fraction of true positives caught</td><td>Missing a case is dangerous (cancer screening)</td></tr>
+            <tr><td>Specificity</td><td>Fraction of negatives correctly cleared</td><td>False alarms are costly or harmful</td></tr>
+            <tr><td>PPV / precision</td><td>Fraction of alerts that are real</td><td>Alert fatigue, low-prevalence settings</td></tr>
+            <tr><td>AUROC</td><td>Ranking quality across thresholds</td><td>Comparing models, threshold not yet fixed</td></tr>
+            <tr><td>Calibration (e.g. ECE)</td><td>Whether "70%" really means 70%</td><td>Probabilities drive treatment decisions</td></tr>
+            <tr><td>Subgroup gaps</td><td>Performance across demographics</td><td>Always — fairness auditing</td></tr>
+          </tbody>
+        </table>
+        <p>Calibration deserves special emphasis: a clinician acting on a predicted probability needs that number to be trustworthy, so techniques such as temperature scaling or isotonic regression are applied and then re-checked on each subgroup. And every headline metric should be reported per subgroup, because an aggregate number can hide a model that works well for one population and poorly for another.</p>
+
+        <h2 id="benefits">Benefits of AI adoption</h2>
+        <ul>
+            <li>Enhanced diagnostic precision and reduced human error</li>
+            <li>Early detection and prevention of chronic diseases</li>
+            <li>Optimized hospital operations and resource management</li>
+            <li>Improved patient experience through digital assistants and telehealth</li>
+            <li>Accelerated research and innovation in medical sciences</li>
+            <li>Reduced documentation burden and clinician burnout via ambient scribing</li>
+        </ul>
+
+        <h2 id="challenges">Challenges and ethical considerations</h2>
+        <ul>
+            <li><strong>Data Privacy &amp; Security:</strong> Ensuring compliance with regulations such as HIPAA and GDPR is vital, as AI systems rely on sensitive patient data for training and inference. De-identification, access controls, and increasingly privacy-preserving techniques such as federated learning are part of the answer.</li>
+            <li><strong>Bias and Fairness:</strong> If training datasets are unbalanced, AI models may yield biased outcomes that disproportionately affect certain demographics. This must be measured with explicit subgroup analysis, not assumed away.</li>
+            <li><strong>Transparency &amp; Explainability:</strong> Clinicians must be able to understand AI's decision-making processes to maintain trust and accountability in clinical practice. Methods such as saliency maps for imaging and SHAP-style attributions for tabular models help, but explanations must themselves be validated, not taken on faith.</li>
+            <li><strong>Distribution shift:</strong> A model trained at one hospital can degrade at another because scanners, populations, and coding practices differ. Continuous monitoring for drift is mandatory, not optional.</li>
+            <li><strong>Automation bias:</strong> Clinicians can over-trust a confident model and stop questioning it. Interface design must keep the human genuinely in the loop.</li>
+            <li><strong>Integration into Workflows:</strong> AI tools must complement existing healthcare systems and empower clinicians — not replace them.</li>
+        </ul>
+
+        <h2 id="regulation">Regulation and deployment reality</h2>
+        <p>A clinical model is often a regulated medical device. In the United States the FDA reviews AI/ML-enabled devices and, recognizing that models are updated over time, introduced the idea of a <strong>Predetermined Change Control Plan</strong> so a manufacturer can pre-specify how a model may be retrained and updated without a new submission each time. In Europe, such software falls under the Medical Device Regulation, and the EU AI Act adds obligations for high-risk systems. The practical takeaway for engineers: version everything, document the intended use precisely, and treat monitoring and change control as first-class parts of the system rather than afterthoughts.</p>
+
+        <h2 id="future">Future outlook</h2>
+        <p>As technology evolves, AI will increasingly serve as a trusted partner to healthcare professionals. The next decade will likely see more AI-driven clinical decision support systems, robotic-assisted surgeries, and personalized health monitoring devices. In the near term, the concrete trends are multimodal foundation models that reason jointly over images, notes, and labs; ambient documentation becoming standard equipment; and agentic assistants that can query records and draft orders under strict human review. Success will depend on transparent validation, continuous monitoring, and human-centered design that prioritizes patient safety and ethical use.</p>
+
+        <p>AI in healthcare is not about replacing doctors — it's about giving them superpowers. By combining human empathy with machine intelligence, the future of medicine can be faster, smarter, and more compassionate.</p>
+
+        <h2 id="takeaways">Takeaways</h2>
+        <ul>
+          <li>Match the model family to the task: perception, prediction, language, and discovery each have distinct architectures and risks.</li>
+          <li>The model is the easy part; data quality, calibration, subgroup fairness, and monitoring decide whether it is safe.</li>
+          <li>Pick metrics by clinical consequence — sensitivity, PPV, and calibration matter more than raw accuracy.</li>
+          <li>Foundation and generative models are powerful drafting assistants, but a human must remain accountable for every decision.</li>
+          <li>Regulation, versioning, and change control are engineering requirements, not paperwork you bolt on at the end.</li>
+        </ul>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="/blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=AI+in+Healthcare&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fai-in-healthcare%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fai-in-healthcare%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>Titans Architecture and the MIRAS Framework</title>
+<meta name="description" content="A deep dive into Google Research's Titans architecture and the MIRAS framework: how test-time memorization, surprise-driven updates, and attentional bias push models past the quadratic-attention wall.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="/blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">Research</span>
+      <h1 class="post-title" style="margin-top: 16px;">Titans Architecture and the MIRAS Framework</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A deep dive into Google Research's Titans architecture and the MIRAS framework: how test-time memorization, surprise-driven updates, and attentional bias push models past the quadratic-attention wall.</p>
+      <div class="post-meta">
+        <time datetime="2025-12-11">Dec 11, 2025</time>
+        <span>·</span>
+        <span>12 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">Titans</span><span class="pill">MIRAS</span><span class="pill">test-time memory</span><span class="pill">long-context</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>Understanding how Titans and MIRAS redefine efficiency and memory in modern AI systems. Both come out of Google Research and share a single provocative idea: memory is not a fixed table you read from, it is a small network you keep <em>training</em> while the model is running.</p>
+
+        <blockquote>Titans is the architecture that learns to memorize at test time; MIRAS is the framework that explains why that works and how far it generalizes.</blockquote>
+
+        <!-- Table of Contents -->
+        <nav aria-label="Table of Contents">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#intro">Introduction: the long-context problem</a></li>
+                <li><a href="#background">Background: why attention hits a wall</a></li>
+                <li><a href="#titans">Titans Architecture</a></li>
+                <li><a href="#surprise">Learning to Memorize at Test Time</a></li>
+                <li><a href="#variants">Three Ways to Wire in Memory: MAC, MAG, MAL</a></li>
+                <li><a href="#miras">The MIRAS Framework</a></li>
+                <li><a href="#axes">The Four Design Axes of MIRAS</a></li>
+                <li><a href="#models">Moneta, Yaad, and Memora</a></li>
+                <li><a href="#compare">How It Compares</a></li>
+                <li><a href="#matter">Why They Matter</a></li>
+                <li><a href="#caveats">Caveats and Open Questions</a></li>
+                <li><a href="#conclusion">Conclusion</a></li>
+            </ul>
+        </nav>
+
+        <!-- Blog Content -->
+        <h2 id="intro">Introduction: the long-context problem</h2>
+        <p>Traditional Transformers face challenges when scaling to very long sequences due to quadratic attention costs. Every token attends to every other token, so doubling the context roughly quadruples the compute and blows up the key-value (KV) cache that must live in memory during generation. Titans architecture and the MIRAS framework were introduced to overcome these limitations by combining efficiency, scalability, and continuous learning.</p>
+        <p>The deeper problem is not just cost, it is <em>expressivity</em>. Softmax attention gives you a perfect, lossless lookup over the context window, but nothing beyond it. Recurrent models give you unbounded context for a fixed cost, but they cram everything into one fixed-size state and forget the details. Titans and MIRAS ask a different question: what if the model carried a small neural network as its memory, and <em>kept training that network on the fly</em> as new tokens arrive?</p>
+
+        <h2 id="background">Background: why attention hits a wall</h2>
+        <p>It helps to name the three families of sequence models before we place Titans among them.</p>
+        <ul>
+            <li><strong>Softmax Transformers.</strong> Exact pairwise attention. Quadratic time and memory in sequence length, but extremely accurate in-context recall.</li>
+            <li><strong>Recurrent / linear models.</strong> RNNs, and modern state-space models like Mamba, plus linear-attention variants. They maintain a fixed-size state updated token by token, giving linear cost and constant memory, at the price of lossy compression of history.</li>
+            <li><strong>Test-time memory models.</strong> The newer family Titans belongs to, where the recurrent "state" is itself a learnable module whose parameters are updated by an inner optimization loop during inference.</li>
+        </ul>
+        <p>The key insight the 2024-2025 literature converged on is that many linear-attention and state-space updates can be read as <em>online learning</em>: the state update is a gradient step on some inner objective. Titans and MIRAS take that observation seriously and turn it into a design space.</p>
+
+        <div class="mermaid">
+flowchart TD
+    A[Long input sequence] --> B{How is history stored?}
+    B -->|All tokens, pairwise| C[Softmax Transformer]
+    B -->|Fixed-size vector state| D[RNN / SSM / Linear attention]
+    B -->|Small network trained at test time| E[Titans neural memory]
+    C --> C1[Lossless recall / quadratic cost]
+    D --> D1[Constant cost / lossy compression]
+    E --> E1[Large capacity / linear cost / adaptive]
+        </div>
+
+        <h2 id="titans">Titans Architecture</h2>
+        <p>Titans is a new AI architecture designed to address the context length problem in Transformers. It merges the speed of recurrent neural networks with the accuracy of Transformers. It was introduced by Google Research in <em>"Titans: Learning to Memorize at Test Time"</em> (Ali Behrouz, Peilin Zhong, Vahab Mirrokni), and its central contribution is a deep <strong>neural long-term memory</strong> module.</p>
+        <ul>
+            <li><strong>Neural long-term memory module:</strong> Helps the model memorize historical context while focusing on current input. Instead of a lookup table, memory is a small multi-layer network whose weights <em>are</em> the stored knowledge.</li>
+            <li><strong>Efficient scaling:</strong> Handles extremely long contexts such as full documents, genome sequences, or extended video streams, reportedly scaling to context windows beyond two million tokens.</li>
+            <li><strong>Real-time adaptability:</strong> Updates memory dynamically during inference, enabling continuous adaptation.</li>
+        </ul>
+        <p>Titans organizes memory into three cooperating components, which is easiest to see as a hierarchy:</p>
+        <div class="mermaid">
+flowchart TD
+    IN[Incoming tokens] --> STM[Short-term memory: attention over a local window]
+    IN --> LTM[Long-term memory: deep neural memory updated at test time]
+    PM[Persistent memory: fixed, task-level learnable tokens] --> STM
+    STM --> OUT[Output representation]
+    LTM --> OUT
+    LTM -->|surprise-driven writes| LTM
+        </div>
+        <table>
+            <thead>
+                <tr><th>Component</th><th>Time scale</th><th>What it holds</th><th>Updated when?</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Persistent memory</td><td>Fixed</td><td>Task-general knowledge as learnable tokens</td><td>Only at training time</td></tr>
+                <tr><td>Short-term memory (attention)</td><td>Immediate</td><td>Exact local context in the current window</td><td>Every step (via attention)</td></tr>
+                <tr><td>Long-term neural memory</td><td>Across the whole sequence</td><td>Compressed, salient history</td><td>Every step, at test time</td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="surprise">Learning to Memorize at Test Time</h2>
+        <p>The interesting question is <em>what</em> the long-term memory chooses to store. Titans answers with a biologically flavored heuristic: store what is <strong>surprising</strong>. Formally, surprise is measured by the gradient of an associative-memory loss with respect to the memory's parameters. A token that the memory already predicts well produces a small gradient and is largely ignored; a token that violates expectations produces a large gradient and is written strongly.</p>
+        <p>Two refinements make this practical:</p>
+        <ul>
+            <li><strong>Momentary vs. momentum surprise.</strong> Using only the instantaneous gradient makes the model forget that it was surprised a moment ago and stop tracking an ongoing surprising event. Titans adds a momentum term so surprise decays smoothly rather than resetting each step, much like momentum in SGD.</li>
+            <li><strong>Adaptive forgetting.</strong> Unbounded writing eventually saturates any finite memory. A data-dependent weight-decay term acts as a learnable forgetting gate, letting the module flush stale information when the context calls for it.</li>
+        </ul>
+        <p>Conceptually the inner update looks like a gradient-descent-with-momentum step on the memory network, run once per incoming token, with the "loss" being how badly the memory reconstructs the current key-value association:</p>
+        <pre><code># Pseudocode for the inner (test-time) memory update
+# M      : the neural memory network (its weights are the "state")
+# k, v   : key/value projected from the current token
+# theta  : learning rate (data-dependent gate)
+# alpha  : forgetting / weight-decay gate (data-dependent)
+# eta    : momentum coefficient
+
+loss     = associative_loss(M(k), v)      # how surprised are we?
+grad     = d loss / d M.weights           # surprise signal
+S        = eta * S_prev - theta * grad    # momentum surprise
+M.weights = (1 - alpha) * M.weights + S   # forget a bit, then write
+</code></pre>
+        <p>Because the update is a well-defined recurrence, Titans can be reformulated to run in parallel over chunks of the sequence during training, so it keeps the hardware efficiency of modern linear-attention kernels rather than being stuck with a slow token-by-token loop.</p>
+        <div class="mermaid">
+flowchart TD
+    T[New token] --> P[Project to key/value]
+    P --> L[Compute memory prediction loss]
+    L --> G[Gradient = surprise]
+    G --> M{Momentum: combine with past surprise}
+    M --> W[Decay old memory, then apply update]
+    W --> R[Updated long-term memory]
+    R --> T2[Next token]
+        </div>
+
+        <h2 id="variants">Three Ways to Wire in Memory: MAC, MAG, MAL</h2>
+        <p>Titans does not prescribe a single topology. The paper proposes three ways to combine the neural memory with attention, trading off recall precision against efficiency.</p>
+        <table>
+            <thead>
+                <tr><th>Variant</th><th>Full name</th><th>How memory and attention combine</th><th>Character</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>MAC</td><td>Memory as Context</td><td>Retrieved long-term memory is concatenated with the current window and fed to attention</td><td>Strongest recall; attention sees history as extra context</td></tr>
+                <tr><td>MAG</td><td>Memory as Gate</td><td>Attention branch and memory branch are combined through a learned gate</td><td>Balanced; blends local precision with global memory</td></tr>
+                <tr><td>MAL</td><td>Memory as Layer</td><td>Memory is stacked as a dedicated layer before/after attention</td><td>Simplest to implement; memory acts as a pre-processing state</td></tr>
+            </tbody>
+        </table>
+        <div class="mermaid">
+flowchart TD
+    subgraph MAC[Memory as Context]
+        A1[Long-term memory read] --> A2[Concatenate with window] --> A3[Attention]
+    end
+    subgraph MAG[Memory as Gate]
+        B1[Attention branch] --> B3[Learned gate]
+        B2[Memory branch] --> B3
+    end
+    subgraph MAL[Memory as Layer]
+        C1[Memory layer] --> C2[Attention layer]
+    end
+        </div>
+
+        <h2 id="miras">The MIRAS Framework</h2>
+        <blockquote>"MIRAS provides the foundation for continuously learning AI models with functional long-term memory."</blockquote>
+        <p>The MIRAS framework complements Titans by enabling continuous learning and efficient handling of massive contexts. In the author's reading it stands for a <em>Memory-Informed Recurrent Attention System</em>: a lens for treating attention and recurrence as two faces of the same associative-memory machinery. In the formal Google Research paper it is introduced under the title <em>"It's All Connected: A Journey Through Test-Time Memorization, Attentional Bias, Retention, and Online Optimization"</em> (Behrouz et al., 2025), where the same acronym names a unifying design space rather than a single model.</p>
+        <ul>
+            <li><strong>Continuous learning:</strong> Models can keep learning during use, not just during training. The memory's parameters are still moving while the model serves requests.</li>
+            <li><strong>Efficient memory updates:</strong> Allows AI to update its core memory dynamically while processing data streams, using cheap online-optimization steps rather than full retraining.</li>
+            <li><strong>Balance between compression and detail:</strong> Retains fine-grained information across long sequences, unlike RNNs that compress context into a single hidden state.</li>
+        </ul>
+        <p>The core claim of MIRAS is unifying: <strong>attention, linear attention, state-space models, and Titans-style memory are all instances of one template</strong> — an inner learner that minimizes an "attentional bias" objective under a retention constraint. Once you see the template, you can mix and match its pieces to invent new architectures on purpose instead of by accident.</p>
+
+        <h2 id="axes">The Four Design Axes of MIRAS</h2>
+        <p>MIRAS decomposes any test-time memory model into four independent choices. Classical attention, Mamba-style SSMs, and Titans each correspond to particular settings of these knobs.</p>
+        <table>
+            <thead>
+                <tr><th>Axis</th><th>Question it answers</th><th>Example choices</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Memory architecture</td><td>What structure stores the state?</td><td>Vector, matrix, or a deep neural network (as in Titans)</td></tr>
+                <tr><td>Attentional bias</td><td>What objective does the inner learner minimize?</td><td>L2 (dot-product) loss, robust p-norm losses, Huber-style losses</td></tr>
+                <tr><td>Retention gate</td><td>How is old information forgotten or preserved?</td><td>Weight decay, elastic-net / regularized retention, data-dependent gates</td></tr>
+                <tr><td>Learning algorithm</td><td>How is the inner objective optimized per step?</td><td>Gradient descent, momentum, adaptive optimizers</td></tr>
+            </tbody>
+        </table>
+        <p>The important conceptual move is around <strong>attentional bias</strong>. Standard attention implicitly minimizes an L2 reconstruction objective, which is sensitive to outliers — a single noisy token can dominate the update. MIRAS argues that swapping in more robust objectives yields memory that is less distracted by noise and better at retaining structure over very long streams. Similarly, generalizing the forgetting term from plain weight decay to richer regularizers gives finer control over the compression/detail trade-off.</p>
+        <div class="mermaid">
+flowchart TD
+    START[Sequence model as test-time learner] --> A[Axis 1: memory architecture]
+    A --> B[Axis 2: attentional bias / objective]
+    B --> C[Axis 3: retention gate]
+    C --> D[Axis 4: optimization algorithm]
+    D --> OUT[A concrete architecture instance]
+    OUT -.example.-> T[Titans = deep memory + L2 + decay + momentum GD]
+        </div>
+
+        <h2 id="models">Moneta, Yaad, and Memora</h2>
+        <p>To show the framework is generative and not just descriptive, the MIRAS paper instantiates several new models by turning the knobs above. They are worth naming because they make the abstract axes concrete:</p>
+        <ul>
+            <li><strong>Moneta</strong> — explores generalized p-norm attentional biases, decoupling the objective used to write memory from the standard dot-product form.</li>
+            <li><strong>Yaad</strong> — uses a robust, Huber-like objective so that surprising-but-noisy tokens do not overwrite well-established memory.</li>
+            <li><strong>Memora</strong> — pairs a bounded/normalized objective with a retention scheme aimed at stable long-horizon behavior.</li>
+        </ul>
+        <p>Each is just a different coordinate in the four-axis space, which is exactly the point: Titans becomes one recipe among many that the framework can express.</p>
+
+        <h2 id="compare">How It Compares</h2>
+        <p>Placing these ideas next to the architectures practitioners already know clarifies the trade-offs.</p>
+        <table>
+            <thead>
+                <tr><th>Property</th><th>Softmax Transformer</th><th>SSM / linear attention (e.g. Mamba)</th><th>Titans + MIRAS</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Cost vs. length</td><td>Quadratic</td><td>Linear</td><td>Linear (with chunked parallel training)</td></tr>
+                <tr><td>Memory state</td><td>Full KV cache</td><td>Fixed-size vector/matrix</td><td>A small neural network</td></tr>
+                <tr><td>Recall fidelity</td><td>Exact, in-window</td><td>Lossy</td><td>Adaptive, surprise-weighted</td></tr>
+                <tr><td>Adapts at inference?</td><td>No</td><td>State updates, weights frozen</td><td>Yes — memory weights keep learning</td></tr>
+                <tr><td>Practical context length</td><td>Tens to hundreds of K</td><td>Very long</td><td>Reported past 2M tokens</td></tr>
+            </tbody>
+        </table>
+        <p>A useful mental model: the Transformer is a perfect but expensive scratchpad, the SSM is a cheap but forgetful summary, and Titans is a student who keeps a compact notebook and rewrites it whenever something surprising happens.</p>
+
+        <h2 id="matter">Why They Matter</h2>
+        <p>Traditional Transformers are powerful but limited by quadratic scaling with sequence length. Titans and MIRAS offer a path toward scalable, memory-efficient, and continuously learning AI. They land in a 2025-2026 moment where the field is actively hunting for post-Transformer or hybrid designs — state-space models, linear attention, and hybrid stacks that interleave a few full-attention layers with many efficient ones. Titans fits this trend but adds the distinctive twist of a memory that is itself trained during inference.</p>
+        <p>Applications include:</p>
+        <ul>
+            <li>Full-document understanding — reasoning over entire books, codebases, or legal filings without chunking hacks.</li>
+            <li>Genomic analysis — sequences where meaningful dependencies span millions of base pairs.</li>
+            <li>Long video or multimodal sequence processing — hours of frames where salient events are sparse and must be remembered.</li>
+            <li>Streaming and agentic settings — where the model runs continuously and benefits from adapting its memory to the ongoing session.</li>
+        </ul>
+
+        <h2 id="caveats">Caveats and Open Questions</h2>
+        <p>Honest engineering means naming the sharp edges too:</p>
+        <ul>
+            <li><strong>Test-time compute.</strong> Running an inner optimization step per token adds work at inference; the chunked-parallel formulation mitigates but does not eliminate this.</li>
+            <li><strong>Stability of continuous learning.</strong> A memory that keeps updating can drift or be steered by adversarial inputs, so retention and forgetting gates are safety-relevant, not just accuracy knobs.</li>
+            <li><strong>Evaluation.</strong> Long-context benchmarks are still maturing; strong needle-in-a-haystack scores do not always translate to genuine long-range reasoning.</li>
+            <li><strong>Ecosystem maturity.</strong> Softmax attention has years of kernel optimization behind it; newer memory modules are still catching up on tooling and hardware support.</li>
+        </ul>
+
+        <h2 id="conclusion">Conclusion</h2>
+        <p>Titans is the architecture that implements efficient long-term memory, while MIRAS is the framework that formalizes how models can continuously update and use that memory in practice. Titans supplies a concrete, surprise-driven neural memory with three integration patterns (MAC, MAG, MAL); MIRAS steps back and shows that this memory is one point in a four-axis design space spanning architecture, attentional bias, retention, and optimization. Together, they represent a significant step forward in building AI systems that are scalable, adaptable, and capable of handling long-term dependencies.</p>
+
+        <br><br>
+        <p><strong>As AI evolves, architectures like Titans and frameworks like MIRAS will shape the future of intelligent systems — not by making attention obsolete, but by giving models a memory that keeps learning long after training ends.</strong></p>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="/blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=Titans+Architecture+and+the+MIRAS+Framework&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FTitans-Architecture-and-the-MIRAS-Framework%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FTitans-Architecture-and-the-MIRAS-Framework%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+    <section class="related">
+      <h2 class="related-head">Related reading</h2>
+      <div class="related-grid">
+        
+        
+          
+          <a class="related-card" href="/blogs/Reasoning-Models-and-Test-Time-Compute/">
+            <span class="eyebrow">Research</span>
+            <h3>Reasoning Models and Test-Time Compute</h3>
+            <time datetime="2026-08-16">Aug 16, 2026</time>
+          </a>
+          
+          
+        
+          
+          <a class="related-card" href="/blogs/CausalFM/">
+            <span class="eyebrow">Research</span>
+            <h3>Foundation Models for Causal Inference (CausalFM)</h3>
+            <time datetime="2026-05-25">May 25, 2026</time>
+          </a>
+          
+          
+        
+          
+        
+      </div>
+    </section>
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+

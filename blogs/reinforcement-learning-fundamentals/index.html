@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>Reinforcement Learning Fundamentals</title>
+<meta name="description" content="A practical, in-depth guide to reinforcement learning: MDPs, value and policy methods, deep RL algorithms, and how RL now powers reasoning LLMs through RLHF, DPO, and GRPO.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="/blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">Reinforcement Learning</span>
+      <h1 class="post-title" style="margin-top: 16px;">Reinforcement Learning Fundamentals</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A practical, in-depth guide to reinforcement learning: MDPs, value and policy methods, deep RL algorithms, and how RL now powers reasoning LLMs through RLHF, DPO, and GRPO.</p>
+      <div class="post-meta">
+        <time datetime="2025-05-05">May 05, 2025</time>
+        <span>·</span>
+        <span>11 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">reinforcement learning</span><span class="pill">RL</span><span class="pill">Q-learning</span><span class="pill">policy gradient</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>Reinforcement Learning (RL) is a branch of machine learning focused on sequential decision-making. An agent interacts with an environment, taking actions to maximize cumulative rewards over time. Unlike supervised learning, RL does not rely on labeled data but instead learns from feedback in the form of rewards or penalties. What makes RL distinct — and difficult — is that feedback is often <em>delayed</em>, <em>sparse</em>, and <em>evaluative</em> rather than instructive: the environment tells you how good an action was, not what the correct action would have been.</p>
+
+    <blockquote>RL is the study of learning to act: mapping situations to actions so as to maximize a long-run reward signal, under uncertainty and with delayed consequences.</blockquote>
+
+    <!-- Table of Contents -->
+    <nav aria-label="Table of Contents">
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#core-concepts">Core Concepts</a></li>
+        <li><a href="#mdp">The Markov Decision Process</a></li>
+        <li><a href="#value-vs-policy">Value-Based vs. Policy-Based Learning</a></li>
+        <li><a href="#algorithms">Popular Algorithms</a></li>
+        <li><a href="#rl-loop">The RL Loop</a></li>
+        <li><a href="#worked-example">A Worked Example: Q-Learning on Gridworld</a></li>
+        <li><a href="#exploration">Exploration Strategies</a></li>
+        <li><a href="#rlhf">RL for Language Models: RLHF, DPO, and GRPO</a></li>
+        <li><a href="#applications">Real-World Applications</a></li>
+        <li><a href="#pitfalls">Best Practices and Common Pitfalls</a></li>
+        <li><a href="#future">Future Outlook</a></li>
+      </ul>
+    </nav>
+
+    <h2 id="core-concepts">Core Concepts</h2>
+    <ul>
+      <li><b>Agent and Environment:</b> The agent is the learner or decision-maker; the environment is everything the agent interacts with and cannot directly control.</li>
+      <li><b>State, Action, Reward:</b> At each step the agent observes a state <code>s</code>, selects an action <code>a</code>, and receives a scalar reward <code>r</code> plus a next state <code>s'</code>.</li>
+      <li><b>Policy (&pi;):</b> A mapping from states to actions (or to a probability distribution over actions). The policy <em>is</em> the agent's behavior; learning a good policy is the whole goal.</li>
+      <li><b>Return:</b> The discounted sum of future rewards, <code>G_t = r_t + &gamma; r_{t+1} + &gamma;^2 r_{t+2} + ...</code>. RL maximizes the <em>expected</em> return, not any single reward.</li>
+      <li><b>Discount Factor (&gamma;):</b> A value in <code>[0, 1)</code> that weights future rewards against immediate ones. Values near 1 make the agent farsighted; values near 0 make it myopic.</li>
+      <li><b>Value Functions and Q-functions:</b> The state-value <code>V(s)</code> estimates expected return from a state; the action-value <code>Q(s, a)</code> estimates expected return from taking action <code>a</code> in state <code>s</code> and following the policy thereafter.</li>
+      <li><b>Exploration vs. Exploitation:</b> The agent must balance trying new actions to discover better strategies (exploration) against using what it already knows to be good (exploitation).</li>
+    </ul>
+
+    <h2 id="mdp">The Markov Decision Process</h2>
+    <p>Almost all of RL is formalized as a <strong>Markov Decision Process (MDP)</strong>, defined by the tuple <code>(S, A, P, R, &gamma;)</code>: a set of states <code>S</code>, a set of actions <code>A</code>, transition dynamics <code>P(s' | s, a)</code>, a reward function <code>R(s, a)</code>, and a discount factor <code>&gamma;</code>. The defining <em>Markov property</em> is that the future depends only on the current state, not on the full history — the state is a sufficient statistic.</p>
+    <p>The core objects satisfy the <strong>Bellman equations</strong>, which express value recursively in terms of the value of successor states. For the optimal action-value function:</p>
+    <pre><code>Q*(s, a) = E[ r + &gamma; * max_a' Q*(s', a') | s, a ]</code></pre>
+    <p>This recursion is the engine behind nearly every value-based algorithm. When we know <code>P</code> and <code>R</code>, we can solve it exactly with dynamic programming (value iteration, policy iteration). When we do not — the usual case — we <em>sample</em> transitions and approximate the expectation, which is what Q-learning and its descendants do.</p>
+
+    <div class="mermaid">
+    flowchart TD
+      A["Full RL problem"] --> B{"Do we know P and R?"}
+      B -->|Yes| C["Dynamic Programming: value iteration, policy iteration"]
+      B -->|No| D{"Learn a model of the environment?"}
+      D -->|Yes| E["Model-based RL: Dyna, MuZero"]
+      D -->|No| F["Model-free RL"]
+      F --> G["Value-based: Q-learning, DQN"]
+      F --> H["Policy-based: REINFORCE, PPO"]
+      F --> I["Actor-Critic: A2C, SAC"]
+    </div>
+
+    <h2 id="value-vs-policy">Value-Based vs. Policy-Based Learning</h2>
+    <p>Model-free RL splits into two broad families that answer the control problem differently. <strong>Value-based</strong> methods learn <code>Q(s, a)</code> and derive a policy implicitly by acting greedily. <strong>Policy-based</strong> methods parameterize and optimize the policy directly. <strong>Actor-critic</strong> methods combine both: an actor proposes actions while a critic estimates value to reduce variance.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Value-Based (e.g. DQN)</th>
+          <th>Policy-Based (e.g. PPO)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>What is learned</td>
+          <td>Action-value function Q(s, a)</td>
+          <td>Policy &pi;(a | s) directly</td>
+        </tr>
+        <tr>
+          <td>Action spaces</td>
+          <td>Best for discrete actions</td>
+          <td>Handles continuous actions naturally</td>
+        </tr>
+        <tr>
+          <td>Policy type</td>
+          <td>Deterministic (greedy)</td>
+          <td>Stochastic, differentiable</td>
+        </tr>
+        <tr>
+          <td>Sample efficiency</td>
+          <td>Higher (off-policy, replay buffer)</td>
+          <td>Lower (often on-policy)</td>
+        </tr>
+        <tr>
+          <td>Stability</td>
+          <td>Can diverge with function approximation</td>
+          <td>More stable, but high variance gradients</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="algorithms">Popular Algorithms</h2>
+
+    <h3>Tabular Methods</h3>
+    <p>For small, discrete state and action spaces, values can be stored exactly in a table. <strong>Q-learning</strong> is the canonical off-policy tabular algorithm; <strong>SARSA</strong> is its on-policy sibling. These are foundational: nearly every deep RL method is a function-approximation generalization of them.</p>
+
+    <h3>Deep Q-Networks (DQN)</h3>
+    <p>DQN (Mnih et al., 2015) replaced the Q-table with a neural network, enabling RL on high-dimensional inputs such as raw Atari pixels. Two tricks made it stable: an <em>experience replay buffer</em> that breaks correlation between consecutive samples, and a periodically updated <em>target network</em> that stabilizes the bootstrapped Bellman target. Later refinements — Double DQN, Dueling DQN, Prioritized Experience Replay, and the combined <em>Rainbow</em> agent — each addressed a specific source of bias or inefficiency.</p>
+
+    <h3>Policy Gradient and Actor-Critic Methods</h3>
+    <ul>
+      <li><b>REINFORCE:</b> The simplest policy gradient; scales the log-probability of actions by the observed return. Unbiased but high variance.</li>
+      <li><b>A2C / A3C:</b> Actor-critic methods that use a learned value baseline (the <em>advantage</em>) to cut variance.</li>
+      <li><b>PPO (Proximal Policy Optimization):</b> The workhorse of modern RL. It constrains each policy update with a clipped surrogate objective so the new policy stays close to the old one, giving robust, low-tuning training. PPO is the algorithm most commonly used to fine-tune large language models.</li>
+      <li><b>SAC (Soft Actor-Critic):</b> An off-policy actor-critic that adds an entropy bonus to the objective, encouraging exploration and delivering strong sample efficiency on continuous-control tasks.</li>
+      <li><b>DDPG / TD3:</b> Off-policy methods for continuous control; TD3 adds twin critics and delayed updates to curb overestimation.</li>
+    </ul>
+
+    <h3>Model-Based RL</h3>
+    <p>Model-based methods learn (or are given) the environment dynamics and plan against them. <strong>MuZero</strong> (DeepMind) learns a latent dynamics model and plans with Monte Carlo Tree Search, mastering Go, chess, shogi, and Atari without being told the rules. <strong>Dreamer</strong> learns a world model and trains a policy inside imagined rollouts, dramatically improving sample efficiency.</p>
+
+    <h2 id="rl-loop">The RL Loop</h2>
+    <blockquote>"The essence of RL is the feedback loop between agent and environment."</blockquote>
+    <div class="mermaid">
+    flowchart TD
+      A["Agent (policy &pi;)"] -->|selects action a| B["Environment"]
+      B -->|next state s'| A
+      B -->|reward r| C["Learning update"]
+      C -->|improves| A
+      A -->|observes state s| A
+    </div>
+
+    <h2 id="worked-example">A Worked Example: Q-Learning on Gridworld</h2>
+    <p>To make the update concrete, consider tabular Q-learning. The agent maintains a table <code>Q[s][a]</code> and, after every transition <code>(s, a, r, s')</code>, nudges its estimate toward the bootstrapped target using a learning rate <code>&alpha;</code>:</p>
+    <pre><code>Q[s][a] &larr; Q[s][a] + &alpha; * ( r + &gamma; * max_a' Q[s'][a'] - Q[s][a] )</code></pre>
+    <p>The bracketed quantity is the <strong>temporal-difference (TD) error</strong> — the gap between what we predicted and what we now estimate. A minimal training loop in Python:</p>
+    <pre><code>import numpy as np
+
+Q = np.zeros((n_states, n_actions))
+alpha, gamma, epsilon = 0.1, 0.99, 0.1
+
+for episode in range(num_episodes):
+    s = env.reset()
+    done = False
+    while not done:
+        # epsilon-greedy action selection
+        if np.random.rand() &lt; epsilon:
+            a = np.random.randint(n_actions)   # explore
+        else:
+            a = int(np.argmax(Q[s]))           # exploit
+
+        s_next, r, done = env.step(a)
+
+        # temporal-difference update
+        td_target = r + gamma * np.max(Q[s_next]) * (not done)
+        Q[s][a] += alpha * (td_target - Q[s][a])
+
+        s = s_next</code></pre>
+    <p>Because Q-learning is <em>off-policy</em>, it learns the optimal greedy policy even while behaving with random exploration. Given enough visits to every state-action pair and a decaying learning rate, the table provably converges to <code>Q*</code>.</p>
+
+    <h2 id="exploration">Exploration Strategies</h2>
+    <p>How an agent explores often matters more than which update rule it uses. Common approaches:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Idea</th>
+          <th>Trade-off</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&epsilon;-greedy</td>
+          <td>Act randomly with probability &epsilon;, greedily otherwise</td>
+          <td>Simple; explores uniformly and inefficiently</td>
+        </tr>
+        <tr>
+          <td>Boltzmann / softmax</td>
+          <td>Sample actions in proportion to their estimated value</td>
+          <td>Focuses exploration but needs temperature tuning</td>
+        </tr>
+        <tr>
+          <td>Entropy regularization</td>
+          <td>Reward the policy for staying stochastic (used in SAC, PPO)</td>
+          <td>Smooth and differentiable; central to modern methods</td>
+        </tr>
+        <tr>
+          <td>Intrinsic / curiosity rewards</td>
+          <td>Bonus for reaching novel or surprising states</td>
+          <td>Helps with sparse rewards; can chase noise</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="rlhf">RL for Language Models: RLHF, DPO, and GRPO</h2>
+    <p>The most consequential recent application of RL is aligning and improving large language models. Because "helpfulness" has no closed-form reward, the field learns a reward from human judgments and optimizes against it.</p>
+
+    <h3>RLHF (Reinforcement Learning from Human Feedback)</h3>
+    <p>RLHF, popularized by InstructGPT and used across modern assistant models, has three stages: (1) supervised fine-tuning on demonstrations; (2) training a <em>reward model</em> from human preference comparisons between candidate responses; and (3) optimizing the policy against that reward model with PPO, while a KL penalty keeps the model from drifting too far from the supervised base. The KL term plays the same role as PPO's trust region — it prevents reward hacking and preserves fluency.</p>
+
+    <div class="mermaid">
+    flowchart TD
+      A["Pretrained LLM"] --> B["Supervised fine-tuning (SFT)"]
+      B --> C["Collect human preference pairs"]
+      C --> D["Train reward model"]
+      B --> E["Policy optimization (PPO)"]
+      D --> E
+      E --> F["KL penalty vs. SFT reference"]
+      F --> E
+      E --> G["Aligned model"]
+    </div>
+
+    <h3>DPO (Direct Preference Optimization)</h3>
+    <p>DPO (Rafailov et al., 2023) removed the separate reward model and the online RL loop entirely. It reformulates preference learning as a single classification-style loss on preferred vs. rejected responses, implicitly optimizing the same objective as RLHF. Because it is a stable supervised-style update, DPO is far simpler to run and has become a default for open-weight preference tuning. Variants such as IPO and KTO refine its loss and data assumptions.</p>
+
+    <h3>GRPO and RL for Reasoning</h3>
+    <p>The 2024-2025 wave of <em>reasoning models</em> brought RL back to the center. <strong>GRPO (Group Relative Policy Optimization)</strong>, introduced in the DeepSeekMath work and used prominently in DeepSeek-R1, drops PPO's learned value critic. Instead it samples a <em>group</em> of responses per prompt and normalizes each response's reward against the group's mean and standard deviation to form the advantage — cutting memory and complexity while remaining stable. Crucially, for math and code the reward can be a simple, verifiable check (does the answer match, does the test pass), an approach often called <strong>RLVR — RL from Verifiable Rewards</strong>. This is how models are trained to produce long chains of thought that improve with more inference-time compute, the paradigm behind OpenAI's o-series and DeepSeek-R1.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Needs reward model?</th>
+          <th>Online sampling?</th>
+          <th>Typical use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PPO (RLHF)</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>General alignment / helpfulness</td>
+        </tr>
+        <tr>
+          <td>DPO</td>
+          <td>No (implicit)</td>
+          <td>No (offline pairs)</td>
+          <td>Simple, stable preference tuning</td>
+        </tr>
+        <tr>
+          <td>GRPO</td>
+          <td>No critic; uses group baseline</td>
+          <td>Yes</td>
+          <td>Reasoning with verifiable rewards</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="applications">Real-World Applications</h2>
+    <ul>
+      <li><b>Robotics:</b> Autonomous navigation, dexterous manipulation, and motion planning, increasingly trained in simulation and transferred to hardware (sim-to-real).</li>
+      <li><b>Games:</b> Mastering Go (AlphaGo), chess and shogi (AlphaZero, MuZero), and complex real-time games such as StarCraft II and Dota 2.</li>
+      <li><b>Operations:</b> Dynamic resource allocation, inventory optimization, scheduling, and datacenter energy management.</li>
+      <li><b>Autonomous Vehicles:</b> Learning and refining driving policies under varying, uncertain conditions.</li>
+      <li><b>Language and Reasoning Models:</b> RLHF, DPO, and GRPO for alignment and for training chain-of-thought reasoning.</li>
+      <li><b>Recommendation and Ads:</b> Long-horizon optimization of engagement and retention rather than single-click prediction.</li>
+    </ul>
+
+    <h2 id="pitfalls">Best Practices and Common Pitfalls</h2>
+    <p>Effective RL systems require careful reward design, simulation before deployment, and monitoring for distribution shifts. Poorly specified rewards can lead to unintended behaviors, while realistic simulations ensure robust performance. A few hard-won lessons:</p>
+    <ul>
+      <li><b>Reward hacking:</b> Agents optimize the reward you wrote, not the goal you intended. Shape rewards carefully and watch for degenerate high-reward strategies.</li>
+      <li><b>Sparse rewards:</b> When reward arrives only at success, learning stalls. Use reward shaping, curriculum learning, or intrinsic motivation.</li>
+      <li><b>Instability from bootstrapping:</b> The "deadly triad" of function approximation, bootstrapping, and off-policy learning can cause divergence. Target networks, gradient clipping, and normalized advantages help.</li>
+      <li><b>Evaluation seeds and variance:</b> RL results vary wildly across random seeds; always report across multiple seeds.</li>
+      <li><b>Simulate first:</b> Train and stress-test in simulation, and validate sim-to-real transfer before touching physical systems.</li>
+    </ul>
+
+    <!-- Comparison Table -->
+    <h3>Traditional ML vs Reinforcement Learning</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Traditional ML</th>
+          <th>Reinforcement Learning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data</td>
+          <td>Labeled datasets</td>
+          <td>Interaction feedback (rewards)</td>
+        </tr>
+        <tr>
+          <td>Objective</td>
+          <td>Minimize prediction error</td>
+          <td>Maximize cumulative reward</td>
+        </tr>
+        <tr>
+          <td>Learning</td>
+          <td>Static training</td>
+          <td>Dynamic trial-and-error</td>
+        </tr>
+        <tr>
+          <td>Feedback</td>
+          <td>Instructive (correct answer given)</td>
+          <td>Evaluative and delayed (how good the action was)</td>
+        </tr>
+        <tr>
+          <td>Data distribution</td>
+          <td>Assumed i.i.d. and fixed</td>
+          <td>Non-stationary; shaped by the agent's own policy</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="future">Future Outlook</h2>
+    <p>
+      Future RL research focuses on <strong>sample efficiency</strong>, <strong>safe exploration</strong>, and <strong>scalability</strong>.
+      Current algorithms often require millions of interactions to learn effectively, which is impractical in many real-world settings.
+      Researchers are developing methods to reduce data requirements, leverage transfer learning, and integrate prior knowledge.
+    </p>
+    <ul>
+      <li><b>Sample Efficiency:</b> Using model-based RL and offline datasets to reduce training interactions.</li>
+      <li><b>Offline RL:</b> Learning entirely from logged data without live interaction — critical where exploration is costly or unsafe (healthcare, finance).</li>
+      <li><b>Safe Exploration:</b> Ensuring agents avoid catastrophic actions during training and deployment.</li>
+      <li><b>Scalability:</b> Applying RL to large-scale systems like smart grids, logistics, and healthcare.</li>
+      <li><b>RL from Verifiable Rewards:</b> Scaling reasoning by rewarding checkable correctness in math, code, and tool use.</li>
+      <li><b>Integration with Other Paradigms:</b> Combining RL with supervised learning, self-supervised learning, and generative models for richer capabilities, including agentic LLM systems that plan and use tools.</li>
+    </ul>
+
+    <br><br>
+    <p><strong>Reinforcement Learning is not just an algorithmic framework — it is a paradigm for building adaptive, intelligent agents that learn from experience, and it has become the training signal that turns capable models into aligned, reasoning ones.</strong></p>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="/blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=Reinforcement+Learning+Fundamentals&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Freinforcement-learning-fundamentals%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Freinforcement-learning-fundamentals%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+

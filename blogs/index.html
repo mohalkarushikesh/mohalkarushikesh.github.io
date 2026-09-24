@@ -1,16 +1,125 @@
----
-layout: default
-title: Blog — Rushikesh Mohalkar
-description: Articles and deep dives on AI, machine learning, deep learning, and the ideas shaping modern intelligence.
-permalink: /blogs/
----
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<header class="page-head">
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>Blog — Rushikesh Mohalkar</title>
+<meta name="description" content="Articles and deep dives on AI, machine learning, deep learning, and the ideas shaping modern intelligence.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <header class="page-head">
   <div class="wrap">
     <span class="eyebrow">Writing</span>
     <h1 class="post-title" style="margin-top: 16px;">All <span class="grad-text">Articles</span></h1>
     <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px;">
-      {{ site.posts | size }} deep dives on architectures, research, and the ideas shaping modern AI.
+      25 deep dives on architectures, research, and the ideas shaping modern AI.
     </p>
   </div>
 </header>
@@ -18,17 +127,300 @@ permalink: /blogs/
 <section style="padding-top: 20px;">
   <div class="wrap">
     <div class="listing">
-      {% for post in site.posts %}
+      
       <article class="card b-card reveal">
         <div class="meta">
-          <span class="tag">{{ post.category | default: 'Article' }}</span>
-          <span>{{ post.date | date: "%b %d, %Y" }}</span>
+          <span class="tag">Agents</span>
+          <span>Sep 06, 2026</span>
         </div>
-        <h3>{{ post.title }}</h3>
-        <p>{{ post.description | default: post.excerpt | strip_html | truncate: 150 }}</p>
-        <a class="more" href="{{ post.url | relative_url }}">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <h3>Agent Harnesses: The Engineering System Around Reliable AI Agents</h3>
+        <p>A technical guide to building agent harnesses: the runtime, state, tools, policies, evaluation, and observability that turn an LLM loop into a depe...</p>
+        <a class="more" href="/blogs/Agent-Harnesses-Engineering-Reliable-AI-Agents/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </article>
-      {% endfor %}
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">MLOps</span>
+          <span>Sep 06, 2026</span>
+        </div>
+        <h3>Deploying Models in Production: A Technical Guide from Artifact to SLO</h3>
+        <p>A practical deep dive into production model deployment: packaging, serving, scaling, rollout strategies, observability, and the failure modes that ...</p>
+        <a class="more" href="/blogs/Deploying-Models-in-Production-Technical-Guide/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">LLM Architecture</span>
+          <span>Sep 06, 2026</span>
+        </div>
+        <h3>Kimi Delta Attention: A Technical Deep Dive into Gated Linear Memory</h3>
+        <p>How Kimi Delta Attention replaces quadratic attention with a gated delta-rule memory, and what that means for long-context language models.</p>
+        <a class="more" href="/blogs/Kimi-Delta-Attention-Technical-Deep-Dive/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">LLM & Agents</span>
+          <span>Aug 30, 2026</span>
+        </div>
+        <h3>Agentic AI and the Model Context Protocol (MCP)</h3>
+        <p>A senior engineer's tour of the path from plain RAG to autonomous, multi-agent systems, and how the Model Context Protocol standardizes the way LLM...</p>
+        <a class="more" href="/blogs/Agentic-AI-and-the-Model-Context-Protocol/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Research</span>
+          <span>Aug 16, 2026</span>
+        </div>
+        <h3>Reasoning Models and Test-Time Compute</h3>
+        <p>How the field shifted from scaling training to spending compute at inference — chain-of-thought as computation, RLVR, and the sampling, verificatio...</p>
+        <a class="more" href="/blogs/Reasoning-Models-and-Test-Time-Compute/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Jul 20, 2026</span>
+        </div>
+        <h3>Mamba and State Space Models: The Transformer Challenger</h3>
+        <p>A senior-level tour of state space models — from S4 to Mamba's selective SSMs and Mamba-2's state-space duality — as a linear-time alternative to q...</p>
+        <a class="more" href="/blogs/Mamba-and-State-Space-Models/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Jun 28, 2026</span>
+        </div>
+        <h3>Mixture-of-Experts: How Frontier LLMs Scale Efficiently</h3>
+        <p>A senior-level walkthrough of Mixture-of-Experts in LLMs — how sparse routing decouples parameter count from per-token compute, plus the losses, fa...</p>
+        <a class="more" href="/blogs/Mixture-of-Experts-Scaling-LLMs-Efficiently/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Research</span>
+          <span>May 25, 2026</span>
+        </div>
+        <h3>Foundation Models for Causal Inference (CausalFM)</h3>
+        <p>CausalFM is a transformer-based foundation model trained on simulated causal worlds so it can reason about cause and effect, estimate treatment eff...</p>
+        <a class="more" href="/blogs/CausalFM/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Vision-Language</span>
+          <span>Jan 12, 2026</span>
+        </div>
+        <h3>VL JEPA: A Deep Dive into Vision-Language Predictive Models</h3>
+        <p>A detailed engineering walkthrough of VL JEPA, the Vision-Language Joint Embedding Predictive Architecture, situated within Meta AI's JEPA lineage ...</p>
+        <a class="more" href="/blogs/VL-JEPA-A-Deep-Dive-into-Vision-Language-Predictive-Models/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Computer Vision</span>
+          <span>Dec 20, 2025</span>
+        </div>
+        <h3>Understanding the CLIP Model: Bridging Vision and Language</h3>
+        <p>A deep, practical walkthrough of OpenAI's CLIP: the dual-encoder architecture, the contrastive (InfoNCE) training objective, prompt engineering, wo...</p>
+        <a class="more" href="/blogs/Understanding-the-CLIP-Model-Bridging-Vision-and-Language/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Research</span>
+          <span>Dec 11, 2025</span>
+        </div>
+        <h3>Titans Architecture and the MIRAS Framework</h3>
+        <p>A deep dive into Google Research's Titans architecture and the MIRAS framework: how test-time memorization, surprise-driven updates, and attentiona...</p>
+        <a class="more" href="/blogs/Titans-Architecture-and-the-MIRAS-Framework/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Dec 11, 2025</span>
+        </div>
+        <h3>Transformers++: The Next Evolution in AI Architecture</h3>
+        <p>A deep, engineering-level tour of Transformers++ — the wave of architectural changes (linear and sparse attention, state-space hybrids, neural memo...</p>
+        <a class="more" href="/blogs/Transformers-Plus-Plus-The-Next-Evolution-in-AI-Architecture/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Dec 11, 2025</span>
+        </div>
+        <h3>Transformers: The Architecture That Changed AI Forever</h3>
+        <p>A deep, modern dive into Transformer architecture — attention math, encoder/decoder design, the 2025-2026 stack (RoPE, RMSNorm, GQA, FlashAttention...</p>
+        <a class="more" href="/blogs/Transformers-The-Architecture-That-Changed-AI-Forever/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Personal</span>
+          <span>Nov 24, 2025</span>
+        </div>
+        <h3>800 Days of Grind: The Full Blueprint</h3>
+        <p>An 800-day blueprint for transformation, backed by the neuroscience of habit formation, identity-based behavior change, deliberate practice, and a ...</p>
+        <a class="more" href="/blogs/800-Days-of-Grind-The-Full-Blueprint/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Neuroscience</span>
+          <span>Nov 24, 2025</span>
+        </div>
+        <h3>How the Human Mind Works</h3>
+        <p>A deep dive into how the human mind works — the brain's architecture, conscious and subconscious layers, perception, memory, emotion, creativity, a...</p>
+        <a class="more" href="/blogs/How-the-Human-Mind-Works/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">AI in Marketing</span>
+          <span>Oct 02, 2025</span>
+        </div>
+        <h3>AI in Marketing</h3>
+        <p>A technically grounded tour of AI in marketing: customer segmentation, predictive lifetime-value and churn models, Bayesian media mix modeling, gen...</p>
+        <a class="more" href="/blogs/ai-in-marketing/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">AI in Finance</span>
+          <span>Sep 14, 2025</span>
+        </div>
+        <h3>AI in Finance</h3>
+        <p>A working engineer's tour of AI across the financial stack: fraud detection with graph neural networks, credit and risk modeling, algorithmic tradi...</p>
+        <a class="more" href="/blogs/ai-in-finance/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">AI in Healthcare</span>
+          <span>Aug 23, 2025</span>
+        </div>
+        <h3>AI in Healthcare</h3>
+        <p>How AI is reshaping healthcare across diagnostics, predictive analytics, and workflow automation — with the technical depth an ML engineer needs: m...</p>
+        <a class="more" href="/blogs/ai-in-healthcare/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">AI Ethics</span>
+          <span>Jul 12, 2025</span>
+        </div>
+        <h3>AI Ethics and Bias</h3>
+        <p>A practical, engineering-focused guide to AI ethics and bias — where bias comes from, how to measure it with fairness metrics, how to mitigate it a...</p>
+        <a class="more" href="/blogs/ai-ethics-and-bias/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Generative AI</span>
+          <span>Jun 22, 2025</span>
+        </div>
+        <h3>Generative AI</h3>
+        <p>A practitioner's tour of generative AI — the model families (autoregressive Transformers, diffusion, VAEs, GANs), how they are trained and served, ...</p>
+        <a class="more" href="/blogs/generative-ai/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Reinforcement Learning</span>
+          <span>May 05, 2025</span>
+        </div>
+        <h3>Reinforcement Learning Fundamentals</h3>
+        <p>A practical, in-depth guide to reinforcement learning: MDPs, value and policy methods, deep RL algorithms, and how RL now powers reasoning LLMs thr...</p>
+        <a class="more" href="/blogs/reinforcement-learning-fundamentals/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">NLP</span>
+          <span>Apr 19, 2025</span>
+        </div>
+        <h3>Natural Language Processing Revolution</h3>
+        <p>A deep, engineer-oriented tour of the NLP revolution: from n-grams and CRFs to transformers, instruction-tuned LLMs, attention internals, tokenizat...</p>
+        <a class="more" href="/blogs/natural-language-processing-revolution/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Computer Vision</span>
+          <span>Mar 22, 2025</span>
+        </div>
+        <h3>Computer Vision Applications</h3>
+        <p>A deep, modern look at computer vision — the classical-to-deep-learning pipeline, CNNs and Vision Transformers, detection and segmentation architec...</p>
+        <a class="more" href="/blogs/computer-vision-applications/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Feb 22, 2025</span>
+        </div>
+        <h3>Deep Learning with Neural Networks</h3>
+        <p>In-depth guide to deep learning — neural network fundamentals, activation and loss functions, optimizers, regularization, modern architectures (CNN...</p>
+        <a class="more" href="/blogs/deep-learning-with-neural-networks/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Machine Learning</span>
+          <span>Jan 25, 2025</span>
+        </div>
+        <h3>Introduction to Machine Learning</h3>
+        <p>A practical, engineer-oriented guide to machine learning: core concepts, the main learning paradigms, algorithms, the end-to-end lifecycle, evaluat...</p>
+        <a class="more" href="/blogs/introduction-to-machine-learning/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
     </div>
   </div>
 </section>
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+

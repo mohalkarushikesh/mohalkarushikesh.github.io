@@ -1,12 +1,120 @@
----
-layout: default
-title: Rushikesh Mohalkar — AI/ML Engineer & Software Developer
-description: >-
-  Portfolio of Rushikesh Mohalkar — AI/ML engineer specializing in deep learning,
-  reinforcement learning, computer vision, and generative AI. Built with Jekyll and pure CSS.
----
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<!-- ===================== HERO ===================== -->
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>Rushikesh Mohalkar — AI/ML Engineer & Software Developer</title>
+<meta name="description" content="Portfolio of Rushikesh Mohalkar — AI/ML engineer specializing in deep learning, reinforcement learning, computer vision, and generative AI. Built with Jekyll and pure CSS.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
 <header id="home" class="hero">
   <div class="wrap">
 
@@ -50,7 +158,7 @@ description: >-
         View My Projects
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-ghost">
+      <a href="/resume/Resume.pdf" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-ghost">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
         Download Résumé
       </a>
@@ -58,20 +166,20 @@ description: >-
     </div>
 
     <div class="socials">
-      <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <a href="https://github.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
         <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
       </a>
-      <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <a href="https://www.linkedin.com/in/rushikesh-mohalkar/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
         <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
       </a>
-      <a href="https://x.com/{{ site.social.x }}" target="_blank" rel="noopener noreferrer" aria-label="X">
+      <a href="https://x.com/mohalkrushikesh" target="_blank" rel="noopener noreferrer" aria-label="X">
         <svg viewBox="0 0 24 24"><path d="M18.244 2H21.5l-7.19 8.21L22.7 22h-6.6l-5.17-6.76L4.99 22H1.73l7.69-8.79L1.4 2h6.7l4.68 6.16L18.24 2z"/></svg>
       </a>
     </div>
 
     <div class="stats">
-      <div class="stat reveal"><div class="num grad-text">{{ site.data.projects | size }}+</div><div class="lbl">ML Projects</div></div>
-      <div class="stat reveal"><div class="num grad-text">{{ site.posts | size }}+</div><div class="lbl">Articles Written</div></div>
+      <div class="stat reveal"><div class="num grad-text">19+</div><div class="lbl">ML Projects</div></div>
+      <div class="stat reveal"><div class="num grad-text">25+</div><div class="lbl">Articles Written</div></div>
       <div class="stat reveal"><div class="num grad-text">3</div><div class="lbl">Built From Scratch</div></div>
       <div class="stat reveal"><div class="num grad-text">2</div><div class="lbl">Production-Grade Systems</div></div>
     </div>
@@ -148,13 +256,13 @@ description: >-
 
       <!-- B · stat -->
       <div class="card bento-tile bento-stat reveal">
-        <span class="big grad-text">{{ site.data.projects | size }}+</span>
+        <span class="big grad-text">19+</span>
         <span class="lbl">Projects shipped</span>
       </div>
 
       <!-- C · stat -->
       <div class="card bento-tile bento-stat reveal">
-        <span class="big grad-text">{{ site.posts | size }}</span>
+        <span class="big grad-text">25</span>
         <span class="lbl">Articles written</span>
       </div>
 
@@ -211,11 +319,11 @@ description: >-
       <div class="card bento-tile bento-cta reveal">
         <p>Want the full picture? Grab the résumé or dig through the code.</p>
         <div class="tile-actions">
-          <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary btn-sm">
+          <a href="/resume/Resume.pdf" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary btn-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
             Résumé
           </a>
-          <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">GitHub ↗</a>
+          <a href="https://github.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer" class="btn btn-ghost btn-sm">GitHub ↗</a>
         </div>
       </div>
     </div>
@@ -251,42 +359,423 @@ description: >-
       </div>
 
       <div class="grid-cards">
-        {% for project in site.data.projects %}
-        <article class="card p-card reveal" data-cat="{{ project.cat }}">
-          <div class="card-thumb{% if project.logo %} has-img{% endif %}"{% if project.logo %} style="background-image:url('{{ '/assets/img/' | append: project.logo | relative_url }}')"{% endif %}>
-            {% unless project.logo %}
-            <span class="thumb-icon">
-              {% case project.cat %}
-              {% when 'llm' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
-              {% when 'nlp' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 20h6M12 5v15"/></svg>
-              {% when 'cv' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              {% when 'rl' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l1-5a3 3 0 013-3h4a3 3 0 013 3l1 5"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg>
-              {% when 'ml' %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
-              {% else %}<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-              {% endcase %}
-            </span>
-            {% endunless %}
-            <span class="cat">{{ project.category }}</span>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/pexels-apple-1834328.jpg')">
+            
+            <span class="cat">LLM & Agents</span>
           </div>
           <div class="p-body">
-            <h3>{{ project.title }}</h3>
-            <p>{{ project.description }}</p>
-            {% if project.metric %}<div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>{{ project.metric }}</span></div>{% endif %}
-            <div class="tags">{% for t in project.tags %}<span>{{ t }}</span>{% endfor %}</div>
+            <h3>Advanced RAG — Enterprise Pipeline</h3>
+            <p>An enterprise-grade Retrieval-Augmented Generation system for Kubernetes IT operations — hybrid search, cross-encoder reranking, HyDE, corrective and self-RAG loops, and Text2SQL, all orchestrated with LangGraph and guarded by a nine-layer safety framework.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>9-layer safety framework</span></div>
+            <div class="tags"><span>RAG</span><span>LangGraph</span><span>Qdrant</span><span>Guardrails</span></div>
             <div class="foot">
-              <a class="repo" href="{{ project.repo }}" target="_blank" rel="noopener noreferrer">
+              <a class="repo" href="https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG" target="_blank" rel="noopener noreferrer">
                 View Code
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
               </a>
             </div>
           </div>
         </article>
-        {% endfor %}
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/stock-price.jpg')">
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>Custodian — Agentic AP Automation</h3>
+            <p>A multi-agent AI system for banking accounts-payable that autonomously reads invoices, scores them for fraud and risk, routes approvals, and auto-pays safe transactions — wrapped in six governance layers for full auditability and provenance.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>6 governance layers · auto-pay</span></div>
+            <div class="tags"><span>Multi-Agent</span><span>LiteLLM</span><span>Governance</span><span>FastAPI</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/switch/tree/main/Projects/custodian-ap" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/microgpt.jpg')">
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>microGPT-X</h3>
+            <p>A minimal GPT built from scratch to demystify how transformer language models really work — every moving part, no black boxes.</p>
+            
+            <div class="tags"><span>GPT</span><span>Transformers</span><span>PyTorch</span><span>From-Scratch</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/microgpt-x" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/rag.webp')">
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>RAG Pipeline from Scratch</h3>
+            <p>A complete Retrieval-Augmented Generation system with no LangChain and no vector-DB server — structure-aware chunking, hybrid search, reranking, contradiction handling, and an eval harness.</p>
+            
+            <div class="tags"><span>RAG</span><span>Retrieval</span><span>Reranking</span><span>Evaluation</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/RAG-Pipeline-From-Scrach" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/chatbot.avif')">
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>Oryza — Private Local LLM Chat</h3>
+            <p>A privacy-first AI chat app that runs Qwen LLMs locally via Ollama — a minimal Python backend, a simple web UI, and optional Docker, for fast offline conversations with no cloud APIs.</p>
+            
+            <div class="tags"><span>LLM</span><span>Ollama</span><span>Qwen</span><span>Local</span><span>Docker</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Oryza" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              
+            </span>
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>Job Application Agent — Agentic RAG</h3>
+            <p>A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters, resume bullets, and 0-100 fit scores with gap analysis — served through a FastAPI backend and Streamlit UI.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>0–100 fit scoring + gap analysis</span></div>
+            <div class="tags"><span>LangChain</span><span>RAG</span><span>FAISS</span><span>FastAPI</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              
+            </span>
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>Taxly — AI Property Tax Assistant</h3>
+            <p>An AI-powered property tax assistant built with Google Gemini API, Flask, and Tailwind CSS for real-time tax calculations, regulatory compliance guidance, and automated payment deadline tracking.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>Real-time tax calculations</span></div>
+            <div class="tags"><span>Gemini API</span><span>Flask</span><span>AI Chatbot</span><span>Property Tax</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Taxly" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="llm">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+              
+            </span>
+            
+            <span class="cat">LLM & Agents</span>
+          </div>
+          <div class="p-body">
+            <h3>TextWiz — Fine-Tuned LLM Platform</h3>
+            <p>A fine-tuned Flask-based LLM application using Hugging Face Transformers (GPT-2) for context-aware text generation, domain fine-tuning, and customizable NLP workflows.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>Context-aware generation</span></div>
+            <div class="tags"><span>Transformers</span><span>GPT-2</span><span>Hugging Face</span><span>Flask</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/TextWiz" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="nlp">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/bhashantar.png')">
+            
+            <span class="cat">NLP</span>
+          </div>
+          <div class="p-body">
+            <h3>Bhashantar — Neural Machine Translation</h3>
+            <p>A Seq2Seq neural machine-translation engine that translates between English and Marathi using full-sentence context rather than word-by-word substitution.</p>
+            
+            <div class="tags"><span>NMT</span><span>Seq2Seq</span><span>Deep Learning</span><span>NLP</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Bhashantar" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="nlp">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 20h6M12 5v15"/></svg>
+              
+            </span>
+            
+            <span class="cat">NLP</span>
+          </div>
+          <div class="p-body">
+            <h3>ChatterBot-QA-SA — DistilBERT QA & Sentiment</h3>
+            <p>A Flask-based dual NLP engine using DistilBERT for contextual Question-Answering and real-time sentiment classification (positive/neutral/negative) over custom document text.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>DistilBERT QA & Sentiment</span></div>
+            <div class="tags"><span>DistilBERT</span><span>NLP</span><span>Flask</span><span>Sentiment Analysis</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/ChatterBot-QA-SA" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="nlp">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 20h6M12 5v15"/></svg>
+              
+            </span>
+            
+            <span class="cat">NLP</span>
+          </div>
+          <div class="p-body">
+            <h3>SummarizeX — Multi-Model Summarization</h3>
+            <p>An automated NLP text summarization workbench supporting BART, T5, and Pegasus transformer architectures for instant document summarization and batch CSV analysis.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>BART / T5 / Pegasus suite</span></div>
+            <div class="tags"><span>BART</span><span>T5</span><span>Pegasus</span><span>Hugging Face</span><span>Summarization</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/SummarizeX" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="dl">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              
+            </span>
+            
+            <span class="cat">Deep Learning</span>
+          </div>
+          <div class="p-body">
+            <h3>Medical Diagnoser — LSTM Symptom Analysis</h3>
+            <p>An LSTM network in TensorFlow/Keras that reads free-text patient symptoms and predicts a likely disease and a recommended prescription via a dual-output, multi-class softmax head.</p>
+            
+            <div class="tags"><span>LSTM</span><span>TensorFlow</span><span>Keras</span><span>Medical Diagnoser</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="dl">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              
+            </span>
+            
+            <span class="cat">Deep Learning</span>
+          </div>
+          <div class="p-body">
+            <h3>Pneumonia Detection — VGG16 Transfer Learning</h3>
+            <p>A transfer-learning pipeline that classifies chest X-rays as normal or pneumonia using a frozen ImageNet-pretrained VGG16 convolutional base with a dense softmax head.</p>
+            
+            <div class="tags"><span>Transfer Learning</span><span>VGG16</span><span>Keras</span><span>Medical Imaging</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="rl">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/selfdrive.png')">
+            
+            <span class="cat">Reinforcement Learning</span>
+          </div>
+          <div class="p-body">
+            <h3>SelfDriveRL — Autonomous Driving</h3>
+            <p>A Pygame self-driving car that learns to navigate tracks on its own using Proximal Policy Optimization (PPO) deep reinforcement learning.</p>
+            
+            <div class="tags"><span>PPO</span><span>Reinforcement Learning</span><span>Pygame</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/SelfDriveRL" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="cv">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/vahtuk.jpg')">
+            
+            <span class="cat">Computer Vision</span>
+          </div>
+          <div class="p-body">
+            <h3>Vahtuk Policia — Traffic Vision</h3>
+            <p>A real-time computer-vision pipeline that monitors intersections, detects traffic signals and zebra crossings, and flags vehicles that violate stop protocols.</p>
+            
+            <div class="tags"><span>Computer Vision</span><span>YOLO</span><span>Real-Time</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Vahtuk-Policia" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="cv">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              
+            </span>
+            
+            <span class="cat">Computer Vision</span>
+          </div>
+          <div class="p-body">
+            <h3>Cat vs. Dog Classifier — CNN Vision</h3>
+            <p>A deep convolutional neural network (CNN) in TensorFlow/Keras with early stopping, data augmentation, and custom convolution layers for binary image classification.</p>
+            
+            <div class="tags"><span>CNN</span><span>TensorFlow</span><span>Keras</span><span>Computer Vision</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="cv">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              
+            </span>
+            
+            <span class="cat">Computer Vision</span>
+          </div>
+          <div class="p-body">
+            <h3>Finger Blaster — Gesture AR Game</h3>
+            <p>A webcam AR arcade game where your hand becomes the gun — MediaPipe Hand Landmarker tracks index-finger direction to draw an aiming laser, an upward finger-flick fires, and a fist reloads.</p>
+            
+            <div class="tags"><span>MediaPipe</span><span>OpenCV</span><span>Gesture Recognition</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/CV2_AR_Bird_Huting" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="dl">
+          <div class="card-thumb">
+            
+            <span class="thumb-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              
+            </span>
+            
+            <span class="cat">Deep Learning</span>
+          </div>
+          <div class="p-body">
+            <h3>StockLSTM — Time-Series Forecasting</h3>
+            <p>A stacked LSTM recurrent network in Keras/TensorFlow that forecasts Google's opening stock price from 60-day input sequences with Dropout regularization.</p>
+            
+            <div class="tags"><span>LSTM</span><span>Time-Series Forecasting</span><span>Keras</span><span>TensorFlow</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/StockLSTM" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
+        <article class="card p-card reveal" data-cat="ml">
+          <div class="card-thumb has-img" style="background-image:url('/assets/img/movie-recommender.jpg')">
+            
+            <span class="cat">Machine Learning</span>
+          </div>
+          <div class="p-body">
+            <h3>MovieRBM — RBM Recommender</h3>
+            <p>A PyTorch movie recommender that trains a Restricted Boltzmann Machine on the MovieLens dataset for collaborative filtering using CD-10 contrastive divergence.</p>
+            <div class="metric"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg><span>0.2544 test MAE</span></div>
+            <div class="tags"><span>RBM</span><span>Collaborative Filtering</span><span>PyTorch</span><span>MovieLens</span></div>
+            <div class="foot">
+              <a class="repo" href="https://github.com/mohalkarushikesh/MovieRBM" target="_blank" rel="noopener noreferrer">
+                View Code
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+        
       </div>
     </div>
 
     <div class="center-cta reveal">
-      <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
+      <a href="https://github.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
         Explore all repositories on GitHub
       </a>
@@ -305,7 +794,7 @@ description: >-
         the flagship algorithms actually work.</p>
     </div>
     <div class="center-cta reveal">
-      <a href="{{ '/aiml-tree-structure.html' | relative_url }}" class="btn btn-primary">
+      <a href="/aiml-tree-structure.html" class="btn btn-primary">
         Explore the AI/ML Map
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
@@ -323,22 +812,72 @@ description: >-
     </div>
 
     <div class="grid-cards">
-      {% for post in site.posts limit: 6 %}
+      
       <article class="card b-card reveal">
         <div class="meta">
-          <span class="tag">{{ post.category | default: 'Article' }}</span>
-          <span>{{ post.date | date: "%b %Y" }}</span>
+          <span class="tag">Agents</span>
+          <span>Sep 2026</span>
         </div>
-        <h3>{{ post.title }}</h3>
-        <p>{{ post.description | default: post.excerpt | strip_html | truncate: 130 }}</p>
-        <a class="more" href="{{ post.url | relative_url }}">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <h3>Agent Harnesses: The Engineering System Around Reliable AI Agents</h3>
+        <p>A technical guide to building agent harnesses: the runtime, state, tools, policies, evaluation, and observability that turn an ...</p>
+        <a class="more" href="/blogs/Agent-Harnesses-Engineering-Reliable-AI-Agents/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </article>
-      {% endfor %}
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">MLOps</span>
+          <span>Sep 2026</span>
+        </div>
+        <h3>Deploying Models in Production: A Technical Guide from Artifact to SLO</h3>
+        <p>A practical deep dive into production model deployment: packaging, serving, scaling, rollout strategies, observability, and the...</p>
+        <a class="more" href="/blogs/Deploying-Models-in-Production-Technical-Guide/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">LLM Architecture</span>
+          <span>Sep 2026</span>
+        </div>
+        <h3>Kimi Delta Attention: A Technical Deep Dive into Gated Linear Memory</h3>
+        <p>How Kimi Delta Attention replaces quadratic attention with a gated delta-rule memory, and what that means for long-context lang...</p>
+        <a class="more" href="/blogs/Kimi-Delta-Attention-Technical-Deep-Dive/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">LLM & Agents</span>
+          <span>Aug 2026</span>
+        </div>
+        <h3>Agentic AI and the Model Context Protocol (MCP)</h3>
+        <p>A senior engineer's tour of the path from plain RAG to autonomous, multi-agent systems, and how the Model Context Protocol stan...</p>
+        <a class="more" href="/blogs/Agentic-AI-and-the-Model-Context-Protocol/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Research</span>
+          <span>Aug 2026</span>
+        </div>
+        <h3>Reasoning Models and Test-Time Compute</h3>
+        <p>How the field shifted from scaling training to spending compute at inference — chain-of-thought as computation, RLVR, and the s...</p>
+        <a class="more" href="/blogs/Reasoning-Models-and-Test-Time-Compute/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
+      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">Deep Learning</span>
+          <span>Jul 2026</span>
+        </div>
+        <h3>Mamba and State Space Models: The Transformer Challenger</h3>
+        <p>A senior-level tour of state space models — from S4 to Mamba's selective SSMs and Mamba-2's state-space duality — as a linear-t...</p>
+        <a class="more" href="/blogs/Mamba-and-State-Space-Models/">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>
+      
     </div>
 
     <div class="center-cta reveal">
-      <a href="{{ '/blogs/' | relative_url }}" class="btn btn-primary">
-        Browse all {{ site.posts | size }} articles
+      <a href="/blogs/" class="btn btn-primary">
+        Browse all 25 articles
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -358,34 +897,41 @@ description: >-
       <div class="reveal">
         <h3 class="sub">💼 Experience</h3>
         <div class="timeline">
-          {% for item in site.data.resume.experience %}
+          
           <div class="card tl-item">
-            <span class="when">{{ item.when }}</span>
-            <h4>{{ item.role }}</h4>
-            <span class="org">{{ item.org }}</span>
-            <p>{{ item.detail }}</p>
+            <span class="when">July 2024 — Present</span>
+            <h4>QA Engineer</h4>
+            <span class="org">Cognizant</span>
+            <p>Ensuring software quality through testing, automation, and process improvements while deepening my AI/ML foundations on the side.</p>
           </div>
-          {% endfor %}
+          
+          <div class="card tl-item">
+            <span class="when">Ongoing</span>
+            <h4>AI/ML Engineer</h4>
+            <span class="org">Independent & Project-Based</span>
+            <p>Building AI/ML systems with a focus on deep learning, reinforcement learning, and production-grade intelligent systems.</p>
+          </div>
+          
         </div>
       </div>
 
       <div class="reveal">
         <h3 class="sub">🎓 Education</h3>
         <div class="timeline">
-          {% for item in site.data.resume.education %}
+          
           <div class="card tl-item">
-            <span class="when">{{ item.when }}</span>
-            <h4>{{ item.degree }}</h4>
-            <span class="org">{{ item.org }}</span>
-            <p>{{ item.detail }}</p>
+            <span class="when">2019 — 2023</span>
+            <h4>BE in Electronics & Telecommunication</h4>
+            <span class="org">AISSMS IOIT, Pune • SPPU</span>
+            <p>Foundation in electronics, communication systems, and software engineering.</p>
           </div>
-          {% endfor %}
+          
         </div>
       </div>
     </div>
 
     <div class="center-cta reveal">
-      <a href="{{ '/resume/Resume.pdf' | relative_url }}" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary">
+      <a href="/resume/Resume.pdf" download="Rushikesh_Mohalkar_Resume.pdf" class="btn btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg>
         Download Full Résumé
       </a>
@@ -407,24 +953,24 @@ description: >-
         <h3>Reach out directly</h3>
         <p>The fastest ways to get in touch — no forms, no scripts, just a message away.</p>
         <div class="contact-list">
-          <a href="mailto:{{ site.email }}">
+          <a href="mailto:rushikeshmohalkar2001@gmail.com">
             <span class="ic"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
-            <span class="txt"><small>Email</small><b>{{ site.email }}</b></span>
+            <span class="txt"><small>Email</small><b>rushikeshmohalkar2001@gmail.com</b></span>
           </a>
           <div class="row">
             <span class="ic"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg></span>
             <span class="txt"><small>Location</small><b>Bengaluru, Karnataka, India</b></span>
           </div>
-          <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer">
             <span class="ic"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></span>
-            <span class="txt"><small>GitHub</small><b>@{{ site.social.github }}</b></span>
+            <span class="txt"><small>GitHub</small><b>@mohalkarushikesh</b></span>
           </a>
         </div>
         <div class="socials" style="justify-content:flex-start; margin-top:4px;">
-          <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/rushikesh-mohalkar/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg>
           </a>
-          <a href="https://x.com/{{ site.social.x }}" target="_blank" rel="noopener noreferrer" aria-label="X">
+          <a href="https://x.com/mohalkrushikesh" target="_blank" rel="noopener noreferrer" aria-label="X">
             <svg viewBox="0 0 24 24"><path d="M18.244 2H21.5l-7.19 8.21L22.7 22h-6.6l-5.17-6.76L4.99 22H1.73l7.69-8.79L1.4 2h6.7l4.68 6.16L18.24 2z"/></svg>
           </a>
         </div>
@@ -432,9 +978,9 @@ description: >-
 
       <!-- Contact form → opens the visitor's email app pre-filled (no backend, no third-party key). -->
       <!-- Progressive enhancement in app.js composes the mailto; the action below is the no-JS fallback. -->
-      <form id="contactForm" data-email="{{ site.email }}"
+      <form id="contactForm" data-email="rushikeshmohalkar2001@gmail.com"
             class="card contact-form reveal"
-            action="mailto:{{ site.email }}" method="post" enctype="text/plain">
+            action="mailto:rushikeshmohalkar2001@gmail.com" method="post" enctype="text/plain">
         <h3>Send a message</h3>
         <p class="intro">Fill this out and hit send — it opens your email app with the message ready to go. Prefer to write it yourself? My address is just below.</p>
 
@@ -463,8 +1009,51 @@ description: >-
           Send Message
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         </button>
-        <p class="form-note">Prefer email? Write to <a href="mailto:{{ site.email }}" style="color:var(--brand-2)">{{ site.email }}</a>.</p>
+        <p class="form-note">Prefer email? Write to <a href="mailto:rushikeshmohalkar2001@gmail.com" style="color:var(--brand-2)">rushikeshmohalkar2001@gmail.com</a>.</p>
       </form>
     </div>
   </div>
 </section>
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+

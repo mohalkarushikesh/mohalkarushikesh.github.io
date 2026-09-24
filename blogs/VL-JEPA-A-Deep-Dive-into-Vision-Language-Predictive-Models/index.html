@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Theme initialization (Default Light mode) -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add('js');
+      var t = 'light'; // Default light theme per USWDS specifications
+      try { var s = localStorage.getItem('theme'); if (s) t = s; } catch (e) {}
+      if (t === 'dark') d.classList.add('dark');
+    })();
+  </script>
+
+  <meta name="theme-color" content="#002868" />
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png" />
+
+  <!-- USWDS Type system: Montserrat across the entire website -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
+
+  <link rel="stylesheet" href="/assets/css/main.css?v=20260924074757" />
+
+  <title>VL JEPA: A Deep Dive into Vision-Language Predictive Models</title>
+<meta name="description" content="A detailed engineering walkthrough of VL JEPA, the Vision-Language Joint Embedding Predictive Architecture, situated within Meta AI's JEPA lineage (I-JEPA, V-JEPA, V-JEPA 2) and the broader shift toward predictive, non-generative representation learning.">
+</head>
+
+<body>
+  <!-- Mobile-menu state (CSS-only checkbox) -->
+  <input type="checkbox" id="nav-switch" aria-label="Toggle navigation menu" />
+
+  <!-- Scroll progress bar -->
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <!-- USWDS Official Government Header Banner -->
+  <section class="usa-banner" aria-label="Official website of the Executive Office of AI & ML Engineering">
+    <div class="wrap usa-banner-inner">
+      <div class="usa-banner-header">
+        <span class="usa-flag-icon" aria-hidden="true">
+          <svg viewBox="0 0 16 11" width="18" height="12" fill="none"><rect width="16" height="11" fill="#D9381E"/><rect width="16" height="1.69" y="1.69" fill="#FFF"/><rect width="16" height="1.69" y="5.08" fill="#FFF"/><rect width="16" height="1.69" y="8.46" fill="#FFF"/><rect width="7.38" height="5.92" fill="#002868"/><circle cx="1.8" cy="1.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="1.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="1.5" r="0.4" fill="#FFF"/><circle cx="2.7" cy="3" r="0.4" fill="#FFF"/><circle cx="4.6" cy="3" r="0.4" fill="#FFF"/><circle cx="1.8" cy="4.5" r="0.4" fill="#FFF"/><circle cx="3.7" cy="4.5" r="0.4" fill="#FFF"/><circle cx="5.6" cy="4.5" r="0.4" fill="#FFF"/></svg>
+        </span>
+        <p class="usa-banner-text">
+          An official website of the <strong>Executive Office of AI &amp; ML Engineering</strong>
+        </p>
+        <label for="usa-banner-toggle" class="usa-banner-btn">
+          Here's how you know <span class="chevron">▼</span>
+        </label>
+      </div>
+      <input type="checkbox" id="usa-banner-toggle" class="usa-banner-toggle-check" />
+      <div class="usa-banner-content">
+        <div class="usa-banner-grid">
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🏛️</div>
+            <div class="usa-banner-details">
+              <strong>Official USWDS 3.0 Standard</strong>
+              <p>Top-level digital federal design system built for maximum clarity, readability, and accessibility.</p>
+            </div>
+          </div>
+          <div class="usa-banner-col">
+            <div class="usa-banner-icon">🔒</div>
+            <div class="usa-banner-details">
+              <strong>Verified Digital Asset</strong>
+              <p>Certified production-grade deployment managed under official GitHub Pages infrastructure.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <span id="top"></span>
+  <nav class="navbar">
+    <!-- Masthead: Federal Department branding · Hamburger · Theme toggle -->
+    <div class="wrap nav-top">
+      <div class="nav-side nav-side-left">
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
+      <a href="/#home" class="brand">
+        <div class="fed-seal-badge">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+            <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            <circle cx="20" cy="20" r="12" stroke="#FFFFFF" stroke-width="1.2" stroke-dasharray="2 2"/>
+            <circle cx="20" cy="20" r="4" fill="#FFFFFF"/>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-agency">U.S. DEPT OF AI &amp; ML ENGINEERING</span>
+          <span class="brand-name">Rushikesh Mohalkar</span>
+        </div>
+      </a>
+      <div class="nav-side nav-side-right">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+      </div>
+    </div>
+
+    <!-- Primary navigation (centered USWDS style) -->
+    <div class="nav-menu">
+      <a class="link" href="/#home">Home</a>
+      <a class="link" href="/#about">About</a>
+      <a class="link" href="/#projects">Projects</a>
+      <a class="link" href="/aiml-tree-structure.html">AI/ML Map</a>
+      <a class="link" href="/blogs/">Blogs</a>
+      <a class="link" href="/#resume">Resume</a>
+      <a class="link" href="/#contact">Contact</a>
+    </div>
+  </nav>
+
+  <main>
+    <article>
+  <header class="page-head">
+    <div class="wrap" style="max-width: 820px;">
+      <a class="back" href="/blogs/">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        All articles
+      </a>
+      <span class="eyebrow">Vision-Language</span>
+      <h1 class="post-title" style="margin-top: 16px;">VL JEPA: A Deep Dive into Vision-Language Predictive Models</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A detailed engineering walkthrough of VL JEPA, the Vision-Language Joint Embedding Predictive Architecture, situated within Meta AI's JEPA lineage (I-JEPA, V-JEPA, V-JEPA 2) and the broader shift toward predictive, non-generative representation learning.</p>
+      <div class="post-meta">
+        <time datetime="2026-01-12">Jan 12, 2026</time>
+        <span>·</span>
+        <span>12 min read</span>
+        <span>·</span>
+        <span>By </span>
+        
+          <span class="pill">VL JEPA</span><span class="pill">JEPA</span><span class="pill">Meta AI</span><span class="pill">Vision-Language Models</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="post-body">
+      <p>VL JEPA (Vision-Language Joint Embedding Predictive Architecture) describes a self-supervised approach that bridges vision and language understanding by predicting <em>representations</em> rather than reconstructing <em>pixels or tokens</em>. It sits inside a family of architectures that Yann LeCun and Meta AI have championed as the JEPA line: I-JEPA for images, V-JEPA and V-JEPA 2 for video, and predictive world models more broadly. A clarification up front: the models Meta has publicly released under this banner are I-JEPA, V-JEPA, and V-JEPA 2. "VL JEPA" as used here is the natural vision-language extension of that same recipe rather than a specific published release, and this post treats it as a design study — unpacking how such a model would work end to end, why the "predict in latent space" idea matters, and where it fits among the contrastive and generative methods it competes with.</p>
+
+    <blockquote>Takeaway: JEPA does not ask "what does the missing patch look like?" It asks "what does the missing patch <em>mean</em>?" — and that single reframing is what makes it scalable, robust, and world-model friendly.</blockquote>
+
+    <!-- Table of Contents -->
+    <nav aria-label="Table of Contents">
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#intro">Introduction to VL JEPA</a></li>
+        <li><a href="#lineage">The JEPA Lineage: I-JEPA, V-JEPA, V-JEPA 2</a></li>
+        <li><a href="#paradigms">Three Paradigms: Generative vs Contrastive vs Predictive</a></li>
+        <li><a href="#architecture">Core Architecture</a></li>
+        <li><a href="#masking">Masking and the Prediction Task</a></li>
+        <li><a href="#collapse">Why Latent Prediction Does Not Collapse</a></li>
+        <li><a href="#training">Training Paradigm</a></li>
+        <li><a href="#pseudocode">A Minimal Training Loop</a></li>
+        <li><a href="#applications">Applications</a></li>
+        <li><a href="#tradeoffs">Design Trade-offs and Limitations</a></li>
+        <li><a href="#future">Future Directions</a></li>
+        <li><a href="#takeaways">Key Takeaways</a></li>
+      </ul>
+    </nav>
+
+    <!-- Blog Content -->
+    <h2 id="intro">Introduction to VL JEPA</h2>
+    <p>VL JEPA extends the principles behind Meta AI's JEPA models to the joint vision-language setting. Unlike supervised models that depend on massive labeled datasets, and unlike generative models that spend capacity reconstructing every pixel, a JEPA-style vision-language model learns by predicting contextual embeddings across modalities. This makes the approach scalable and adaptable to real-world data where labels are scarce and where pixel-perfect reconstruction is wasteful.</p>
+    <p>The core intuition, argued at length by Yann LeCun in his position papers on autonomous machine intelligence, is that an intelligent system should build an internal <em>predictive model of the world</em> in an abstract representation space. Predicting in that space lets the model discard unpredictable, irrelevant detail (the exact texture of grass, the precise phrasing of a caption) and concentrate on the structure that actually carries meaning. VL JEPA applies that principle to the joint vision-language setting.</p>
+
+    <h2 id="lineage">The JEPA Lineage: I-JEPA, V-JEPA, V-JEPA 2</h2>
+    <p>VL JEPA is best understood as a member of a growing family rather than a standalone invention. Each member applies the same "predict masked targets in latent space" recipe to a different modality or setting.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Modality</th>
+          <th>Core idea</th>
+          <th>Notable trait</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>I-JEPA</td>
+          <td>Static images</td>
+          <td>Predict representations of masked image blocks from a single context block</td>
+          <td>Strong semantic features without hand-crafted augmentations</td>
+        </tr>
+        <tr>
+          <td>V-JEPA</td>
+          <td>Video</td>
+          <td>Predict representations of masked spatio-temporal regions</td>
+          <td>Learns motion and temporal structure self-supervised</td>
+        </tr>
+        <tr>
+          <td>V-JEPA 2</td>
+          <td>Video + action</td>
+          <td>Scales video pretraining toward a world model usable for planning and robotics</td>
+          <td>Positions JEPA as a controllable world model, not just an encoder</td>
+        </tr>
+        <tr>
+          <td>VL JEPA (this post)</td>
+          <td>Vision + language</td>
+          <td>Predict cross-modal representations in a shared embedding space</td>
+          <td>Aligns image and text meaning without heavy caption supervision</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>The through-line is consistent: an online <em>context</em> encoder sees part of the input, a slowly updated <em>target</em> encoder produces the ground-truth representations, and a lightweight <em>predictor</em> bridges the two. VL JEPA extends this to the case where the "missing" content and the "context" may live in different modalities.</p>
+
+    <h2 id="paradigms">Three Paradigms: Generative vs Contrastive vs Predictive</h2>
+    <p>To appreciate what VL JEPA buys you, it helps to place it against the two dominant self-supervised families it competes with.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Generative (MAE, autoregressive)</th>
+          <th>Contrastive (CLIP, SimCLR, DINO)</th>
+          <th>Predictive JEPA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Prediction target</td>
+          <td>Raw pixels / tokens</td>
+          <td>Instance similarity</td>
+          <td>Latent representations of masked regions</td>
+        </tr>
+        <tr>
+          <td>Needs paired/augmented positives</td>
+          <td>No</td>
+          <td>Yes (augmentations or image-text pairs)</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Needs negatives</td>
+          <td>No</td>
+          <td>Often yes</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Wastes capacity on unpredictable detail</td>
+          <td>Yes</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Collapse risk</td>
+          <td>Low</td>
+          <td>Medium (needs careful loss)</td>
+          <td>Medium (needs asymmetry/EMA)</td>
+        </tr>
+        <tr>
+          <td>Feature semantics</td>
+          <td>Low-level, needs fine-tuning</td>
+          <td>Strong, alignment-driven</td>
+          <td>Strong, abstraction-driven</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Contrastive methods such as CLIP learn a shared vision-language space by pulling matched image-text pairs together and pushing mismatched pairs apart. They are powerful but hinge on large curated pair datasets and, in many variants, on carefully mined negatives. Generative masked models such as MAE reconstruct raw inputs, which forces the network to model high-entropy detail that rarely matters for downstream reasoning. VL JEPA keeps the semantic strength of the contrastive world while avoiding both raw reconstruction and the negative-mining machinery, by predicting in representation space.</p>
+
+    <h2 id="architecture">Core Architecture</h2>
+    <p>The architecture is built on a joint embedding space into which both vision and language inputs are projected. A predictor network then forecasts the representations of masked or missing content, conditioned on what remains and on a description of <em>where</em> the missing content is. Three encoders do the heavy lifting.</p>
+
+    <ul>
+      <li><strong>Vision Encoder (context):</strong> a Vision Transformer that maps visible image patches into a set of embeddings.</li>
+      <li><strong>Language Encoder (context):</strong> a Transformer that maps visible text tokens into embeddings in the same space.</li>
+      <li><strong>Target Encoder:</strong> an exponential-moving-average (EMA) copy of the encoders that produces the prediction targets. Its weights are not updated by gradients; they track the online encoders slowly.</li>
+      <li><strong>Predictor Network:</strong> a narrow Transformer that takes the context embeddings plus positional/mask tokens and predicts the target-encoder representations of the masked regions.</li>
+      <li><strong>Joint Embedding Space:</strong> the shared latent geometry where a "dog" patch and the word "dog" end up near one another because both are predictive of the same context.</li>
+    </ul>
+
+    <div class="mermaid">
+    flowchart TD
+      A[Image input] --> B[Vision Encoder context]
+      C[Text input] --> D[Language Encoder context]
+      B --> E[Joint Embedding Space]
+      D --> E
+      E --> F[Predictor Network]
+      F --> G[Predicted embeddings for masked regions]
+      A --> H[Target Encoder EMA]
+      C --> H
+      H --> I[Target embeddings ground truth]
+      G --> J[Prediction loss L2 / smooth-L1]
+      I --> J
+      J -. gradients update online encoders + predictor .-> B
+      J -. gradients .-> D
+      J -. gradients .-> F
+      J -. EMA update no gradient .-> H
+    </div>
+
+    <p>Note the asymmetry in the diagram: gradients flow only through the online path (vision encoder, language encoder, predictor). The target encoder is updated by an EMA of the online weights, never by backpropagation. That asymmetry is not incidental — it is a large part of why the model does not collapse, as discussed below.</p>
+
+    <h2 id="masking">Masking and the Prediction Task</h2>
+    <p>The learning signal comes entirely from masking. A portion of the input is hidden, the remainder becomes context, and the model must predict what the target encoder would have produced for the hidden part. VL JEPA can mask within a modality or across modalities.</p>
+
+    <ul>
+      <li><strong>Intra-image masking:</strong> hide several contiguous image blocks and predict their embeddings from a smaller visible block, following the I-JEPA recipe. Block masking (rather than random-pixel masking) forces genuinely semantic prediction.</li>
+      <li><strong>Intra-text masking:</strong> hide spans of tokens and predict their embeddings from surrounding text.</li>
+      <li><strong>Cross-modal masking:</strong> hide part of the image and predict its embedding using the text as context, or vice versa. This is what makes the space genuinely <em>joint</em> — the text has to carry enough information to locate the visual meaning.</li>
+    </ul>
+
+    <div class="mermaid">
+    flowchart TD
+      X[Full image-text example] --> Y[Masking policy]
+      Y --> C1[Context: visible patches + visible tokens]
+      Y --> M1[Masked targets: hidden patches / spans]
+      C1 --> P[Online encoders + predictor]
+      M1 --> T[Target encoder]
+      P --> PR[Predicted latent for masked targets]
+      T --> TG[Actual latent for masked targets]
+      PR --> L[Minimize distance]
+      TG --> L
+    </div>
+
+    <p>Crucially, the predictor is conditioned on the <em>positions</em> of the masked targets via learned mask tokens. Without positional conditioning the task would be ill-posed: the model would have no way to know which missing region it is being asked to describe.</p>
+
+    <h2 id="collapse">Why Latent Prediction Does Not Collapse</h2>
+    <p>Predicting representations has an obvious failure mode. If both the online encoder and the target encoder are free to change, the trivial solution is to output a constant vector for everything — the loss goes to zero and the model has learned nothing. This is "representation collapse," and every non-contrastive method must defend against it. JEPA-style models use a combination of defenses.</p>
+
+    <ul>
+      <li><strong>EMA target (stop-gradient asymmetry):</strong> because the target encoder changes only slowly and receives no gradient, the online network is chasing a moving-but-stable target rather than a target that can degenerate in lock-step with it.</li>
+      <li><strong>Predictor bottleneck:</strong> a narrow predictor cannot simply copy inputs to outputs; it must summarize.</li>
+      <li><strong>Variance and covariance regularization:</strong> methods in this family (VICReg-style objectives) can add terms that keep per-dimension variance above a floor and decorrelate feature dimensions, explicitly forbidding the constant solution.</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Anti-collapse mechanism</th>
+          <th>What it prevents</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>EMA target + stop-gradient</td>
+          <td>Both encoders drifting to a constant together</td>
+          <td>Extra parameter copy; momentum tuning</td>
+        </tr>
+        <tr>
+          <td>Variance floor (VICReg)</td>
+          <td>Per-dimension variance shrinking to zero</td>
+          <td>Loss weighting sensitivity</td>
+        </tr>
+        <tr>
+          <td>Covariance decorrelation</td>
+          <td>All dimensions carrying the same signal</td>
+          <td>Quadratic-in-dimension term</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="training">Training Paradigm</h2>
+    <blockquote>"Predictive learning is not about reconstructing pixels, but about capturing meaning."</blockquote>
+    <p>VL JEPA leverages a self-supervised predictive learning paradigm. Instead of reconstructing raw inputs, the model predicts embeddings in a joint space. By masking parts of the input and predicting the target encoder's embeddings of those parts, VL JEPA learns robust cross-modal representations that generalize well. The loss is typically a simple distance in latent space — an L2 or smooth-L1 between predicted and target embeddings — with no negatives to sample and no pixels to decode.</p>
+    <p>Training proceeds in phases familiar to anyone who has trained a modern foundation model:</p>
+    <ol>
+      <li><strong>Pretraining:</strong> large-scale masked prediction over unlabeled or weakly-paired image-text data.</li>
+      <li><strong>Probing/evaluation:</strong> freeze the encoders and attach a lightweight head (linear probe or small attentive probe) to measure representation quality on downstream tasks.</li>
+      <li><strong>Adaptation:</strong> optionally fine-tune or attach task-specific decoders for retrieval, VQA, or grounding.</li>
+    </ol>
+    <p>A recurring lesson from the JEPA line is that frozen features from a well-pretrained predictive encoder are already strong, which keeps downstream adaptation cheap.</p>
+
+    <h2 id="pseudocode">A Minimal Training Loop</h2>
+    <p>The following schematic captures the essential moving parts. It is illustrative pseudocode, not a runnable implementation.</p>
+    <pre><code>for image, text in dataloader:
+    # 1. Build context and targets via masking
+    ctx_img, ctx_txt, mask_positions = mask(image, text)
+
+    # 2. Online path (receives gradients)
+    z_img = vision_encoder(ctx_img)
+    z_txt = language_encoder(ctx_txt)
+    context = join(z_img, z_txt)                 # shared space
+    pred = predictor(context, mask_positions)    # predict masked latents
+
+    # 3. Target path (no gradients, EMA weights)
+    with no_grad():
+        target = target_encoder(image, text)
+        target = select(target, mask_positions)  # ground-truth latents
+
+    # 4. Latent prediction loss (no negatives, no pixels)
+    loss = smooth_l1(pred, stop_gradient(target))
+    loss.backward()
+    optimizer.step()
+
+    # 5. Slowly update the target encoder
+    ema_update(target_encoder, online_encoders, momentum=m)
+</code></pre>
+    <p>Everything hard about the method lives in <code>mask()</code>, the <code>ema_update</code> momentum schedule, and the anti-collapse regularization — not in the loss, which is deliberately trivial.</p>
+
+    <h2 id="applications">Applications</h2>
+    <p>VL JEPA has wide-ranging applications across AI research and industry:</p>
+    <ul>
+      <li><strong>Image-Text Retrieval:</strong> matching images with descriptive text and vice versa, using nearest-neighbor search in the joint space.</li>
+      <li><strong>Visual Question Answering:</strong> answering questions about images by reasoning over aligned joint embeddings.</li>
+      <li><strong>Content Moderation:</strong> detecting harmful or misleading multimodal content where the image and caption jointly encode the intent.</li>
+      <li><strong>Assistive Technology:</strong> helping visually impaired users by aligning textual descriptions with visual inputs.</li>
+      <li><strong>Grounding and localization:</strong> because prediction is position-conditioned, the representations carry spatial structure useful for pointing and grounding.</li>
+      <li><strong>Foundation for Multimodal AI:</strong> serving as a frozen backbone for larger systems, and — following V-JEPA 2 — as the perception core of predictive world models for planning and robotics.</li>
+    </ul>
+
+    <h2 id="tradeoffs">Design Trade-offs and Limitations</h2>
+    <p>Predictive latent learning is powerful but not a free lunch. Being honest about the trade-offs is part of using it well.</p>
+    <ul>
+      <li><strong>No generation for free:</strong> because JEPA never learns to decode pixels or tokens, it cannot generate images or captions out of the box. It is a representation learner; generative capability requires a separate decoder.</li>
+      <li><strong>Evaluation is indirect:</strong> the training loss is not interpretable in absolute terms (unlike reconstruction error you can look at). Quality must be judged through downstream probes.</li>
+      <li><strong>Sensitivity to the masking policy:</strong> block size, mask ratio, and cross-modal mask scheduling materially change what the model learns. Poor masking yields either a trivial task or an impossible one.</li>
+      <li><strong>Momentum tuning:</strong> the EMA schedule for the target encoder is a delicate hyperparameter; too fast invites collapse, too slow stalls learning.</li>
+      <li><strong>Modality balance:</strong> if one modality is far easier to predict from, the model can lean on it and under-develop the other.</li>
+    </ul>
+
+    <h2 id="future">Future Directions</h2>
+    <p>VL JEPA represents a step toward more general-purpose multimodal AI. Several directions are actively being explored across the field:</p>
+    <ul>
+      <li><strong>More modalities:</strong> extending predictive embeddings to audio, video, and 3D/point-cloud data so a single space captures how the world looks, sounds, and moves.</li>
+      <li><strong>World models and planning:</strong> V-JEPA 2 already frames the encoder as a controllable world model; the natural next step is action-conditioned prediction for embodied agents and robotics.</li>
+      <li><strong>Hybrid predictive-generative stacks:</strong> pairing a JEPA representation core with a lightweight generative decoder, getting robust features and generation without paying reconstruction cost during representation learning.</li>
+      <li><strong>Alignment with human feedback:</strong> integrating preference signals so that the learned abstractions match what users actually care about.</li>
+      <li><strong>Hierarchical prediction:</strong> stacking predictors that operate at increasing temporal and semantic scale, echoing LeCun's hierarchical JEPA proposal.</li>
+    </ul>
+
+    <h2 id="takeaways">Key Takeaways</h2>
+    <ul>
+      <li>VL JEPA predicts <em>representations</em>, not pixels or tokens — trading generative ability for scalable, semantic, robust features.</li>
+      <li>It belongs to the JEPA family (I-JEPA, V-JEPA, V-JEPA 2) unified by an online encoder, an EMA target encoder, and a small predictor.</li>
+      <li>Collapse is the central technical risk, defended against by stop-gradient asymmetry, EMA targets, and variance/covariance regularization.</li>
+      <li>The joint space comes from cross-modal masking: text must carry enough meaning to predict hidden visual content, and vice versa.</li>
+      <li>The long-term trajectory is predictive world models that reason across modalities and actions.</li>
+    </ul>
+
+    <p><strong>VL JEPA is not just a model — it is a paradigm shift toward predictive, multimodal intelligence, and it points at where self-supervised learning is heading next.</strong></p>
+
+    </div>
+
+    <div class="post-foot">
+      <a class="btn btn-ghost btn-sm" href="/blogs/">← Back to all articles</a>
+      <div class="share">
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://twitter.com/intent/tweet?text=VL+JEPA%3A+A+Deep+Dive+into+Vision-Language+Predictive+Models&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FVL-JEPA-A-Deep-Dive-into-Vision-Language-Predictive-Models%2F">Share on X</a>
+        <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
+           href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2FVL-JEPA-A-Deep-Dive-into-Vision-Language-Predictive-Models%2F">Share on LinkedIn</a>
+      </div>
+    </div>
+
+    
+
+    
+    
+  </div>
+</article>
+
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
+
+
+  </main>
+
+  <!-- USWDS Official Footer -->
+  <footer class="site">
+    <div class="wrap">
+      <div class="footer-top-row">
+        <div class="fed-footer-brand">
+          <div class="fed-seal-badge">
+            <svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" fill="#002868" stroke="#E6A100" stroke-width="2"/>
+              <path d="M20 7L23.5 14H31L25 18.5L27 26L20 21.5L13 26L15 18.5L9 14H16.5L20 7Z" fill="#E6A100"/>
+            </svg>
+          </div>
+          <div>
+            <strong>Executive Office of AI &amp; Machine Learning</strong>
+            <p>Official Digital Portfolio &amp; System Directory</p>
+          </div>
+        </div>
+        <div class="usa-badge-tag">SECTION 508 COMPLIANT</div>
+      </div>
+      <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="fnav">
+        <a href="/#home">Home</a>
+        <a href="/#about">About</a>
+        <a href="/#projects">Projects</a>
+        <a href="/aiml-tree-structure.html">AI/ML Map</a>
+        <a href="/blogs/">Blogs</a>
+        <a href="/#resume">Resume</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+      <p class="copy">© 2026 Rushikesh Mohalkar. Built following USWDS 3.0 System Standards with Montserrat &amp; Jekyll.</p>
+    </div>
+  </footer>
+
+  <a href="#top" class="to-top" aria-label="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <script src="/assets/js/app.js?v=20260924074757" defer></script>
+</body>
+</html>
+
