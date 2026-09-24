@@ -99,7 +99,40 @@ body {
 
 a { color: var(--brand); text-decoration: none; transition: all 0.2s ease; }
 a:hover { color: var(--brand-2); }
-img, svg { display: block; max-width: 100%; }
+img { display: block; max-width: 100%; height: auto; }
+svg {
+  width: 1.2em;
+  height: 1.2em;
+  max-width: 100%;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.brand svg, .ai-seal-badge svg, .fed-seal-badge svg {
+  width: 24px;
+  height: 24px;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.metric svg {
+  width: 16px;
+  height: 16px;
+}
+
+.more svg, .repo svg {
+  width: 16px;
+  height: 16px;
+}
+
+.genz-sticker svg {
+  width: 14px;
+  height: 14px;
+}
 ::selection { background: #2563eb; color: #ffffff; }
 
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
