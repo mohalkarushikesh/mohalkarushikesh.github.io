@@ -119,12 +119,7 @@ section { padding: clamp(64px, 8vw, 108px) 0; position: relative; }
 
 /* Header Banner */
 .usa-banner {
-  background: var(--surface-solid);
-  border-bottom: 1px solid var(--border);
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  position: relative;
-  z-index: 101;
+  display: none !important;
 }
 
 .usa-banner-inner { padding-top: 8px; padding-bottom: 8px; }
