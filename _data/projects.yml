@@ -46,6 +46,7 @@
   tags: [Gemini API, Flask, Property Tax, Copilot]
   metric: "Real-time tax calculations"
   repo: "https://github.com/mohalkarushikesh/Taxly"
+  logo: taxpilot.jpg
   date: 2026-08-27
 
 - title: "finetune-forge — LLM Fine-Tuning Workbench"
@@ -55,6 +56,7 @@
   tags: [Fine-Tuning, LoRA, Hugging Face, Transformers]
   metric: "Domain adaptation pipeline"
   repo: "https://github.com/mohalkarushikesh/TextWiz"
+  logo: finetune-forge.jpg
   date: 2026-08-27
 
 - title: "Oryza — Private Local LLM Chat (oryza)"
@@ -75,6 +77,7 @@
   tags: [LangChain, RAG, FAISS, FastAPI]
   metric: "0–100 fit scoring + gap analysis"
   repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
+  logo: annmariephotography-computer-4484282.jpg
   date: 2026-08-27
 
 - title: "RAG Pipeline from Scratch"
@@ -102,6 +105,7 @@
   tags: [DistilBERT, NLP, Flask, Sentiment Analysis]
   metric: "DistilBERT QA & Sentiment"
   repo: "https://github.com/mohalkarushikesh/ChatterBot-QA-SA"
+  logo: pexels-apple-1868496.jpg
   date: 2026-08-27
 
 - title: "SummarizeX — Multi-Model Summarization"
@@ -111,6 +115,7 @@
   tags: [BART, T5, Pegasus, Hugging Face, Summarization]
   metric: "BART / T5 / Pegasus suite"
   repo: "https://github.com/mohalkarushikesh/SummarizeX"
+  logo: qimono-light-bulb-4514505.jpg
   date: 2026-08-27
 
 - title: "Medical Diagnoser — LSTM Symptom Analysis"
@@ -119,6 +124,7 @@
   description: "An LSTM network in TensorFlow/Keras that reads free-text patient symptoms and predicts a likely disease and a recommended prescription via a dual-output, multi-class softmax head."
   tags: [LSTM, TensorFlow, Keras, Medical Diagnoser]
   repo: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser"
+  logo: firmbee-laptop-6062423.jpg
   date: 2026-08-27
 
 - title: "Pneumonia Detection — VGG16 Transfer Learning"
@@ -127,6 +133,7 @@
   description: "A transfer-learning pipeline that classifies chest X-rays as normal or pneumonia using a frozen ImageNet-pretrained VGG16 convolutional base with a dense softmax head."
   tags: [Transfer Learning, VGG16, Keras, Medical Imaging]
   repo: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning"
+  logo: joshuaworoniecki-laptop-5673901.jpg
   date: 2026-08-27
 
 - title: "SelfDriveRL — Autonomous Driving"
@@ -153,6 +160,7 @@
   description: "A deep convolutional neural network (CNN) in TensorFlow/Keras with early stopping, data augmentation, and custom convolution layers for binary image classification."
   tags: [CNN, TensorFlow, Keras, Computer Vision]
   repo: "https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN"
+  logo: pexels-bright-1847006.jpg
   date: 2026-08-27
 
 - title: "Finger Blaster — Gesture AR Game"
@@ -161,6 +169,7 @@
   description: "A webcam AR arcade game where your hand becomes the gun — MediaPipe Hand Landmarker tracks index-finger direction to draw an aiming laser, an upward finger-flick fires, and a fist reloads."
   tags: [MediaPipe, OpenCV, Gesture Recognition]
   repo: "https://github.com/mohalkarushikesh/CV2_AR_Bird_Huting"
+  logo: clickerhappy-computer-2982270.jpg
   date: 2026-02-09
 
 - title: "StockLSTM — Time-Series Forecasting"
@@ -169,6 +178,7 @@
   description: "A stacked LSTM recurrent network in Keras/TensorFlow that forecasts Google's opening stock price from 60-day input sequences with Dropout regularization."
   tags: [LSTM, Time-Series Forecasting, Keras, TensorFlow]
   repo: "https://github.com/mohalkarushikesh/StockLSTM"
+  logo: tookapic-office-932926.jpg
   date: 2026-06-13
 
 - title: "MovieRBM — RBM Recommender"
