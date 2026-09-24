@@ -252,9 +252,16 @@ html.dark .nav-container {
 
 .hero-ctas { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 32px; }
 .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
   padding: 14px 28px; border-radius: var(--radius-pill); font-size: 0.95rem; font-weight: 700;
-  cursor: pointer; transition: all 0.25 ease; text-decoration: none !important;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); text-decoration: none !important;
+  line-height: 1.2;
+}
+.btn svg {
+  width: 1.2em; height: 1.2em; flex-shrink: 0; transition: transform 0.2s ease;
+}
+.btn:hover svg {
+  transform: scale(1.1);
 }
 .btn-primary { background: var(--brand); color: #ffffff !important; box-shadow: var(--shadow-md); }
 .btn-primary:hover { background: var(--brand-2); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
@@ -594,19 +601,22 @@ html.dark .nav-container {
 }
 
 .foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
-.repo { font-size: 0.88rem; font-weight: 700; color: var(--brand); display: inline-flex; align-items: center; gap: 6px; }
-.repo:hover { color: var(--brand-2); text-decoration: none !important; }
+.repo, .project-card .repo, .b-card .more {
+  font-size: 0.85rem; font-weight: 800; color: var(--brand);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 18px; border-radius: var(--radius-pill);
+  background: var(--bg-2); border: 1px solid var(--border);
+  transition: all 0.25s ease; text-decoration: none !important;
+}
+.repo:hover, .project-card .repo:hover, .b-card .more:hover {
+  color: #ffffff !important; background: var(--brand); border-color: var(--brand);
+  transform: translateY(-2px); box-shadow: var(--shadow-glow);
+}
 .project-card p, .b-card p { font-size: 0.92rem; color: var(--text-dim); margin-bottom: 20px; flex-grow: 1; line-height: 1.6; }
 
 .metric { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; font-weight: 800; color: var(--brand); margin-bottom: 16px; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .tags span, .meta .tag { font-size: 0.75rem; font-weight: 700; background: var(--bg-2); color: var(--text-dim); padding: 5px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border); }
-
-.project-card .repo, .b-card .more {
-  font-size: 0.88rem; font-weight: 800; color: var(--brand); display: inline-flex; align-items: center; gap: 6px;
-  transition: all 0.2s ease;
-}
-.project-card .repo:hover, .b-card .more:hover { text-decoration: none; transform: translateX(3px); }
 
 /* ============================================================
    BLOGS & ARTICLES TYPOGRAPHY & LAYOUT
