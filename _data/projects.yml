@@ -48,6 +48,33 @@
   logo: chatbot.avif
   date: 2026-06-29
 
+- title: "Job Application Agent — Agentic RAG"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters, resume bullets, and 0-100 fit scores with gap analysis — served through a FastAPI backend and Streamlit UI."
+  tags: [LangChain, RAG, FAISS, FastAPI]
+  metric: "0–100 fit scoring + gap analysis"
+  repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
+  date: 2026-08-27
+
+- title: "Taxly — AI Property Tax Assistant"
+  cat: llm
+  category: "LLM & Agents"
+  description: "An AI-powered property tax assistant built with Google Gemini API, Flask, and Tailwind CSS for real-time tax calculations, regulatory compliance guidance, and automated payment deadline tracking."
+  tags: [Gemini API, Flask, AI Chatbot, Property Tax]
+  metric: "Real-time tax calculations"
+  repo: "https://github.com/mohalkarushikesh/Taxly"
+  date: 2026-08-27
+
+- title: "TextWiz — Fine-Tuned LLM Platform"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A fine-tuned Flask-based LLM application using Hugging Face Transformers (GPT-2) for context-aware text generation, domain fine-tuning, and customizable NLP workflows."
+  tags: [Transformers, GPT-2, Hugging Face, Flask]
+  metric: "Context-aware generation"
+  repo: "https://github.com/mohalkarushikesh/TextWiz"
+  date: 2026-08-27
+
 - title: "Bhashantar — Neural Machine Translation"
   cat: nlp
   category: "NLP"
@@ -56,6 +83,40 @@
   repo: "https://github.com/mohalkarushikesh/Bhashantar"
   logo: bhashantar.png
   date: 2026-02-22
+
+- title: "ChatterBot-QA-SA — DistilBERT QA & Sentiment"
+  cat: nlp
+  category: "NLP"
+  description: "A Flask-based dual NLP engine using DistilBERT for contextual Question-Answering and real-time sentiment classification (positive/neutral/negative) over custom document text."
+  tags: [DistilBERT, NLP, Flask, Sentiment Analysis]
+  metric: "DistilBERT QA & Sentiment"
+  repo: "https://github.com/mohalkarushikesh/ChatterBot-QA-SA"
+  date: 2026-08-27
+
+- title: "SummarizeX — Multi-Model Summarization"
+  cat: nlp
+  category: "NLP"
+  description: "An automated NLP text summarization workbench supporting BART, T5, and Pegasus transformer architectures for instant document summarization and batch CSV analysis."
+  tags: [BART, T5, Pegasus, Hugging Face, Summarization]
+  metric: "BART / T5 / Pegasus suite"
+  repo: "https://github.com/mohalkarushikesh/SummarizeX"
+  date: 2026-08-27
+
+- title: "Medical Diagnoser — LSTM Symptom Analysis"
+  cat: dl
+  category: "Deep Learning"
+  description: "An LSTM network in TensorFlow/Keras that reads free-text patient symptoms and predicts a likely disease and a recommended prescription via a dual-output, multi-class softmax head."
+  tags: [LSTM, TensorFlow, Keras, Medical Diagnoser]
+  repo: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser"
+  date: 2026-08-27
+
+- title: "Pneumonia Detection — VGG16 Transfer Learning"
+  cat: dl
+  category: "Deep Learning"
+  description: "A transfer-learning pipeline that classifies chest X-rays as normal or pneumonia using a frozen ImageNet-pretrained VGG16 convolutional base with a dense softmax head."
+  tags: [Transfer Learning, VGG16, Keras, Medical Imaging]
+  repo: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning"
+  date: 2026-08-27
 
 - title: "SelfDriveRL — Autonomous Driving"
   cat: rl
@@ -75,46 +136,26 @@
   logo: vahtuk.jpg
   date: 2026-06-15
 
-- title: "RAG App — PDF Q&A"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A RAG-based PDF question-answering system that retrieves relevant document chunks with FAISS and generates answers using a FLAN-T5 LLM — semantic embeddings, efficient retrieval, and a Gradio UI."
-  tags: [RAG, FAISS, FLAN-T5, LangChain, Gradio]
-  repo: "https://github.com/mohalkarushikesh/RAG-app"
-  logo: ragapp.jpg
-  date: 2026-08-11
-
-# --- Added from github.com/mohalkarushikesh, descriptions verified against each repo's README ---
-
-- title: "Job Application Agent — Agentic RAG"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters, resume bullets, and 0-100 fit scores with gap analysis — served through a FastAPI backend and Streamlit UI, containerized with Docker."
-  tags: [LangChain, RAG, FAISS, FastAPI]
-  metric: "0–100 fit scoring + gap analysis"
-  repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
+- title: "Cat vs. Dog Classifier — CNN Vision"
+  cat: cv
+  category: "Computer Vision"
+  description: "A deep convolutional neural network (CNN) in TensorFlow/Keras with early stopping, data augmentation, and custom convolution layers for binary image classification."
+  tags: [CNN, TensorFlow, Keras, Computer Vision]
+  repo: "https://github.com/mohalkarushikesh/Cat-vs.-Dog-classifier-using-CNN"
   date: 2026-08-27
 
-- title: "Medical Diagnoser — LSTM Symptom Analysis"
-  cat: dl
-  category: "Deep Learning"
-  description: "An LSTM network in TensorFlow/Keras that reads free-text patient symptoms and predicts a likely disease and a recommended prescription via a dual-output, multi-class softmax head — tokenization and a 64-dim embedding feeding a shared 64-unit LSTM layer, trained with categorical crossentropy and Adam."
-  tags: [LSTM, TensorFlow, Keras, Text Classification]
-  repo: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser"
-  date: 2026-08-27
-
-- title: "Pneumonia Detection — VGG16 Transfer Learning"
-  cat: dl
-  category: "Deep Learning"
-  description: "A transfer-learning pipeline that classifies chest X-rays as normal or pneumonia using a frozen ImageNet-pretrained VGG16 convolutional base with a lightweight Flatten + Dense softmax head, trained in Keras with ImageDataGenerator augmentation."
-  tags: [Transfer Learning, VGG16, Keras, Medical Imaging]
-  repo: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning"
-  date: 2026-08-27
+- title: "Finger Blaster — Gesture AR Game"
+  cat: cv
+  category: "Computer Vision"
+  description: "A webcam AR arcade game where your hand becomes the gun — MediaPipe Hand Landmarker tracks index-finger direction to draw an aiming laser, an upward finger-flick fires, and a fist reloads."
+  tags: [MediaPipe, OpenCV, Gesture Recognition]
+  repo: "https://github.com/mohalkarushikesh/CV2_AR_Bird_Huting"
+  date: 2026-02-09
 
 - title: "StockLSTM — Time-Series Forecasting"
   cat: dl
   category: "Deep Learning"
-  description: "A stacked LSTM recurrent network in Keras/TensorFlow that forecasts Google's opening stock price from 60-day input sequences — Min-Max feature scaling, Dropout regularization, and an Adam/MSE training setup, with predictions inverse-transformed and plotted against real prices."
+  description: "A stacked LSTM recurrent network in Keras/TensorFlow that forecasts Google's opening stock price from 60-day input sequences with Dropout regularization."
   tags: [LSTM, Time-Series Forecasting, Keras, TensorFlow]
   repo: "https://github.com/mohalkarushikesh/StockLSTM"
   date: 2026-06-13
@@ -122,18 +163,9 @@
 - title: "MovieRBM — RBM Recommender"
   cat: ml
   category: "Machine Learning"
-  description: "A PyTorch movie recommender that trains a Restricted Boltzmann Machine on the MovieLens dataset for collaborative filtering — converting 1-5 star ratings to binary liked/not-liked feedback and learning 100 latent factors via CD-10 contrastive divergence with Gibbs sampling. Reports a test MAE of 0.2544 on held-out user-movie interactions."
+  description: "A PyTorch movie recommender that trains a Restricted Boltzmann Machine on the MovieLens dataset for collaborative filtering using CD-10 contrastive divergence."
   tags: [RBM, Collaborative Filtering, PyTorch, MovieLens]
   metric: "0.2544 test MAE"
   repo: "https://github.com/mohalkarushikesh/MovieRBM"
   logo: movie-recommender.jpg
   date: 2026-08-10
-
-- title: "Finger Blaster — Gesture-Controlled AR Game"
-  cat: cv
-  category: "Computer Vision"
-  description: "A webcam AR arcade game where your hand becomes the gun — MediaPipe Hand Landmarker tracks index-finger direction to draw an aiming laser, an upward finger-flick fires, and a fist gesture reloads six bullets, all rendered with OpenCV."
-  tags: [MediaPipe, OpenCV, Gesture Recognition]
-  repo: "https://github.com/mohalkarushikesh/CV2_AR_Bird_Huting"
-  date: 2026-02-09
-
