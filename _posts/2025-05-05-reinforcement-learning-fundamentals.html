@@ -1,29 +1,324 @@
 ---
 layout: post
-title: "Modern Reinforcement Learning: PPO, Offline Data, and Safe Policy Optimization"
+title: "Reinforcement Learning Fundamentals"
 date: 2025-05-05
 category: "Reinforcement Learning"
-tags: [Reinforcement Learning, PPO, Offline RL, Policy Optimization, Reward Design, AI Agents]
-description: "A technical deep dive into modern reinforcement learning, including advantage estimation, PPO clipping, offline datasets, reward misspecification, and safe deployment."
+tags: [reinforcement learning, RL, Q-learning, policy gradient, deep RL, PPO, RLHF, DPO, GRPO, MDP, AI agents]
+description: "A practical, in-depth guide to reinforcement learning: MDPs, value and policy methods, deep RL algorithms, and how RL now powers reasoning LLMs through RLHF, DPO, and GRPO."
+mermaid: true
 ---
-<p>Reinforcement learning optimizes behavior through delayed consequences. The difficulty is not merely choosing an algorithm: the agent must learn from correlated trajectories, estimate uncertain returns, explore without catastrophic actions, and operate under a policy that remains safe outside the training environment.</p>
-<nav aria-label="Table of Contents"><h2>Table of Contents</h2><ul><li><a href="#mdp">The control problem</a></li><li><a href="#policy">Policy gradients</a></li><li><a href="#ppo">PPO and advantage estimation</a></li><li><a href="#offline">Offline and preference-based RL</a></li><li><a href="#safe">Safe deployment</a></li></ul></nav>
-<h2 id="mdp">The control problem</h2>
-<p>A Markov decision process contains states, actions, transitions, rewards, and a discount factor. The objective is the expected discounted return:</p>
-<pre><code>J(pi) = E_pi[ sum(t=0..T) gamma^t r_t ]</code></pre>
-<p>In partially observed environments the policy receives observations rather than the true state, so recurrent memory or a learned belief representation may be needed. Reward design is a specification problem: an omitted constraint is often interpreted as permission to exploit it.</p>
-<h2 id="policy">Policy gradients</h2>
-<p>Policy-gradient methods optimize a parameterized distribution directly. The score-function estimator is:</p>
-<pre><code>grad J(theta) = E[ grad log pi_theta(a|s) * A(s,a) ]</code></pre>
-<p>The advantage compares an action with the value expected from the state. A learned critic reduces variance, but critic error can bias the actor update. Normalize advantages per batch only when the resulting change is understood and evaluated.</p>
-<h2 id="ppo">PPO and advantage estimation</h2>
-<p>Proximal Policy Optimization limits how far a new policy moves from the behavior policy:</p>
-<pre><code>r_t(theta) = pi_theta(a_t|s_t) / pi_old(a_t|s_t)
-L_clip = min(r_t A_t, clip(r_t, 1-epsilon, 1+epsilon) A_t)</code></pre>
-<p>Generalized Advantage Estimation uses a lambda-weighted sum of temporal-difference residuals to trade bias for variance. PPO is not automatically stable: rollout freshness, value clipping, entropy pressure, reward scale, episode truncation, and environment determinism all affect results.</p>
-<h2 id="offline">Offline and preference-based RL</h2>
-<p>Offline RL learns from a fixed dataset without new environment interaction. The central hazard is extrapolation error: a critic assigns high value to actions that are poorly represented in the data. Conservative objectives penalize unsupported actions or constrain the learned policy toward the behavior distribution.</p>
-<p>Preference optimization uses comparisons instead of absolute rewards. Direct Preference Optimization increases the likelihood of a preferred response relative to a rejected response under a reference policy, reducing the need to train a separate reward model. It still depends on preference quality, coverage, and resistance to reward hacking.</p>
-<h2 id="safe">Safe deployment</h2>
-<p>Evaluate constraint violations, worst-case episodes, recovery behavior, observation perturbations, and performance under altered dynamics. Use action shields, safety critics, constrained optimization, or a human approval layer when an unsafe action has irreversible cost.</p>
-<p>Before deployment, run the policy in simulation with randomized environments, then shadow it against a trusted controller. Log observations, actions, policy version, value estimates, and intervention reasons. Monitor behavior drift and keep a tested rollback policy. High average return is not enough if the tail contains catastrophic behavior.</p>
+    <p>Reinforcement Learning (RL) is a branch of machine learning focused on sequential decision-making. An agent interacts with an environment, taking actions to maximize cumulative rewards over time. Unlike supervised learning, RL does not rely on labeled data but instead learns from feedback in the form of rewards or penalties. What makes RL distinct — and difficult — is that feedback is often <em>delayed</em>, <em>sparse</em>, and <em>evaluative</em> rather than instructive: the environment tells you how good an action was, not what the correct action would have been.</p>
+
+    <blockquote>RL is the study of learning to act: mapping situations to actions so as to maximize a long-run reward signal, under uncertainty and with delayed consequences.</blockquote>
+
+    <!-- Table of Contents -->
+    <nav aria-label="Table of Contents">
+      <h2>Table of Contents</h2>
+      <ul>
+        <li><a href="#core-concepts">Core Concepts</a></li>
+        <li><a href="#mdp">The Markov Decision Process</a></li>
+        <li><a href="#value-vs-policy">Value-Based vs. Policy-Based Learning</a></li>
+        <li><a href="#algorithms">Popular Algorithms</a></li>
+        <li><a href="#rl-loop">The RL Loop</a></li>
+        <li><a href="#worked-example">A Worked Example: Q-Learning on Gridworld</a></li>
+        <li><a href="#exploration">Exploration Strategies</a></li>
+        <li><a href="#rlhf">RL for Language Models: RLHF, DPO, and GRPO</a></li>
+        <li><a href="#applications">Real-World Applications</a></li>
+        <li><a href="#pitfalls">Best Practices and Common Pitfalls</a></li>
+        <li><a href="#future">Future Outlook</a></li>
+      </ul>
+    </nav>
+
+    <h2 id="core-concepts">Core Concepts</h2>
+    <ul>
+      <li><b>Agent and Environment:</b> The agent is the learner or decision-maker; the environment is everything the agent interacts with and cannot directly control.</li>
+      <li><b>State, Action, Reward:</b> At each step the agent observes a state <code>s</code>, selects an action <code>a</code>, and receives a scalar reward <code>r</code> plus a next state <code>s'</code>.</li>
+      <li><b>Policy (&pi;):</b> A mapping from states to actions (or to a probability distribution over actions). The policy <em>is</em> the agent's behavior; learning a good policy is the whole goal.</li>
+      <li><b>Return:</b> The discounted sum of future rewards, <code>G_t = r_t + &gamma; r_{t+1} + &gamma;^2 r_{t+2} + ...</code>. RL maximizes the <em>expected</em> return, not any single reward.</li>
+      <li><b>Discount Factor (&gamma;):</b> A value in <code>[0, 1)</code> that weights future rewards against immediate ones. Values near 1 make the agent farsighted; values near 0 make it myopic.</li>
+      <li><b>Value Functions and Q-functions:</b> The state-value <code>V(s)</code> estimates expected return from a state; the action-value <code>Q(s, a)</code> estimates expected return from taking action <code>a</code> in state <code>s</code> and following the policy thereafter.</li>
+      <li><b>Exploration vs. Exploitation:</b> The agent must balance trying new actions to discover better strategies (exploration) against using what it already knows to be good (exploitation).</li>
+    </ul>
+
+    <h2 id="mdp">The Markov Decision Process</h2>
+    <p>Almost all of RL is formalized as a <strong>Markov Decision Process (MDP)</strong>, defined by the tuple <code>(S, A, P, R, &gamma;)</code>: a set of states <code>S</code>, a set of actions <code>A</code>, transition dynamics <code>P(s' | s, a)</code>, a reward function <code>R(s, a)</code>, and a discount factor <code>&gamma;</code>. The defining <em>Markov property</em> is that the future depends only on the current state, not on the full history — the state is a sufficient statistic.</p>
+    <p>The core objects satisfy the <strong>Bellman equations</strong>, which express value recursively in terms of the value of successor states. For the optimal action-value function:</p>
+    <pre><code>Q*(s, a) = E[ r + &gamma; * max_a' Q*(s', a') | s, a ]</code></pre>
+    <p>This recursion is the engine behind nearly every value-based algorithm. When we know <code>P</code> and <code>R</code>, we can solve it exactly with dynamic programming (value iteration, policy iteration). When we do not — the usual case — we <em>sample</em> transitions and approximate the expectation, which is what Q-learning and its descendants do.</p>
+
+    <div class="mermaid">
+    flowchart TD
+      A["Full RL problem"] --> B{"Do we know P and R?"}
+      B -->|Yes| C["Dynamic Programming: value iteration, policy iteration"]
+      B -->|No| D{"Learn a model of the environment?"}
+      D -->|Yes| E["Model-based RL: Dyna, MuZero"]
+      D -->|No| F["Model-free RL"]
+      F --> G["Value-based: Q-learning, DQN"]
+      F --> H["Policy-based: REINFORCE, PPO"]
+      F --> I["Actor-Critic: A2C, SAC"]
+    </div>
+
+    <h2 id="value-vs-policy">Value-Based vs. Policy-Based Learning</h2>
+    <p>Model-free RL splits into two broad families that answer the control problem differently. <strong>Value-based</strong> methods learn <code>Q(s, a)</code> and derive a policy implicitly by acting greedily. <strong>Policy-based</strong> methods parameterize and optimize the policy directly. <strong>Actor-critic</strong> methods combine both: an actor proposes actions while a critic estimates value to reduce variance.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Value-Based (e.g. DQN)</th>
+          <th>Policy-Based (e.g. PPO)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>What is learned</td>
+          <td>Action-value function Q(s, a)</td>
+          <td>Policy &pi;(a | s) directly</td>
+        </tr>
+        <tr>
+          <td>Action spaces</td>
+          <td>Best for discrete actions</td>
+          <td>Handles continuous actions naturally</td>
+        </tr>
+        <tr>
+          <td>Policy type</td>
+          <td>Deterministic (greedy)</td>
+          <td>Stochastic, differentiable</td>
+        </tr>
+        <tr>
+          <td>Sample efficiency</td>
+          <td>Higher (off-policy, replay buffer)</td>
+          <td>Lower (often on-policy)</td>
+        </tr>
+        <tr>
+          <td>Stability</td>
+          <td>Can diverge with function approximation</td>
+          <td>More stable, but high variance gradients</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="algorithms">Popular Algorithms</h2>
+
+    <h3>Tabular Methods</h3>
+    <p>For small, discrete state and action spaces, values can be stored exactly in a table. <strong>Q-learning</strong> is the canonical off-policy tabular algorithm; <strong>SARSA</strong> is its on-policy sibling. These are foundational: nearly every deep RL method is a function-approximation generalization of them.</p>
+
+    <h3>Deep Q-Networks (DQN)</h3>
+    <p>DQN (Mnih et al., 2015) replaced the Q-table with a neural network, enabling RL on high-dimensional inputs such as raw Atari pixels. Two tricks made it stable: an <em>experience replay buffer</em> that breaks correlation between consecutive samples, and a periodically updated <em>target network</em> that stabilizes the bootstrapped Bellman target. Later refinements — Double DQN, Dueling DQN, Prioritized Experience Replay, and the combined <em>Rainbow</em> agent — each addressed a specific source of bias or inefficiency.</p>
+
+    <h3>Policy Gradient and Actor-Critic Methods</h3>
+    <ul>
+      <li><b>REINFORCE:</b> The simplest policy gradient; scales the log-probability of actions by the observed return. Unbiased but high variance.</li>
+      <li><b>A2C / A3C:</b> Actor-critic methods that use a learned value baseline (the <em>advantage</em>) to cut variance.</li>
+      <li><b>PPO (Proximal Policy Optimization):</b> The workhorse of modern RL. It constrains each policy update with a clipped surrogate objective so the new policy stays close to the old one, giving robust, low-tuning training. PPO is the algorithm most commonly used to fine-tune large language models.</li>
+      <li><b>SAC (Soft Actor-Critic):</b> An off-policy actor-critic that adds an entropy bonus to the objective, encouraging exploration and delivering strong sample efficiency on continuous-control tasks.</li>
+      <li><b>DDPG / TD3:</b> Off-policy methods for continuous control; TD3 adds twin critics and delayed updates to curb overestimation.</li>
+    </ul>
+
+    <h3>Model-Based RL</h3>
+    <p>Model-based methods learn (or are given) the environment dynamics and plan against them. <strong>MuZero</strong> (DeepMind) learns a latent dynamics model and plans with Monte Carlo Tree Search, mastering Go, chess, shogi, and Atari without being told the rules. <strong>Dreamer</strong> learns a world model and trains a policy inside imagined rollouts, dramatically improving sample efficiency.</p>
+
+    <h2 id="rl-loop">The RL Loop</h2>
+    <blockquote>"The essence of RL is the feedback loop between agent and environment."</blockquote>
+    <div class="mermaid">
+    flowchart TD
+      A["Agent (policy &pi;)"] -->|selects action a| B["Environment"]
+      B -->|next state s'| A
+      B -->|reward r| C["Learning update"]
+      C -->|improves| A
+      A -->|observes state s| A
+    </div>
+
+    <h2 id="worked-example">A Worked Example: Q-Learning on Gridworld</h2>
+    <p>To make the update concrete, consider tabular Q-learning. The agent maintains a table <code>Q[s][a]</code> and, after every transition <code>(s, a, r, s')</code>, nudges its estimate toward the bootstrapped target using a learning rate <code>&alpha;</code>:</p>
+    <pre><code>Q[s][a] &larr; Q[s][a] + &alpha; * ( r + &gamma; * max_a' Q[s'][a'] - Q[s][a] )</code></pre>
+    <p>The bracketed quantity is the <strong>temporal-difference (TD) error</strong> — the gap between what we predicted and what we now estimate. A minimal training loop in Python:</p>
+    <pre><code>import numpy as np
+
+Q = np.zeros((n_states, n_actions))
+alpha, gamma, epsilon = 0.1, 0.99, 0.1
+
+for episode in range(num_episodes):
+    s = env.reset()
+    done = False
+    while not done:
+        # epsilon-greedy action selection
+        if np.random.rand() &lt; epsilon:
+            a = np.random.randint(n_actions)   # explore
+        else:
+            a = int(np.argmax(Q[s]))           # exploit
+
+        s_next, r, done = env.step(a)
+
+        # temporal-difference update
+        td_target = r + gamma * np.max(Q[s_next]) * (not done)
+        Q[s][a] += alpha * (td_target - Q[s][a])
+
+        s = s_next</code></pre>
+    <p>Because Q-learning is <em>off-policy</em>, it learns the optimal greedy policy even while behaving with random exploration. Given enough visits to every state-action pair and a decaying learning rate, the table provably converges to <code>Q*</code>.</p>
+
+    <h2 id="exploration">Exploration Strategies</h2>
+    <p>How an agent explores often matters more than which update rule it uses. Common approaches:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Strategy</th>
+          <th>Idea</th>
+          <th>Trade-off</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>&epsilon;-greedy</td>
+          <td>Act randomly with probability &epsilon;, greedily otherwise</td>
+          <td>Simple; explores uniformly and inefficiently</td>
+        </tr>
+        <tr>
+          <td>Boltzmann / softmax</td>
+          <td>Sample actions in proportion to their estimated value</td>
+          <td>Focuses exploration but needs temperature tuning</td>
+        </tr>
+        <tr>
+          <td>Entropy regularization</td>
+          <td>Reward the policy for staying stochastic (used in SAC, PPO)</td>
+          <td>Smooth and differentiable; central to modern methods</td>
+        </tr>
+        <tr>
+          <td>Intrinsic / curiosity rewards</td>
+          <td>Bonus for reaching novel or surprising states</td>
+          <td>Helps with sparse rewards; can chase noise</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="rlhf">RL for Language Models: RLHF, DPO, and GRPO</h2>
+    <p>The most consequential recent application of RL is aligning and improving large language models. Because "helpfulness" has no closed-form reward, the field learns a reward from human judgments and optimizes against it.</p>
+
+    <h3>RLHF (Reinforcement Learning from Human Feedback)</h3>
+    <p>RLHF, popularized by InstructGPT and used across modern assistant models, has three stages: (1) supervised fine-tuning on demonstrations; (2) training a <em>reward model</em> from human preference comparisons between candidate responses; and (3) optimizing the policy against that reward model with PPO, while a KL penalty keeps the model from drifting too far from the supervised base. The KL term plays the same role as PPO's trust region — it prevents reward hacking and preserves fluency.</p>
+
+    <div class="mermaid">
+    flowchart TD
+      A["Pretrained LLM"] --> B["Supervised fine-tuning (SFT)"]
+      B --> C["Collect human preference pairs"]
+      C --> D["Train reward model"]
+      B --> E["Policy optimization (PPO)"]
+      D --> E
+      E --> F["KL penalty vs. SFT reference"]
+      F --> E
+      E --> G["Aligned model"]
+    </div>
+
+    <h3>DPO (Direct Preference Optimization)</h3>
+    <p>DPO (Rafailov et al., 2023) removed the separate reward model and the online RL loop entirely. It reformulates preference learning as a single classification-style loss on preferred vs. rejected responses, implicitly optimizing the same objective as RLHF. Because it is a stable supervised-style update, DPO is far simpler to run and has become a default for open-weight preference tuning. Variants such as IPO and KTO refine its loss and data assumptions.</p>
+
+    <h3>GRPO and RL for Reasoning</h3>
+    <p>The 2024-2025 wave of <em>reasoning models</em> brought RL back to the center. <strong>GRPO (Group Relative Policy Optimization)</strong>, introduced in the DeepSeekMath work and used prominently in DeepSeek-R1, drops PPO's learned value critic. Instead it samples a <em>group</em> of responses per prompt and normalizes each response's reward against the group's mean and standard deviation to form the advantage — cutting memory and complexity while remaining stable. Crucially, for math and code the reward can be a simple, verifiable check (does the answer match, does the test pass), an approach often called <strong>RLVR — RL from Verifiable Rewards</strong>. This is how models are trained to produce long chains of thought that improve with more inference-time compute, the paradigm behind OpenAI's o-series and DeepSeek-R1.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Needs reward model?</th>
+          <th>Online sampling?</th>
+          <th>Typical use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PPO (RLHF)</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>General alignment / helpfulness</td>
+        </tr>
+        <tr>
+          <td>DPO</td>
+          <td>No (implicit)</td>
+          <td>No (offline pairs)</td>
+          <td>Simple, stable preference tuning</td>
+        </tr>
+        <tr>
+          <td>GRPO</td>
+          <td>No critic; uses group baseline</td>
+          <td>Yes</td>
+          <td>Reasoning with verifiable rewards</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="applications">Real-World Applications</h2>
+    <ul>
+      <li><b>Robotics:</b> Autonomous navigation, dexterous manipulation, and motion planning, increasingly trained in simulation and transferred to hardware (sim-to-real).</li>
+      <li><b>Games:</b> Mastering Go (AlphaGo), chess and shogi (AlphaZero, MuZero), and complex real-time games such as StarCraft II and Dota 2.</li>
+      <li><b>Operations:</b> Dynamic resource allocation, inventory optimization, scheduling, and datacenter energy management.</li>
+      <li><b>Autonomous Vehicles:</b> Learning and refining driving policies under varying, uncertain conditions.</li>
+      <li><b>Language and Reasoning Models:</b> RLHF, DPO, and GRPO for alignment and for training chain-of-thought reasoning.</li>
+      <li><b>Recommendation and Ads:</b> Long-horizon optimization of engagement and retention rather than single-click prediction.</li>
+    </ul>
+
+    <h2 id="pitfalls">Best Practices and Common Pitfalls</h2>
+    <p>Effective RL systems require careful reward design, simulation before deployment, and monitoring for distribution shifts. Poorly specified rewards can lead to unintended behaviors, while realistic simulations ensure robust performance. A few hard-won lessons:</p>
+    <ul>
+      <li><b>Reward hacking:</b> Agents optimize the reward you wrote, not the goal you intended. Shape rewards carefully and watch for degenerate high-reward strategies.</li>
+      <li><b>Sparse rewards:</b> When reward arrives only at success, learning stalls. Use reward shaping, curriculum learning, or intrinsic motivation.</li>
+      <li><b>Instability from bootstrapping:</b> The "deadly triad" of function approximation, bootstrapping, and off-policy learning can cause divergence. Target networks, gradient clipping, and normalized advantages help.</li>
+      <li><b>Evaluation seeds and variance:</b> RL results vary wildly across random seeds; always report across multiple seeds.</li>
+      <li><b>Simulate first:</b> Train and stress-test in simulation, and validate sim-to-real transfer before touching physical systems.</li>
+    </ul>
+
+    <!-- Comparison Table -->
+    <h3>Traditional ML vs Reinforcement Learning</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Traditional ML</th>
+          <th>Reinforcement Learning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Data</td>
+          <td>Labeled datasets</td>
+          <td>Interaction feedback (rewards)</td>
+        </tr>
+        <tr>
+          <td>Objective</td>
+          <td>Minimize prediction error</td>
+          <td>Maximize cumulative reward</td>
+        </tr>
+        <tr>
+          <td>Learning</td>
+          <td>Static training</td>
+          <td>Dynamic trial-and-error</td>
+        </tr>
+        <tr>
+          <td>Feedback</td>
+          <td>Instructive (correct answer given)</td>
+          <td>Evaluative and delayed (how good the action was)</td>
+        </tr>
+        <tr>
+          <td>Data distribution</td>
+          <td>Assumed i.i.d. and fixed</td>
+          <td>Non-stationary; shaped by the agent's own policy</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="future">Future Outlook</h2>
+    <p>
+      Future RL research focuses on <strong>sample efficiency</strong>, <strong>safe exploration</strong>, and <strong>scalability</strong>.
+      Current algorithms often require millions of interactions to learn effectively, which is impractical in many real-world settings.
+      Researchers are developing methods to reduce data requirements, leverage transfer learning, and integrate prior knowledge.
+    </p>
+    <ul>
+      <li><b>Sample Efficiency:</b> Using model-based RL and offline datasets to reduce training interactions.</li>
+      <li><b>Offline RL:</b> Learning entirely from logged data without live interaction — critical where exploration is costly or unsafe (healthcare, finance).</li>
+      <li><b>Safe Exploration:</b> Ensuring agents avoid catastrophic actions during training and deployment.</li>
+      <li><b>Scalability:</b> Applying RL to large-scale systems like smart grids, logistics, and healthcare.</li>
+      <li><b>RL from Verifiable Rewards:</b> Scaling reasoning by rewarding checkable correctness in math, code, and tool use.</li>
+      <li><b>Integration with Other Paradigms:</b> Combining RL with supervised learning, self-supervised learning, and generative models for richer capabilities, including agentic LLM systems that plan and use tools.</li>
+    </ul>
+
+    <br><br>
+    <p><strong>Reinforcement Learning is not just an algorithmic framework — it is a paradigm for building adaptive, intelligent agents that learn from experience, and it has become the training signal that turns capable models into aligned, reasoning ones.</strong></p>

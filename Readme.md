@@ -6,7 +6,7 @@ dark/light theme choice across visits — everything else (mobile menu, project 
 rotating role text) is pure CSS (`:has()` + `animation-timeline`). Blog posts load Mermaid only when
 they contain a diagram.
 
-🔗 **Live:** https://rushikesh-cts.github.io/
+🔗 **Live:** https://mohalkarushikesh.github.io/
 
 ## ⚠️ Previewing locally
 

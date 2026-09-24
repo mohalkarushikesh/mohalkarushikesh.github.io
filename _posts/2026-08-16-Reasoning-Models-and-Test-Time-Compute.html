@@ -1,0 +1,195 @@
+---
+layout: post
+title: "Reasoning Models and Test-Time Compute"
+date: 2026-08-16
+category: "Research"
+tags: [Reasoning Models, Test-Time Compute, Chain-of-Thought, RLVR, o1, DeepSeek-R1, Inference Scaling, Distillation]
+description: "How the field shifted from scaling training to spending compute at inference — chain-of-thought as computation, RLVR, and the sampling, verification, and search strategies that turn extra thinking into better answers."
+mermaid: true
+---
+<p>For most of the deep-learning era, the recipe for a better model was simple: more parameters, more data, more training FLOPs. <strong>Reasoning models</strong> break that framing. They show that once a model can generate a long, structured chain of intermediate steps, you can buy additional accuracy at <em>inference time</em> — by letting the model think longer, sample more candidates, and select among them — without touching the weights at all. This article explains the mechanics of that shift, the training regime (RLVR) that made it reliable, the concrete test-time strategies you can deploy, and the tradeoffs that decide when extra thinking is worth paying for.</p>
+
+<blockquote>Test-time compute turns inference from a fixed cost into a dial: spend more tokens or more samples, and — up to a point — buy more accuracy.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#shift">The shift: train-time vs test-time scaling</a></li>
+    <li><a href="#cot">Chain-of-thought as computation</a></li>
+    <li><a href="#references">Reference points: o1 and DeepSeek-R1</a></li>
+    <li><a href="#rlvr">RLVR: reinforcement learning with verifiable rewards</a></li>
+    <li><a href="#strategies">Test-time strategies</a></li>
+    <li><a href="#pipeline">A generic inference pipeline</a></li>
+    <li><a href="#methods-table">Methods, cost, and when to use them</a></li>
+    <li><a href="#distillation">Distilling reasoning into smaller models</a></li>
+    <li><a href="#tradeoffs">Practical tradeoffs and when thinking stops helping</a></li>
+    <li><a href="#takeaways">Takeaways</a></li>
+  </ul>
+</nav>
+
+<h2 id="shift">The shift: train-time vs test-time scaling</h2>
+<p>The scaling laws that dominated the last decade describe how loss falls as you increase parameters, data, and training compute together. That relationship is real, but it is also <em>front-loaded</em>: the cost is paid once, during pretraining, and every inference thereafter is cheap and fixed. <strong>Test-time scaling</strong> is a complementary axis. Instead of making a single forward pass smarter through bigger weights, you let a fixed model do <em>more work per query</em> — generating longer reasoning, drawing multiple samples, or searching over candidate solutions.</p>
+<p>The two axes are not rivals; they compose. A model still has to be pretrained well enough to produce coherent reasoning steps. But once it can, test-time compute often gives a steeper accuracy-per-dollar curve on hard problems than an equivalent spend on more pretraining would — because the extra compute is targeted precisely at the queries that need it.</p>
+
+<table>
+  <thead>
+    <tr><th>Dimension</th><th>Train-time scaling</th><th>Test-time scaling</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>When compute is spent</td><td>Once, during training</td><td>Per query, at inference</td></tr>
+    <tr><td>What changes</td><td>Model weights</td><td>Amount of computation per prompt</td></tr>
+    <tr><td>Cost profile</td><td>Large fixed cost, cheap fixed inference</td><td>Cheap to enable, variable per-query cost</td></tr>
+    <tr><td>Adaptivity</td><td>Same effort for every input</td><td>Can spend more on hard inputs, less on easy ones</td></tr>
+    <tr><td>Typical lever</td><td>Parameters, tokens, epochs</td><td>Reasoning length, samples, search width</td></tr>
+    <tr><td>Main risk</td><td>Diminishing returns, data/compute limits</td><td>Latency and token cost; returns plateau</td></tr>
+  </tbody>
+</table>
+
+<h2 id="cot">Chain-of-thought as computation</h2>
+<p><strong>Chain-of-thought (CoT)</strong> prompting — asking a model to work through intermediate steps before answering — was originally framed as a prompting trick that improved accuracy on arithmetic and multi-step reasoning. The deeper interpretation is that each generated token is an opportunity to do computation. A transformer has a fixed depth per forward pass; it cannot perform an unbounded number of sequential operations to answer in a single step. By emitting intermediate tokens, the model uses its own output as a scratchpad, effectively unrolling a longer computation across many forward passes.</p>
+<p>This reframing matters. If reasoning tokens <em>are</em> computation, then the length of the reasoning trace is a compute budget you can adjust. Short traces solve easy problems cheaply; long traces give the model room to decompose, backtrack, check intermediate results, and reconsider — behaviors that look like search carried out in natural language.</p>
+
+<h3>From prompted CoT to trained "thinking"</h3>
+<p>Early CoT was elicited by prompting ("let's think step by step"). Modern reasoning models internalize the behavior: they are trained to produce a long reasoning trace by default, often demarcated from the final answer so that the trace can be truncated, hidden, or budgeted independently. The important qualitative change is that these traces are not just longer — they contain <em>self-correction</em>: the model proposes an approach, notices an error, and revises. That behavior is what makes additional thinking tokens pay off rather than merely padding the output.</p>
+
+<h2 id="references">Reference points: o1 and DeepSeek-R1</h2>
+<p>Two systems anchor the public conversation about reasoning models.</p>
+<ul>
+  <li><strong>OpenAI o1</strong> was the first widely deployed model explicitly marketed around inference-time reasoning. Its central claim was that accuracy on hard math, coding, and science problems improves as the model is allowed to spend more compute thinking before answering. The detailed reasoning trace is kept internal, and users interact with a summarized result.</li>
+  <li><strong>DeepSeek-R1</strong> is notable because its training methodology was described openly. It demonstrated that long-reasoning behavior — including emergent self-verification and longer traces on harder problems — can be induced primarily through reinforcement learning against checkable rewards, rather than requiring an enormous corpus of hand-written reasoning demonstrations. Its companion exploration (a variant trained with RL from a base model with minimal supervised warm-up) showed that reasoning can emerge from RL alone, though a small amount of supervised data improves readability and stability.</li>
+</ul>
+<p>The takeaway from both is the same: the capability to reason at length is trainable, and once present, it exposes an inference-time knob that trades compute for accuracy.</p>
+
+<h2 id="rlvr">RLVR: reinforcement learning with verifiable rewards</h2>
+<p>The training ingredient that made reasoning reliable is <strong>reinforcement learning with verifiable rewards (RLVR)</strong>. The idea is to restrict RL to domains where the correctness of a final answer can be checked automatically and cheaply:</p>
+<ul>
+  <li><strong>Math</strong> — the final numeric or symbolic answer can be compared against a known solution, or checked with a computer-algebra system.</li>
+  <li><strong>Code</strong> — a candidate program can be run against unit tests; passing or failing is an objective signal.</li>
+  <li><strong>Formal tasks</strong> — anything with a machine-checkable acceptance condition (a proof checker, a constraint solver, a parser).</li>
+</ul>
+<p>Because the reward comes from a verifier rather than a learned preference model, it is far less susceptible to reward hacking on the final answer, and it scales without human labeling. The model samples reasoning traces, the verifier scores the final answers, and a policy-gradient method (commonly a PPO-style or group-relative variant) pushes the policy toward traces that lead to correct answers.</p>
+
+<h3>Why verifiability is the crux</h3>
+<p>RLVR works precisely where the reward is unambiguous. That is also its main limitation: the technique is strongest in math, code, and formal reasoning, and weaker in open-ended domains — summarization, dialogue quality, subjective judgment — where "correct" is not machine-checkable. A subtle failure mode is that the outcome reward only checks the <em>final answer</em>, not the reasoning; a model can reach the right answer through flawed steps, so a correct answer does not guarantee a sound trace.</p>
+
+<h2 id="strategies">Test-time strategies</h2>
+<p>Given a trained reasoning model, several inference-time strategies convert extra compute into accuracy. They can be combined.</p>
+
+<h3>Longer reasoning (sequential compute)</h3>
+<p>The simplest lever is to let a single trace run longer — a larger thinking budget. This is sequential compute: one chain that decomposes and self-corrects more thoroughly. It benefits problems that genuinely require many dependent steps, but returns fall off once the model has "found" the solution.</p>
+
+<h3>Best-of-N sampling</h3>
+<p>Draw <code>N</code> independent samples (with temperature &gt; 0) and select one. This is parallel compute. Selection requires a criterion — a verifier, a reward model, or agreement among samples. Best-of-N shines when the model can <em>sometimes</em> reach the right answer; more draws raise the chance that at least one is correct, provided you can identify it.</p>
+
+<h3>Self-consistency (majority voting)</h3>
+<p>A special case of best-of-N that needs no external verifier: sample many traces, extract each final answer, and take the majority vote. It exploits the observation that correct answers tend to be reached by many independent reasoning paths, while errors are scattered. It works well when answers are discrete and comparable (a number, a label, a short expression) and poorly for free-form outputs where "the same answer" is hard to define.</p>
+
+<h3>Verifier / reward-model reranking</h3>
+<p>Instead of voting, score each candidate with a separate model and keep the top-ranked one. Two flavors matter:</p>
+<ul>
+  <li><strong>Outcome reward models (ORMs)</strong> score the final answer only.</li>
+  <li><strong>Process reward models (PRMs)</strong> score intermediate steps, giving denser signal and enabling step-level selection or pruning.</li>
+</ul>
+<p>Reranking can beat majority voting when a good verifier exists — especially in domains where the "majority" answer is systematically biased — but it adds the cost and failure modes of a second model.</p>
+
+<h3>Tree / search-style exploration</h3>
+<p>Rather than sampling whole traces independently, treat reasoning as a search tree: expand promising partial traces, score them (often with a PRM), prune weak branches, and optionally backtrack. Beam search, lookahead, and Monte-Carlo-Tree-Search-style variants fall here. Search allocates compute adaptively toward promising regions of the solution space and can outperform naive best-of-N at equal budget, at the cost of substantial orchestration complexity and many partial-trace evaluations.</p>
+
+<h2 id="pipeline">A generic inference pipeline</h2>
+<p>Most of these strategies fit one template: generate reasoning, optionally produce multiple candidates, evaluate them, and select an answer. The diagram below shows the general flow; a plain long-CoT model is just the degenerate case where <code>N = 1</code> and selection is trivial.</p>
+
+<div class="mermaid">
+flowchart TD
+  A[Prompt / problem] --> B[Generate reasoning trace]
+  B --> C{Test-time budget?}
+  C -->|Single trace| D[Take final answer]
+  C -->|Multiple samples| E[Sample N traces in parallel]
+  E --> F{Selection method}
+  F -->|Majority vote| G[Self-consistency]
+  F -->|Score candidates| H[Verifier / reward-model rerank]
+  F -->|Expand and prune| I[Tree search over partial traces]
+  G --> J[Selected answer]
+  H --> J
+  I --> J
+  D --> K[Return answer]
+  J --> K
+</div>
+
+<h2 id="methods-table">Methods, cost, and when to use them</h2>
+<p>The strategies differ sharply in cost and in the conditions under which they help. A rough guide:</p>
+
+<table>
+  <thead>
+    <tr><th>Method</th><th>Compute type</th><th>Relative cost</th><th>Needs a verifier?</th><th>When to use</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Longer reasoning trace</td>
+      <td>Sequential</td>
+      <td>Low–moderate (more tokens, one call)</td>
+      <td>No</td>
+      <td>Problems with many genuinely dependent steps; default first lever</td>
+    </tr>
+    <tr>
+      <td>Best-of-N sampling</td>
+      <td>Parallel</td>
+      <td>~N&times; generation, plus selection</td>
+      <td>Yes (to pick the winner)</td>
+      <td>Model sometimes succeeds and you can score outputs</td>
+    </tr>
+    <tr>
+      <td>Self-consistency (majority vote)</td>
+      <td>Parallel</td>
+      <td>~N&times; generation, negligible selection</td>
+      <td>No</td>
+      <td>Discrete, comparable answers (math results, labels)</td>
+    </tr>
+    <tr>
+      <td>Verifier / reward-model rerank</td>
+      <td>Parallel + scoring</td>
+      <td>~N&times; generation + N scoring passes</td>
+      <td>Yes (ORM or PRM)</td>
+      <td>A trustworthy verifier exists; majority vote is biased</td>
+    </tr>
+    <tr>
+      <td>Tree / search exploration</td>
+      <td>Adaptive parallel</td>
+      <td>Highest; many partial-trace evaluations</td>
+      <td>Usually (PRM for step scores)</td>
+      <td>Large solution spaces; budget and orchestration available</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A practical rule: reach for sequential compute (longer thinking) first because it is the cheapest to enable, add self-consistency when answers are discrete and you lack a verifier, and escalate to reranking or search only when a good verifier justifies the extra parallel cost.</p>
+
+<h2 id="distillation">Distilling reasoning into smaller models</h2>
+<p>Running a large reasoning model with a big thinking budget is expensive per query. A powerful follow-on result is that the <em>behavior</em> can be compressed: generate long, high-quality reasoning traces with a strong teacher model (ideally filtered so you keep only traces whose final answers verify as correct), then fine-tune a much smaller student on those traces. The student learns to imitate the reasoning style — decomposition, self-checking, backtracking — and inherits a large share of the teacher's reasoning ability at a fraction of the inference cost.</p>
+<p>The DeepSeek-R1 work popularized this: distilled dense models trained on traces from the larger RL-trained model showed strong reasoning on math and code benchmarks despite being far smaller. The practical implication for engineers is a deployment pattern — run expensive RL and long-reasoning generation once with a large model, then serve distilled students that are cheap enough for production. It is worth noting that distillation transfers the observable trace behavior; the student does not receive the reward signal directly, so its ceiling is bounded by the quality and coverage of the teacher's traces.</p>
+
+<h2 id="tradeoffs">Practical tradeoffs and when thinking stops helping</h2>
+<p>Test-time compute is a dial, not free accuracy. The costs are concrete:</p>
+<ul>
+  <li><strong>Latency.</strong> Longer traces mean more sequential decoding steps, which directly increases time-to-answer. Best-of-N and search can be parallelized across samples, trading money for wall-clock time, but longer single traces cannot.</li>
+  <li><strong>Token cost.</strong> Reasoning tokens are billed like any other. A model that thinks for thousands of tokens before a one-line answer can cost far more per query than its output length suggests, and sampling N traces multiplies that.</li>
+  <li><strong>Diminishing and negative returns.</strong> Accuracy versus compute typically rises then flattens. Beyond a problem-dependent point, extra thinking adds cost without accuracy — and can even hurt, as an over-long trace talks itself out of a correct early answer ("overthinking"). Self-consistency and best-of-N saturate once the correct answer already dominates the sample distribution.</li>
+</ul>
+
+<h3>Knowing when to stop</h3>
+<p>Because the plateau is problem-dependent, the mature move is to spend <em>adaptively</em> rather than using a fixed global budget:</p>
+<ul>
+  <li>Route by difficulty — cheap short-CoT (or a small model) for easy queries, large budgets only for hard ones.</li>
+  <li>Use an early-exit signal — stop sampling once majority vote stabilizes or a verifier is confident.</li>
+  <li>Cap the thinking budget per query and expose it as a tunable knob, so latency- and cost-sensitive paths can dial it down.</li>
+</ul>
+<p>The engineering goal is not maximum thinking; it is spending the <em>right</em> amount of compute on each query.</p>
+
+<h2 id="takeaways">Takeaways</h2>
+<ul>
+  <li>Reasoning models make inference compute a first-class scaling axis, complementary to (not a replacement for) train-time scaling.</li>
+  <li>Chain-of-thought is best understood as computation: reasoning tokens unroll a longer, self-correcting computation across forward passes.</li>
+  <li>RLVR — RL against automatically checkable rewards in math and code — is what made long reasoning reliable and label-efficient; its limits are domains where correctness is not machine-checkable.</li>
+  <li>o1 and DeepSeek-R1 are the anchoring reference points; DeepSeek-R1 additionally showed the training recipe and distillation into smaller models openly.</li>
+  <li>Test-time strategies form a toolkit — longer traces, best-of-N, self-consistency, verifier reranking, tree search — with very different cost profiles and preconditions.</li>
+  <li>Extra thinking has diminishing and eventually negative returns; the discipline is adaptive, budgeted compute, not maximal compute.</li>
+</ul>

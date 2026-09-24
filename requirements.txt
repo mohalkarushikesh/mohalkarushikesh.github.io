@@ -1,0 +1,4 @@
+# Dependencies for the no-Ruby local preview builder (preview_build.py).
+# Install with:  python -m pip install -r requirements.txt
+python-liquid>=2.0,<3
+PyYAML>=6.0

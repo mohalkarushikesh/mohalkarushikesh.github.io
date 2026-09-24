@@ -3,21 +3,28 @@ layout: post
 title: "Foundation Models for Causal Inference (CausalFM)"
 date: 2026-05-25
 category: "Research"
-tags: [CausalFM, Causal Inference, Foundation Models, Transformers, Counterfactuals]
-description: "CausalFM is a transformer-based foundation model trained on causal data so it can reason about cause and effect rather than mere correlation."
+tags: [CausalFM, Causal Inference, Foundation Models, Transformers, Counterfactuals, PFN, Do-Calculus, In-Context Learning]
+description: "CausalFM is a transformer-based foundation model trained on simulated causal worlds so it can reason about cause and effect, estimate treatment effects, and answer counterfactual what-if questions rather than just detect correlations."
+mermaid: true
 ---
-<p><strong>CausalFM</strong> is a new type of AI model designed to learn <em>cause–effect relationships</em>, not just statistical patterns. Where most models answer <em>“what usually goes together?”</em>, CausalFM aims to answer <em>“what causes what?”</em> — a key step toward AI that reasons like a scientist.</p>
+<p><strong>CausalFM</strong> is a new type of AI model designed to learn <em>cause–effect relationships</em>, not just statistical patterns. Where most models answer <em>“what usually goes together?”</em>, CausalFM aims to answer <em>“what causes what?”</em> — a key step toward AI that reasons like a scientist. It sits at the intersection of two threads that matured over 2024–2026: <em>foundation models</em> (large pre-trained transformers) and the <em>Prior-Data Fitted Network (PFN)</em> line of work that turned Bayesian inference into a single forward pass.</p>
 
-<blockquote>CausalFM = a foundation model that can answer “what causes what?” and “what happens if we change something?”</blockquote>
+<blockquote>CausalFM = a foundation model that can answer “what causes what?” and “what happens if we change something?” — in context, without retraining.</blockquote>
 
 <nav aria-label="Table of Contents">
   <h2>Table of Contents</h2>
   <ul>
     <li><a href="#problem">The problem it solves</a></li>
+    <li><a href="#ladder">The ladder of causation</a></li>
     <li><a href="#how">How it works</a></li>
+    <li><a href="#pfn">Prior-Data Fitted Networks in depth</a></li>
+    <li><a href="#pipeline">The training and inference pipeline</a></li>
     <li><a href="#example">A worked example</a></li>
+    <li><a href="#estimands">Causal estimands it targets</a></li>
     <li><a href="#why">Why it's a breakthrough</a></li>
     <li><a href="#compare">How it compares</a></li>
+    <li><a href="#limits">Limitations and open problems</a></li>
+    <li><a href="#takeaways">Key takeaways</a></li>
   </ul>
 </nav>
 
@@ -29,16 +36,86 @@ smoking <em>causes</em> cancer.</p>
 <p>CausalFM instead learns <strong>cause → effect</strong> relationships, so it can distinguish
 "these happen together" from "this one produces that one."</p>
 
+<p>The gap matters because of <em>confounding</em>. A variable that influences both a treatment and an outcome creates a correlation that is not causal. The classic illustration: ice-cream sales correlate with drowning deaths, but neither causes the other — summer heat drives both. A purely correlational model will happily "predict" drownings from ice-cream sales and be badly wrong the moment you <em>intervene</em> (e.g., ban ice cream to save swimmers).</p>
+
+<div class="mermaid">
+flowchart TD
+  H["Hidden cause: hot weather"] --> I["Ice-cream sales"]
+  H --> D["Drownings"]
+  I -. "spurious correlation" .-> D
+</div>
+
+<p>CausalFM's job is to recover the arrows in diagrams like this — the <em>structure</em> — and then answer questions that require knowing that structure, not just the joint distribution over the variables.</p>
+
+<h2 id="ladder">The ladder of causation</h2>
+<p>Judea Pearl's <em>Ladder of Causation</em> is the cleanest way to frame what CausalFM adds. It describes three rungs of reasoning, each strictly more powerful than the one below.</p>
+
+<table>
+  <thead>
+    <tr><th>Rung</th><th>Question type</th><th>Formal operator</th><th>Example</th><th>Plain LLM?</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1. Association</td><td>Seeing / observing</td><td><code>P(y | x)</code></td><td>“Patients on drug A tend to recover.”</td><td>Yes</td></tr>
+    <tr><td>2. Intervention</td><td>Doing / acting</td><td><code>P(y | do(x))</code></td><td>“If we <em>give</em> drug A, recovery rises.”</td><td>Not reliably</td></tr>
+    <tr><td>3. Counterfactual</td><td>Imagining / retrospection</td><td><code>P(y_x | x', y')</code></td><td>“This patient recovered — would they have <em>without</em> the drug?”</td><td>No</td></tr>
+  </tbody>
+</table>
+
+<p>The key distinction is between <code>P(y | x)</code> (observing that <code>x</code> happened) and <code>P(y | do(x))</code> (forcing <code>x</code> to a value, severing whatever normally determined it). Standard prediction lives entirely on Rung 1. CausalFM targets Rungs 2 and 3, which is exactly where high-stakes decisions live: policy, medicine, pricing, and treatment allocation.</p>
+
 <h2 id="how">How it works</h2>
 <p>CausalFM builds on the <strong>transformer</strong> architecture but adds a few key ideas:</p>
 <ul>
   <li><strong>Trained on simulated worlds.</strong> It uses synthetic data generated from causal
-  models, learning scenarios of the form “if A changes, what happens to B?”</li>
+  models — typically structural causal models (SCMs) with randomly sampled graphs and mechanisms — learning scenarios of the form “if A changes, what happens to B?”</li>
   <li><strong>Prior-Data Fitted Networks (PFNs).</strong> The model is trained on defined
-  cause-effect rules (priors) and then learns to generalize beyond them.</li>
-  <li><strong>In-context causal reasoning.</strong> Given an input, it can answer “what caused this?”
-  and “what if we change X?” — a form of <em>counterfactual reasoning</em>.</li>
+  cause-effect rules (priors) and then learns to approximate Bayesian posterior inference in a single forward pass, generalizing beyond any single prior instance.</li>
+  <li><strong>In-context causal reasoning.</strong> Given a dataset in its context window, it can answer “what caused this?”
+  and “what if we change X?” — a form of <em>counterfactual reasoning</em> — <em>without</em> gradient updates at test time.</li>
 </ul>
+
+<h3>Structural causal models as the data-generating prior</h3>
+<p>A structural causal model represents each variable as a deterministic function of its direct causes plus an independent noise term:</p>
+<pre><code>X := f_X(U_X)
+Z := f_Z(X, U_Z)
+Y := f_Y(X, Z, U_Y)</code></pre>
+<p>Here the assignment operator <code>:=</code> is directional: changing <code>X</code> propagates to <code>Y</code>, but not vice versa. An <em>intervention</em> <code>do(X = x)</code> replaces the first line with the constant <code>X := x</code>, cutting the arrows coming <em>into</em> <code>X</code> while leaving everything downstream intact. This surgery on the graph is precisely what a correlational model cannot represent, and it is what CausalFM learns to emulate by seeing many such worlds.</p>
+
+<h2 id="pfn">Prior-Data Fitted Networks in depth</h2>
+<p>PFNs (Müller et al., popularized through <strong>TabPFN</strong> for tabular prediction and extended with a stronger TabPFN v2 in 2025) reframe learning as <em>in-context Bayesian inference</em>. Instead of fitting parameters to one dataset, you:</p>
+<ol>
+  <li>Define a <strong>prior</strong> — a distribution over datasets. For CausalFM this prior is a distribution over SCMs: sample a graph, sample mechanisms, sample noise, then draw observational and interventional samples.</li>
+  <li><strong>Pre-train</strong> a transformer to predict held-out targets given the rest of a sampled dataset, minimizing cross-entropy. Averaged over the prior, this objective drives the network toward the true Bayesian posterior predictive distribution.</li>
+  <li>At <strong>inference</strong>, feed a real dataset as context. The network outputs a calibrated predictive (or interventional) distribution in one forward pass — no per-dataset training loop.</li>
+</ol>
+
+<p>The elegant consequence: all the expensive computation happens <em>once</em>, offline, during pre-training. The prior encodes your causal assumptions, and the network amortizes inference over every dataset the prior can produce. This is why PFN-style models are fast at test time — inference is a forward pass, not an optimization.</p>
+
+<table>
+  <thead>
+    <tr><th>Aspect</th><th>Classic per-dataset model</th><th>PFN / CausalFM</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Where fitting happens</td><td>At test time, per dataset</td><td>Once, during pre-training</td></tr>
+    <tr><td>Test-time cost</td><td>Full training loop</td><td>Single forward pass</td></tr>
+    <tr><td>Assumptions live in</td><td>Model class + hyperparameters</td><td>The prior over SCMs</td></tr>
+    <tr><td>Output</td><td>Point estimate or one posterior</td><td>Amortized posterior predictive</td></tr>
+  </tbody>
+</table>
+
+<h2 id="pipeline">The training and inference pipeline</h2>
+<p>The full loop, from prior to answer, looks like this:</p>
+
+<div class="mermaid">
+flowchart TD
+  P["Prior over SCMs<br/>graphs + mechanisms + noise"] --> S["Sample synthetic datasets<br/>observational + interventional"]
+  S --> T["Pre-train transformer<br/>predict held-out targets"]
+  T --> M["CausalFM weights (frozen)"]
+  R["Real dataset in context"] --> M
+  M --> O["Posterior predictive:<br/>P(y given do(x)), effects, counterfactuals"]
+</div>
+
+<p>Two properties are worth stressing. First, the prior is a <em>modeling choice</em>: broaden it (more graph shapes, nonlinear mechanisms, heavier-tailed noise) and the model becomes more robust but harder to train; narrow it and the model is sharper but more brittle to prior misspecification. Second, because interventional and counterfactual queries are simulated during pre-training, the network can answer Rung-2 and Rung-3 questions at test time even though the real dataset it is handed may be purely observational — provided the query is <em>identifiable</em> from that data under the assumed structure.</p>
 
 <h2 id="example">A worked example</h2>
 <p><strong>Input:</strong> a patient took drug A and recovered.</p>
@@ -49,26 +126,82 @@ smoking <em>causes</em> cancer.</p>
   <li>What if we changed the dosage?</li>
 </ul>
 
+<p>Concretely, suppose severity <code>Z</code> influences both whether a patient receives the drug <code>X</code> and whether they recover <code>Y</code> — a textbook confounder. The naive association <code>P(Y=recover | X=drug)</code> is contaminated by <code>Z</code>, because sicker patients may be preferentially treated. The causal quantity we actually want is the interventional average:</p>
+
+<pre><code>ATE = E[Y | do(X=1)] - E[Y | do(X=0)]</code></pre>
+
+<p>Under the back-door criterion, adjusting for <code>Z</code> identifies it:</p>
+
+<pre><code>P(Y | do(X=x)) = sum_z  P(Y | X=x, Z=z) * P(Z=z)</code></pre>
+
+<div class="mermaid">
+flowchart TD
+  Z["Severity Z (confounder)"] --> X["Drug X"]
+  Z --> Y["Recovery Y"]
+  X --> Y
+</div>
+
+<p>CausalFM effectively learns to perform this adjustment implicitly: because its pre-training distribution contained many confounded worlds where the correct answer required back-door adjustment, the network internalizes the pattern and applies it in context. The counterfactual question — "would <em>this</em> recovered patient have recovered without the drug?" — is Rung 3 and requires the full SCM, including the noise term realized for that individual; this is where CausalFM's SCM-based prior is essential and a plain regression model cannot follow.</p>
+
+<h2 id="estimands">Causal estimands it targets</h2>
+<p>A general causal foundation model aims to cover a family of standard estimands within one interface:</p>
+
+<table>
+  <thead>
+    <tr><th>Estimand</th><th>Meaning</th><th>Typical use</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ATE</td><td>Average treatment effect across a population</td><td>Does the policy help on average?</td></tr>
+    <tr><td>CATE</td><td>Conditional (per-subgroup) treatment effect</td><td>Who benefits most? Personalization</td></tr>
+    <tr><td>ATT</td><td>Effect on the treated</td><td>Was treating these units worth it?</td></tr>
+    <tr><td>Counterfactual</td><td>Outcome for a specific unit under an alternative action</td><td>Individual what-if, attribution</td></tr>
+  </tbody>
+</table>
+
+<p>Classical identification strategies map onto CausalFM's capabilities: <strong>back-door adjustment</strong> when confounders are observed, the <strong>front-door criterion</strong> when a mediator is available but confounders are not, and <strong>instrumental variables</strong> when an exogenous nudge exists. A causal foundation model is attractive because it can, in principle, select and apply the right strategy from the structure implied by its context rather than requiring the analyst to hand-code each one.</p>
+
 <h2 id="why">Why it's a breakthrough</h2>
 <ul>
-  <li><strong>Moves AI beyond correlation</strong> — it can reason about <em>why</em> things happen.</li>
+  <li><strong>Moves AI beyond correlation</strong> — it can reason about <em>why</em> things happen, not just what co-occurs.</li>
   <li><strong>Works in critical domains</strong> — medicine, economics, and policy decisions, where
-  acting on a spurious correlation is costly.</li>
+  acting on a spurious correlation is costly or dangerous.</li>
   <li><strong>A general framework</strong> — it can address back-door and front-door causal problems
-  and instrumental-variable analysis within one model.</li>
+  and instrumental-variable analysis within one model, rather than a bespoke estimator per problem.</li>
+  <li><strong>Amortized and fast</strong> — like TabPFN, inference is a forward pass, so a practitioner gets an answer in seconds instead of standing up a custom causal pipeline.</li>
+  <li><strong>Rides the 2025–2026 tabular FM wave</strong> — the same in-context, prior-fitted recipe that made TabPFN v2 competitive with tuned gradient-boosted trees on small tabular data now extends naturally to causal queries.</li>
 </ul>
 
 <h2 id="compare">How it compares</h2>
 <table>
   <thead>
-    <tr><th>Model type</th><th>What it primarily learns</th></tr>
+    <tr><th>Model type</th><th>What it primarily learns</th><th>Highest rung reached</th></tr>
   </thead>
   <tbody>
-    <tr><td>GPT / LLM</td><td>Patterns (correlation)</td></tr>
-    <tr><td>Reasoning models</td><td>Step-by-step problem solving</td></tr>
-    <tr><td><strong>CausalFM</strong></td><td>Cause-and-effect (causality)</td></tr>
+    <tr><td>GPT / LLM</td><td>Patterns (correlation) over language</td><td>Association</td></tr>
+    <tr><td>Reasoning models</td><td>Step-by-step problem solving</td><td>Association (+ verbal what-if)</td></tr>
+    <tr><td>TabPFN / tabular PFN</td><td>Amortized predictive posterior</td><td>Association</td></tr>
+    <tr><td>Hand-built causal estimator</td><td>One estimand under fixed assumptions</td><td>Intervention / Counterfactual</td></tr>
+    <tr><td><strong>CausalFM</strong></td><td>Cause-and-effect (causality), amortized</td><td>Intervention + Counterfactual</td></tr>
   </tbody>
 </table>
+
+<h2 id="limits">Limitations and open problems</h2>
+<p>A causal foundation model is not magic, and it inherits the fundamental constraints of causal inference:</p>
+<ul>
+  <li><strong>Identifiability is a hard wall.</strong> No model can recover an effect that the data cannot identify. If a confounder is unobserved and no valid instrument or front-door path exists, the answer is genuinely undetermined — CausalFM can at best report a range, not a point.</li>
+  <li><strong>Prior misspecification.</strong> If the real data-generating process falls outside the model's prior over SCMs (unusual graph size, mechanism shape, or noise), estimates degrade — the causal analogue of out-of-distribution failure.</li>
+  <li><strong>Context-window limits.</strong> Like other PFNs, the amount of data it can condition on in one pass is bounded, which constrains very large datasets or very high-dimensional problems.</li>
+  <li><strong>Assumptions are still assumptions.</strong> Back-door and front-door validity, no interference between units (SUTVA), and correct variable definitions remain the analyst's responsibility. The model automates estimation, not causal thinking.</li>
+  <li><strong>Validation is intrinsically hard.</strong> Counterfactuals are never observed, so evaluating Rung-3 answers relies on synthetic benchmarks or rare randomized experiments.</li>
+</ul>
+
+<h2 id="takeaways">Key takeaways</h2>
+<ul>
+  <li>CausalFM combines the <em>foundation-model</em> and <em>PFN</em> recipes: pre-train once on simulated causal worlds, then answer causal queries in context.</li>
+  <li>It targets Rungs 2 and 3 of Pearl's ladder — interventions and counterfactuals — where plain LLMs and standard predictors fail.</li>
+  <li>Its power and its fragility both come from the same place: the <em>prior over structural causal models</em>.</li>
+  <li>It automates causal <em>estimation</em>, but not the identification assumptions that make estimation valid.</li>
+</ul>
 
 <p><strong>One-line intuition:</strong> CausalFM tries to make AI think like a scientist, not just a
 pattern recognizer — a transformer-based foundation model trained on causal data so it can perform

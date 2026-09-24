@@ -1,7 +1,12 @@
+# Jekyll build output & caches
 _site/
-preview_build.py
 .jekyll-cache/
 .jekyll-metadata
 .sass-cache/
+
+# Bundler / Ruby (github-pages gem is a moving target — resolve fresh per machine)
 Gemfile.lock
 vendor/
+
+# Python previewer scratch
+__pycache__/

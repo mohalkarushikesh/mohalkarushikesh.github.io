@@ -1,0 +1,238 @@
+---
+layout: post
+title: "Agentic AI and the Model Context Protocol (MCP)"
+date: 2026-08-30
+category: "LLM & Agents"
+tags: [Agentic AI, MCP, RAG, LangGraph, ReAct, Tool Use, Multi-Agent, Function Calling, Guardrails, LangChain]
+description: "A senior engineer's tour of the path from plain RAG to autonomous, multi-agent systems, and how the Model Context Protocol standardizes the way LLM apps connect to tools and data."
+mermaid: true
+---
+<p>Retrieval-augmented generation (RAG) was the first widely adopted pattern for grounding large language models (LLMs) in private data. But grounding is not the same as <em>acting</em>. Over the last two years the frontier has shifted from "fetch context, then answer" to systems that reason, call tools, observe results, and adapt — agents. This piece traces that progression with concrete engineering detail, then explains the <strong>Model Context Protocol (MCP)</strong>: an open standard that decouples models from integrations the way USB-C decoupled devices from proprietary chargers. Throughout, I illustrate the ideas with three of my own projects rather than abstractions.</p>
+
+<blockquote>RAG gives a model knowledge; agents give it agency; MCP gives that agency a standard socket to plug into the world.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#from-rag">From plain RAG to something that acts</a></li>
+    <li><a href="#tool-use">Tool use and function calling</a></li>
+    <li><a href="#react">The ReAct reason-act-observe loop</a></li>
+    <li><a href="#pmc">Planning, memory, and self-critique</a></li>
+    <li><a href="#multi-agent">Multi-agent orchestration with LangGraph</a></li>
+    <li><a href="#guardrails">Guardrails, governance, and auditability</a></li>
+    <li><a href="#mcp">The Model Context Protocol</a></li>
+    <li><a href="#topology">MCP host and server topology</a></li>
+    <li><a href="#projects">Grounding it in real projects</a></li>
+    <li><a href="#compare">RAG vs single agent vs multi-agent</a></li>
+    <li><a href="#takeaways">Takeaways</a></li>
+  </ul>
+</nav>
+
+<h2 id="from-rag">From plain RAG to something that acts</h2>
+<p>Classic RAG is a fixed, one-shot pipeline: embed the query, retrieve the top-<code>k</code> chunks from a vector store, stuff them into the prompt, and generate. It is powerful because it separates <em>knowledge</em> from <em>parameters</em> — you can update a knowledge base without retraining — but it is also rigid. The pipeline runs the same way regardless of whether the retrieved context is relevant, contradictory, or empty.</p>
+<p>The limitations show up quickly in production:</p>
+<ul>
+  <li><strong>No recovery.</strong> If retrieval returns junk, the model still answers from junk (or hallucinates).</li>
+  <li><strong>Single hop.</strong> Questions that require decomposition — "compare A's Q3 numbers to B's and flag anomalies" — cannot be answered by one retrieval pass.</li>
+  <li><strong>Read-only.</strong> Plain RAG reads context; it cannot take an action, call an API, or write to a system of record.</li>
+</ul>
+<p>Advanced RAG variants close part of this gap by making the pipeline adaptive: <em>hybrid search</em> (dense vectors plus sparse lexical BM25) improves recall on rare terms; a <em>reranker</em> (a cross-encoder scoring query-document pairs) sharpens precision on the shortlist; and <em>corrective</em> and <em>self-RAG</em> add feedback — the system grades its own retrieved context, and if it is insufficient it re-queries, reformulates, or falls back to another source. Once you add those decision points, you have effectively introduced control flow, and you are one step away from an agent.</p>
+
+<h2 id="tool-use">Tool use and function calling</h2>
+<p>The pivotal capability that turns a language model into an agent is <strong>tool use</strong>, exposed by most model providers as <em>function calling</em>. Instead of only emitting prose, the model can emit a structured request — a function name plus JSON arguments conforming to a schema you supply. Your runtime executes that function, captures the result, and feeds it back into the conversation.</p>
+<pre><code>{
+  "tool": "search_invoices",
+  "arguments": {
+    "vendor": "Acme Corp",
+    "status": "unpaid",
+    "period": "2026-Q2"
+  }
+}</code></pre>
+<p>Three engineering points matter here:</p>
+<ul>
+  <li><strong>The schema is the contract.</strong> The model chooses <em>whether</em> and <em>how</em> to call a tool based purely on the tool's name, description, and parameter schema. Good descriptions are prompt engineering.</li>
+  <li><strong>The model does not run code.</strong> It only proposes a call; your host decides whether to execute it. That separation is where you attach authorization and validation.</li>
+  <li><strong>Retrieval itself becomes a tool.</strong> In an agentic RAG system, "search the knowledge base" is just one more callable tool the agent can choose, alongside "query SQL" or "call the ERP API."</li>
+</ul>
+
+<h2 id="react">The ReAct reason-act-observe loop</h2>
+<p>Tool use becomes agency when you wrap it in a loop. The <strong>ReAct</strong> pattern (Yao et al., "ReAct: Synergizing Reasoning and Acting in Language Models") interleaves free-form reasoning ("Thought") with tool calls ("Action") and their returned results ("Observation"). The model reasons about what it knows, acts, observes the outcome, and reasons again — iterating until it can produce a final answer.</p>
+
+<div class="mermaid">
+flowchart TD
+    A[User goal] --> B[Thought: reason about next step]
+    B --> C{Need a tool?}
+    C -- Yes --> D[Action: emit tool call + args]
+    D --> E[Observation: tool result]
+    E --> F[Update working context]
+    F --> B
+    C -- No --> G[Self-critique: is the answer complete and grounded?]
+    G -- No --> B
+    G -- Yes --> H[Final answer]
+</div>
+
+<p>The loop is deceptively simple but introduces the core operational concerns of agents: it can loop forever, rack up cost, or wander off task. Production loops therefore add a <em>step budget</em>, a <em>timeout</em>, and a <em>termination condition</em> beyond "the model said it is done." The "Observation" step is also the natural place to enforce output validation — if a tool returns an error or an out-of-range value, the agent should see that and correct, not silently proceed.</p>
+
+<h2 id="pmc">Planning, memory, and self-critique</h2>
+<p>A raw ReAct loop is reactive. Robust agents add three capabilities on top.</p>
+
+<h3>Planning</h3>
+<p>For multi-step goals, letting the model improvise every step is fragile. <em>Plan-and-execute</em> approaches first generate an explicit plan (an ordered list of subgoals), then execute each step, re-planning when reality diverges. This reduces wasted tool calls and makes behavior more auditable — you can log the plan and diff it against what actually happened.</p>
+
+<h3>Memory</h3>
+<p>Agents need state that outlives a single context window. It is useful to distinguish:</p>
+<ul>
+  <li><strong>Short-term / working memory</strong> — the running scratchpad of thoughts, actions, and observations within one task.</li>
+  <li><strong>Long-term memory</strong> — persisted facts, past interactions, or learned preferences, typically stored in a vector database and retrieved on demand. This is where RAG re-enters: retrieval becomes the agent's recall mechanism.</li>
+</ul>
+
+<h3>Self-critique</h3>
+<p>Reflection patterns (for example, Reflexion) have the agent evaluate its own output against the goal before finalizing: "Did I answer every part? Is each claim supported by an observation? Did any tool fail silently?" A distinct critic pass — sometimes a separate model call or a separate agent — catches errors the actor is blind to. Corrective and self-RAG are a specialized form of this: the critique target is specifically the quality and sufficiency of retrieved evidence.</p>
+
+<h2 id="multi-agent">Multi-agent orchestration with LangGraph</h2>
+<p>A single agent handling planning, retrieval, tool use, and critique in one prompt eventually hits a ceiling: the prompt becomes overloaded and the model's attention is split across too many responsibilities. The response is decomposition into <strong>multiple specialized agents</strong> — a planner, one or more workers, a critic, and often a supervisor that routes work between them.</p>
+<p>Orchestrating this reliably requires more than chaining prompts. <strong>LangGraph</strong> models the system as a stateful graph: nodes are agents or tools, edges are transitions, and a shared typed state object flows through the graph. Because edges can be conditional and cyclic, you can express loops (retry, re-plan, escalate to a human) as first-class structure rather than hoping the model decides correctly inside a single prompt. Crucially, that explicit graph is also what makes the system <em>observable</em>: every node transition is a checkpoint you can log, replay, and audit.</p>
+<p>Common multi-agent topologies:</p>
+<ul>
+  <li><strong>Supervisor / router</strong> — a coordinator agent decides which specialist handles each subtask.</li>
+  <li><strong>Pipeline</strong> — agents run in sequence, each refining the previous output (extract, then validate, then post).</li>
+  <li><strong>Debate / critic</strong> — an actor proposes and a critic challenges, iterating until convergence or a step limit.</li>
+</ul>
+
+<h2 id="guardrails">Guardrails, governance, and auditability</h2>
+<p>An agent that can call tools can, by definition, cause side effects — send an email, move money, modify a record. That makes safety engineering non-optional. Guardrails operate at several layers:</p>
+<ul>
+  <li><strong>Input validation</strong> — schema and range checks on tool arguments before execution; reject or clamp bad values rather than trusting the model.</li>
+  <li><strong>Authorization</strong> — the host, not the model, enforces which tools are callable and with what scope. The model proposes; policy disposes.</li>
+  <li><strong>Human-in-the-loop</strong> — high-impact actions (payments above a threshold, irreversible deletes) pause for explicit approval. LangGraph's interrupt-and-resume support makes this a graph edge.</li>
+  <li><strong>Output filtering</strong> — checks for PII leakage, prompt-injection artifacts, and policy violations before a result is committed or shown.</li>
+  <li><strong>Audit trail</strong> — every thought, tool call, argument, observation, and approval is logged so a decision can be reconstructed after the fact. In regulated workflows this is the difference between a demo and a deployable system.</li>
+</ul>
+<p>Prompt injection deserves special mention: any tool that ingests untrusted text (a web page, an email, a PDF) can carry instructions aimed at hijacking the agent. Treat all tool output as untrusted data, never as privileged instructions, and keep authorization outside the model's reach.</p>
+
+<h2 id="mcp">The Model Context Protocol</h2>
+<p>Every capability above depends on connecting a model to external tools and data. Historically, each connection was bespoke: a custom adapter per model, per framework, per data source. That is an M-by-N integration problem — every new tool must be re-wired for every host. The <strong>Model Context Protocol (MCP)</strong>, an open standard introduced by Anthropic, collapses that to M-plus-N by defining a common interface between LLM applications and integrations. It is frequently described as "USB-C for AI tools": one standard port, many interchangeable peripherals.</p>
+<p>MCP defines a client-server architecture with a small, well-defined vocabulary:</p>
+<ul>
+  <li><strong>Host</strong> — the LLM application the user interacts with (an IDE assistant, a chat app, a custom agent runtime).</li>
+  <li><strong>Client</strong> — a connector inside the host that maintains a one-to-one session with a server.</li>
+  <li><strong>Server</strong> — a program that exposes capabilities for a specific system (a database, a filesystem, a SaaS API).</li>
+</ul>
+<p>Servers expose three kinds of primitives over a defined transport:</p>
+<ul>
+  <li><strong>Tools</strong> — callable functions with typed schemas, meant to be invoked by the model (model-controlled actions).</li>
+  <li><strong>Resources</strong> — read-only data the host can load as context, such as files or records (application-controlled).</li>
+  <li><strong>Prompts</strong> — reusable, parameterized prompt templates a server offers, typically surfaced to the user (user-controlled).</li>
+</ul>
+<p>Communication uses JSON-RPC 2.0 messages over a transport — commonly <em>stdio</em> for local servers and an HTTP-based streaming transport for remote ones. The payoff is decoupling: because a tool is described by the protocol rather than baked into a particular framework, any MCP-compatible host can use any MCP server without custom glue. Swap the model, keep the servers; add a server, and every host gains the capability.</p>
+
+<h2 id="topology">MCP host and server topology</h2>
+<p>The diagram shows a single host running multiple MCP clients, each bound to one server, with the model reasoning over the tools and resources those servers advertise.</p>
+
+<div class="mermaid">
+flowchart TD
+    U[User] --> H[Host: LLM application]
+    H --> M[LLM / agent loop]
+    subgraph HostProcess[Host process]
+        H
+        M
+        C1[MCP client A]
+        C2[MCP client B]
+        C3[MCP client C]
+    end
+    M --> C1
+    M --> C2
+    M --> C3
+    C1 -- JSON-RPC over stdio --> S1[MCP server: filesystem]
+    C2 -- JSON-RPC over stdio --> S2[MCP server: database]
+    C3 -- JSON-RPC over HTTP stream --> S3[MCP server: SaaS API]
+    S1 --> R1[(Local files)]
+    S2 --> R2[(SQL store)]
+    S3 --> R3[(External service)]
+    S1 -. exposes .-> P[Tools / Resources / Prompts]
+    S2 -. exposes .-> P
+    S3 -. exposes .-> P
+</div>
+
+<h2 id="projects">Grounding it in real projects</h2>
+<p>These patterns are not theoretical for me — they map directly onto systems I have built.</p>
+
+<h3>Advanced RAG</h3>
+<p>My <strong>Advanced RAG</strong> project implements the adaptive-retrieval ideas from the first section: <em>hybrid search</em> combines dense and sparse retrieval, a <em>reranker</em> reorders the candidate set for precision, and <em>corrective / self-RAG</em> logic grades retrieved evidence and re-queries when it is insufficient. The whole flow is orchestrated as a <strong>LangGraph</strong> graph, so the "grade context, then decide to answer or retry" decision is an explicit conditional edge rather than hidden prompt behavior. It is the clearest illustration of the RAG-to-agent boundary: still retrieval-centric, but with genuine control flow and self-critique.</p>
+
+<h3>Custodian</h3>
+<p><strong>Custodian</strong> is a <em>multi-agent accounts-payable automation</em> system with explicit <em>governance layers</em>. It is the multi-agent and guardrails sections made concrete: specialized agents handle stages of the AP workflow, while governance layers enforce validation, authorization, and auditability around actions that touch financial records. Because AP is a domain where an incorrect or unapproved action has real consequences, the human-in-the-loop and audit-trail concerns discussed above are core requirements, not afterthoughts.</p>
+
+<h3>Job Application Agent</h3>
+<p>The <strong>Job Application Agent</strong> is an <em>agentic RAG</em> system built with <strong>LangChain</strong> and a <strong>FAISS</strong> vector store. It demonstrates the memory-as-retrieval idea: FAISS provides the recall layer the agent queries as a tool, and LangChain wires the reasoning loop around it. It shows how the same retrieval primitives from Advanced RAG can serve as an agent's long-term memory rather than a one-shot answer pipeline.</p>
+
+<h2 id="compare">RAG vs single agent vs multi-agent</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Dimension</th>
+      <th>Plain RAG</th>
+      <th>Single agent (ReAct)</th>
+      <th>Multi-agent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Control flow</td>
+      <td>Fixed, one-shot pipeline</td>
+      <td>Dynamic loop; model chooses next step</td>
+      <td>Graph of agents with routing and cycles</td>
+    </tr>
+    <tr>
+      <td>Can take actions</td>
+      <td>No (read-only retrieval)</td>
+      <td>Yes, via tool calls</td>
+      <td>Yes, distributed across specialists</td>
+    </tr>
+    <tr>
+      <td>Handles multi-step tasks</td>
+      <td>Weak (single hop)</td>
+      <td>Moderate; can overload one prompt</td>
+      <td>Strong; decomposed by responsibility</td>
+    </tr>
+    <tr>
+      <td>Error recovery</td>
+      <td>None built in</td>
+      <td>Self-critique and retry in loop</td>
+      <td>Dedicated critic/supervisor agents</td>
+    </tr>
+    <tr>
+      <td>Latency and cost</td>
+      <td>Lowest, predictable</td>
+      <td>Higher, variable per loop</td>
+      <td>Highest; parallel or chained calls</td>
+    </tr>
+    <tr>
+      <td>Observability / audit</td>
+      <td>Simple to trace</td>
+      <td>Trace of thought-action-observation</td>
+      <td>Per-node checkpoints; richest audit trail</td>
+    </tr>
+    <tr>
+      <td>Best fit</td>
+      <td>Grounded Q&amp;A over a corpus</td>
+      <td>Tasks needing a few tools and iteration</td>
+      <td>Complex workflows with governance needs</td>
+    </tr>
+    <tr>
+      <td>My example</td>
+      <td>Baseline retrieval</td>
+      <td>Job Application Agent; Advanced RAG</td>
+      <td>Custodian (AP automation)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="takeaways">Takeaways</h2>
+<ul>
+  <li>The progression from RAG to agents is a progression in <em>control flow</em>: from a fixed pipeline, to an adaptive loop, to a graph of cooperating specialists.</li>
+  <li>Tool use is the hinge; the ReAct loop turns tool use into agency; planning, memory, and self-critique make that agency reliable.</li>
+  <li>Guardrails and auditability are what separate a demo from a deployable agent, especially where actions have real consequences.</li>
+  <li>MCP standardizes the connection between LLM apps and the outside world, turning an M-by-N integration mess into a swappable ecosystem of tools, resources, and prompts.</li>
+  <li>Choose the simplest architecture that meets the need: reach for a multi-agent system only when a single agent genuinely cannot carry the workload or the governance requirements.</li>
+</ul>

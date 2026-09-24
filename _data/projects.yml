@@ -1,21 +1,25 @@
 # Projects shown on the home page (fetched from github.com/mohalkarushikesh).
 # cat: one of llm | dl | cv | nlp | rl | ml  (drives the filter + icon)
 # logo: file in assets/img/ used as the card header (gradient + icon fallback if omitted)
-- title: "Custodian — Governed AP AI Agents"
+- title: "Advanced RAG — Enterprise Pipeline"
   cat: llm
   category: "LLM & Agents"
-  description: "A production-style multi-agent accounts-payable platform that ingests invoices, scores fraud and risk, routes approvals, and auto-pays safe invoices through six governance layers with audit trails, PII protection, OCR, and real LLM providers via LiteLLM."
-  tags: [Multi-Agent, LiteLLM, FastAPI, Governance, Docker]
-  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/custodian-ap"
-  date: 2026-09-06
-
-- title: "Enterprise Advanced RAG"
-  cat: llm
-  category: "LLM & Agents"
-  description: "A production-grade LangGraph RAG system for Kubernetes operations with hybrid retrieval, reranking, HyDE, CRAG, Self-RAG, Text2SQL approval gates, semantic caching, and a nine-layer guardrails pipeline."
-  tags: [LangGraph, RAG, Qdrant, FastAPI, Guardrails]
+  description: "An enterprise-grade Retrieval-Augmented Generation system for Kubernetes IT operations — hybrid search, cross-encoder reranking, HyDE, corrective and self-RAG loops, and Text2SQL, all orchestrated with LangGraph and guarded by a nine-layer safety framework."
+  tags: [RAG, LangGraph, Qdrant, Guardrails]
+  metric: "9-layer safety framework"
   repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG"
-  date: 2026-09-06
+  logo: pexels-apple-1834328.jpg
+  date: 2026-08-14
+
+- title: "Custodian — Agentic AP Automation"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A multi-agent AI system for banking accounts-payable that autonomously reads invoices, scores them for fraud and risk, routes approvals, and auto-pays safe transactions — wrapped in six governance layers for full auditability and provenance."
+  tags: [Multi-Agent, LiteLLM, Governance, FastAPI]
+  metric: "6 governance layers · auto-pay"
+  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/custodian-ap"
+  logo: stock-price.jpg
+  date: 2026-08-13
 
 - title: "microGPT-X"
   cat: llm
@@ -71,15 +75,6 @@
   logo: vahtuk.jpg
   date: 2026-06-15
 
-- title: "Stock Price Prediction (LSTM)"
-  cat: dl
-  category: "Deep Learning"
-  description: "An RNN with LSTM layers that forecasts Google stock prices from historical time-series data with a rolling lookback window."
-  tags: [RNN, LSTM, Time-Series, TensorFlow]
-  repo: "https://github.com/mohalkarushikesh/StockLSTM"
-  logo: stock-price.jpg
-  date: 2026-06-13
-
 - title: "RAG App — PDF Q&A"
   cat: llm
   category: "LLM & Agents"
@@ -89,11 +84,56 @@
   logo: ragapp.jpg
   date: 2026-08-11
 
-- title: "Movie Recommender (RBM)"
+# --- Added from github.com/mohalkarushikesh, descriptions verified against each repo's README ---
+
+- title: "Job Application Agent — Agentic RAG"
+  cat: llm
+  category: "LLM & Agents"
+  description: "A LangChain-orchestrated agent that analyzes job descriptions, retrieves relevant experience from a resume via local FAISS + sentence-transformers RAG, researches companies with DuckDuckGo search, and generates tailored cover letters, resume bullets, and 0-100 fit scores with gap analysis — served through a FastAPI backend and Streamlit UI, containerized with Docker."
+  tags: [LangChain, RAG, FAISS, FastAPI]
+  metric: "0–100 fit scoring + gap analysis"
+  repo: "https://github.com/mohalkarushikesh/Job-Application-Assistant-Agent"
+  date: 2026-08-27
+
+- title: "Medical Diagnoser — LSTM Symptom Analysis"
+  cat: dl
+  category: "Deep Learning"
+  description: "An LSTM network in TensorFlow/Keras that reads free-text patient symptoms and predicts a likely disease and a recommended prescription via a dual-output, multi-class softmax head — tokenization and a 64-dim embedding feeding a shared 64-unit LSTM layer, trained with categorical crossentropy and Adam."
+  tags: [LSTM, TensorFlow, Keras, Text Classification]
+  repo: "https://github.com/mohalkarushikesh/Deep-Learning-based-Medical-Diagnoser"
+  date: 2026-08-27
+
+- title: "Pneumonia Detection — VGG16 Transfer Learning"
+  cat: dl
+  category: "Deep Learning"
+  description: "A transfer-learning pipeline that classifies chest X-rays as normal or pneumonia using a frozen ImageNet-pretrained VGG16 convolutional base with a lightweight Flatten + Dense softmax head, trained in Keras with ImageDataGenerator augmentation."
+  tags: [Transfer Learning, VGG16, Keras, Medical Imaging]
+  repo: "https://github.com/mohalkarushikesh/Pneumonia-Detection-using-Deep-Learning"
+  date: 2026-08-27
+
+- title: "StockLSTM — Time-Series Forecasting"
+  cat: dl
+  category: "Deep Learning"
+  description: "A stacked LSTM recurrent network in Keras/TensorFlow that forecasts Google's opening stock price from 60-day input sequences — Min-Max feature scaling, Dropout regularization, and an Adam/MSE training setup, with predictions inverse-transformed and plotted against real prices."
+  tags: [LSTM, Time-Series Forecasting, Keras, TensorFlow]
+  repo: "https://github.com/mohalkarushikesh/StockLSTM"
+  date: 2026-06-13
+
+- title: "MovieRBM — RBM Recommender"
   cat: ml
   category: "Machine Learning"
-  description: "A movie recommendation system using Restricted Boltzmann Machines for collaborative filtering, learning latent factors from user–movie interactions."
-  tags: [RBM, Recommender, Collaborative Filtering]
+  description: "A PyTorch movie recommender that trains a Restricted Boltzmann Machine on the MovieLens dataset for collaborative filtering — converting 1-5 star ratings to binary liked/not-liked feedback and learning 100 latent factors via CD-10 contrastive divergence with Gibbs sampling. Reports a test MAE of 0.2544 on held-out user-movie interactions."
+  tags: [RBM, Collaborative Filtering, PyTorch, MovieLens]
+  metric: "0.2544 test MAE"
   repo: "https://github.com/mohalkarushikesh/MovieRBM"
   logo: movie-recommender.jpg
-  date: 2026-08-11
+  date: 2026-08-10
+
+- title: "Finger Blaster — Gesture-Controlled AR Game"
+  cat: cv
+  category: "Computer Vision"
+  description: "A webcam AR arcade game where your hand becomes the gun — MediaPipe Hand Landmarker tracks index-finger direction to draw an aiming laser, an upward finger-flick fires, and a fist gesture reloads six bullets, all rendered with OpenCV."
+  tags: [MediaPipe, OpenCV, Gesture Recognition]
+  repo: "https://github.com/mohalkarushikesh/CV2_AR_Bird_Huting"
+  date: 2026-02-09
+

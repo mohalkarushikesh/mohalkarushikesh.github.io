@@ -1,27 +1,285 @@
 ---
 layout: post
-title: "Fraud Detection at Financial Scale: Temporal Features, Graphs, and Cost-Sensitive ML"
+title: "AI in Finance"
 date: 2025-09-14
 category: "AI in Finance"
-tags: [Fraud Detection, Graph Neural Networks, Temporal ML, Calibration, MLOps]
-description: "A technical deep dive into production fraud detection using temporal evaluation, heterogeneous graphs, cost-sensitive ranking, and auditable decision systems."
+tags: [Finance, Fraud Detection, Risk Modeling, Algorithmic Trading, RegTech, MLOps, Explainability, Generative AI, Graph Neural Networks, Reinforcement Learning]
+description: "A working engineer's tour of AI across the financial stack: fraud detection with graph neural networks, credit and risk modeling, algorithmic trading, RegTech, and the MLOps and governance that keep it all auditable in 2025-2026."
+mermaid: true
 ---
-<p>Financial fraud detection is a streaming decision problem under adversarial pressure. The model must rank scarce suspicious events, operate within a review budget, and remain auditable when behavior changes. The most dangerous errors are often evaluation errors: future information leakage, random splits across recurring entities, and metrics disconnected from investigation capacity.</p>
-<nav aria-label="Table of Contents"><h2>Table of Contents</h2><ul><li><a href="#formulation">Formulating the event</a></li><li><a href="#features">Temporal features</a></li><li><a href="#graphs">Graph-based detection</a></li><li><a href="#evaluation">Evaluation and calibration</a></li><li><a href="#serving">Real-time serving</a></li></ul></nav>
-<h2 id="formulation">Formulating the event</h2>
-<p>Define a prediction timestamp and label window. At time <code>t</code>, the model may use account, device, merchant, and transaction information known at or before <code>t</code>. A chargeback or confirmed investigation outcome that arrives later belongs to the label, never to the feature snapshot.</p>
-<pre><code>risk_t = model(x_transaction_t, history[:t], graph_snapshot[:t])
-label = confirmed_fraud_in_window(t, t + horizon)</code></pre>
-<p>Fraud labels are delayed, noisy, and selected by investigation policy. Track label maturity and avoid treating every unlabeled recent event as a negative example.</p>
-<h2 id="features">Temporal features</h2>
-<p>Useful features describe velocity and deviation: count and amount in rolling windows, time since the last device or beneficiary change, geographic distance, merchant novelty, and deviation from a user's historical profile. Point-in-time feature generation should be reproducible from an event log so a training row can be replayed exactly.</p>
-<p>Heavy-tailed amounts and counts benefit from log transforms, robust clipping, and explicit missingness indicators. Feature freshness is part of the contract: a 24-hour-old risk aggregate may be acceptable for batch underwriting but unsafe for card authorization.</p>
-<h2 id="graphs">Graph-based detection</h2>
-<p>Fraud is relational. Construct a heterogeneous graph with typed nodes such as accounts, cards, devices, IPs, merchants, and beneficiaries. Edges represent transfers, logins, shared devices, or address relationships. Graph features can include neighborhood counts, connected-component statistics, temporal motifs, and community risk.</p>
-<p>Graph neural networks aggregate messages across neighbors, but temporal leakage is easy: a graph built from the full dataset lets a historical transaction observe future edges. Build snapshots as of the prediction time, or use temporal message passing with event timestamps. A simple graph baseline should be measured before introducing a GNN; many fraud gains come from correct relational features rather than model complexity.</p>
-<h2 id="evaluation">Evaluation and calibration</h2>
-<p>Random cross-validation is usually invalid because the same entities recur. Use forward-chaining windows, an embargo around label periods, and a final untouched time range. Report precision at investigation capacity, recall at a fixed alert rate, PR-AUC, expected financial loss, and calibration. A strong AUROC can coexist with a useless top one percent ranking.</p>
-<p>Separate the probability estimate from the action policy. A calibrated score can trigger review, step-up authentication, or a block depending on current thresholds, customer friction, and available investigators. Monitor subgroup performance and false-positive cost; aggressive blocking can create a different business failure from missed fraud.</p>
-<h2 id="serving">Real-time serving</h2>
-<p>The online path needs an event store, low-latency feature retrieval, a versioned model server, and an idempotent decision record. Cache features with explicit freshness bounds. Return a reason code backed by feature evidence, not an invented explanation. If an upstream feature is unavailable, use a declared fallback and record that degraded mode.</p>
-<p>Replay production events through the model during incident analysis, but protect sensitive financial data. Monitor p99 latency, feature freshness, score distributions, alert rate, approval rate, drift, and delayed outcomes. A fraud model is healthy only when its ranking remains useful under changing attacker behavior and its decisions remain explainable to investigators.</p>
+<p>
+    Artificial Intelligence (AI) has become a cornerstone of modern financial systems. From detecting fraudulent transactions in milliseconds to optimizing billion-dollar portfolios, AI-driven models are reshaping how financial institutions manage risk, serve customers, and make decisions. The integration of <b>machine learning</b>, <b>deep learning</b>, and <b>natural language processing</b> enables data-driven precision that surpasses traditional analytical methods. This piece walks the full stack the way an engineer actually meets it: what the models are, where they live in the pipeline, how they fail, and what it takes to run them under real regulatory scrutiny.
+</p>
+
+<blockquote>In finance, a model is not done when it is accurate — it is done when it is accurate, fast, fair, monitored, and explainable to a regulator.</blockquote>
+
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#landscape">Where AI sits in the financial stack</a></li>
+    <li><a href="#applications">Key applications in finance</a></li>
+    <li><a href="#fraud">Fraud and anomaly detection in depth</a></li>
+    <li><a href="#credit">Credit scoring and risk modeling</a></li>
+    <li><a href="#trading">Algorithmic and reinforcement-learning trading</a></li>
+    <li><a href="#genai">Generative AI and LLMs on the desk</a></li>
+    <li><a href="#challenges">Key challenges and risks</a></li>
+    <li><a href="#explainability">Explainability and model risk management</a></li>
+    <li><a href="#mlops">Responsible AI and MLOps in finance</a></li>
+    <li><a href="#future">The future of AI in finance</a></li>
+    <li><a href="#takeaways">Takeaways</a></li>
+  </ul>
+</nav>
+
+<h2 id="landscape">Where AI sits in the financial stack</h2>
+<p>
+    Before listing applications it helps to see the shape of a production financial-AI system. Almost every use case, whether fraud or trading, follows the same skeleton: ingest events, engineer features (often against a low-latency feature store), score with a model, apply a decision policy with business rules and thresholds, and route the outcome to a human or an automated action. Monitoring and governance wrap the whole thing.
+</p>
+<div class="mermaid">
+flowchart TD
+    A[Raw events: transactions, market ticks, applications] --> B[Streaming and batch ingestion]
+    B --> C[Feature engineering and feature store]
+    C --> D[Model inference: ML / DL / GNN / LLM]
+    D --> E[Decision policy: thresholds and business rules]
+    E --> F{Automated or human?}
+    F -->|Low risk| G[Auto-approve or auto-execute]
+    F -->|High risk / borderline| H[Analyst or trader review]
+    G --> I[System of record]
+    H --> I
+    I --> J[Monitoring: drift, fairness, latency]
+    J --> C
+</div>
+<p>
+    The feedback edge from monitoring back to features is the part teams underestimate. In finance the world moves under the model — spending patterns, fraud tactics, and market regimes all shift — so the loop that detects that shift is as important as the model itself.
+</p>
+
+<h2 id="applications">Key applications in finance</h2>
+<p>
+    AI's impact on finance spans the entire value chain — from front-office customer engagement to back-office risk control and compliance. Below are some of the most influential areas:
+</p>
+<ul>
+    <li><b>Fraud Detection and Anomaly Detection:</b>
+        AI models monitor real-time transaction data to identify suspicious activity. Techniques such as unsupervised anomaly detection, graph neural networks, and ensemble learning can detect patterns that deviate from a customer's normal behavior, helping banks minimize losses due to fraud.
+    </li>
+    <li><b>Credit Scoring and Risk Modeling:</b>
+        Traditional credit models often rely on fixed statistical rules, while AI can integrate a wider range of signals — including social behavior, payment history, and digital footprints — to evaluate creditworthiness more accurately. These systems improve financial inclusion by assessing "thin-file" customers who lack historical data.
+    </li>
+    <li><b>Algorithmic and High-Frequency Trading:</b>
+        Machine learning algorithms analyze vast streams of market data, spotting micro-trends and executing trades at sub-second speeds. Deep reinforcement learning strategies can even learn optimal trading policies dynamically.
+    </li>
+    <li><b>Robo-Advisors and Customer Personalization:</b>
+        AI-driven platforms offer automated investment advice tailored to individual risk preferences and goals. Using NLP and behavioral analytics, these advisors improve user engagement and financial literacy while reducing operational costs.
+    </li>
+    <li><b>RegTech and Compliance Automation:</b>
+        Natural language processing assists in analyzing regulatory documents, detecting compliance risks, and automating reporting — helping institutions meet complex legal standards more efficiently.
+    </li>
+</ul>
+
+<p>The table below maps each application to the model families that dominate it today and the constraint that most shapes its engineering.</p>
+<table>
+  <thead>
+    <tr><th>Application</th><th>Typical model families</th><th>Dominant constraint</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Fraud detection</td><td>Gradient-boosted trees, autoencoders, graph neural networks</td><td>Latency and class imbalance</td></tr>
+    <tr><td>Credit scoring</td><td>Logistic regression, GBMs, monotonic/constrained models</td><td>Explainability and fairness</td></tr>
+    <tr><td>Algorithmic trading</td><td>Time-series models, deep RL, sequence models</td><td>Non-stationarity and latency</td></tr>
+    <tr><td>Robo-advisory</td><td>Optimization plus recommenders and NLP</td><td>Suitability and disclosure</td></tr>
+    <tr><td>RegTech / compliance</td><td>Transformers, retrieval-augmented LLMs</td><td>Accuracy and auditability</td></tr>
+  </tbody>
+</table>
+
+<h2 id="fraud">Fraud and anomaly detection in depth</h2>
+<p>
+    Fraud is the canonical hard problem in financial ML for three reasons: the positive class is rare (often well under one percent of transactions), the adversary adapts, and a decision must be made in the time it takes a card terminal to authorize — typically tens of milliseconds. Those constraints dictate the architecture more than raw accuracy does.
+</p>
+<h3>The extreme class-imbalance problem</h3>
+<p>
+    With so few fraud examples, raw accuracy is meaningless — a model that predicts "legitimate" for everything scores over 99 percent. Teams instead optimize precision-recall trade-offs and calibrate to a cost matrix, because a false negative (missed fraud) and a false positive (a declined legitimate purchase, which drives customers away) carry very different business costs. Common tactics: resampling or SMOTE-style augmentation, class weighting, threshold tuning against expected monetary loss, and evaluation on PR-AUC rather than ROC-AUC.
+</p>
+<h3>Graph neural networks against fraud rings</h3>
+<p>
+    Individual transactions can look innocent while the <em>network</em> of accounts, devices, and merchants reveals a ring. Modeling the data as a graph — nodes are accounts and devices, edges are transactions or shared attributes — lets a <b>graph neural network (GNN)</b> propagate signals across connected entities so that a fresh account sharing a device fingerprint with known mules inherits suspicion. This is why graph-based fraud detection moved from research into mainstream payment and card-network stacks over 2024-2025.
+</p>
+<div class="mermaid">
+flowchart TD
+    subgraph Ring
+      A[Account A] -- shares device --> D[Device X]
+      B[Account B] -- shares device --> D
+      C[New account C] -- shares device --> D
+    end
+    D --> G[GNN message passing]
+    B -- flagged mule --> G
+    G --> S[Elevated risk score for A and C]
+</div>
+<h3>Layered detection pipeline</h3>
+<p>
+    In practice no single model owns the decision. A fast, cheap layer clears the overwhelming majority of clearly-legitimate traffic, and progressively heavier models examine what is left:
+</p>
+<ol>
+  <li><b>Rules engine:</b> deterministic checks (velocity limits, blocklists) that are instant and fully explainable.</li>
+  <li><b>Supervised scorer:</b> a gradient-boosted model on engineered features (amount z-scores, time-since-last, merchant risk) for the bulk decision.</li>
+  <li><b>Unsupervised layer:</b> autoencoders or isolation forests that flag novel behavior no labeled example has taught yet.</li>
+  <li><b>Graph layer:</b> GNN scores that capture ring structure across entities.</li>
+</ol>
+
+<h2 id="credit">Credit scoring and risk modeling</h2>
+<p>
+    Credit is where accuracy collides hardest with regulation. A lender must often provide an <em>adverse action</em> reason when it declines an applicant, which means the model has to be explainable by construction, not just performant. This is why gradient-boosted trees with per-decision attribution, and even deliberately constrained models, remain popular over unconstrained deep networks.
+</p>
+<h3>Monotonic constraints as a feature, not a limitation</h3>
+<p>
+    Regulators and risk officers expect certain relationships to hold no matter what the data noise suggests — higher income should never <em>lower</em> a creditworthiness score, all else equal. Modern gradient-boosting libraries let you impose <b>monotonic constraints</b> per feature, encoding that domain logic directly:
+</p>
+<pre><code>import lightgbm as lgb
+
+# +1 = score increases with feature, -1 = decreases, 0 = free
+monotone = [1, -1, 0]  # income, debt_ratio, region_code
+
+model = lgb.LGBMClassifier(
+    monotone_constraints=monotone,
+    n_estimators=400,
+    learning_rate=0.03,
+)
+model.fit(X_train, y_train)</code></pre>
+<p>
+    The result is a model that cannot produce the embarrassing, indefensible behavior of "we declined you because you earn more," which matters far more in an audit than a fraction of a point of AUC.
+</p>
+<h3>Beyond default probability</h3>
+<p>
+    A full credit-risk stack estimates more than the probability of default (PD). It also models loss given default (LGD) and exposure at default (EAD), and increasingly stress-tests these under macroeconomic scenarios — a discipline sharpened after the accounting moves to forward-looking expected-loss provisioning. AI contributes by widening the input signal (cash-flow data, alternative data for thin-file applicants) while the governance layer keeps the outputs defensible.
+</p>
+
+<h2 id="trading">Algorithmic and reinforcement-learning trading</h2>
+<p>
+    Markets are the least forgiving environment for ML because the data is <b>non-stationary</b> and partly <b>adversarial</b>: the moment a profitable pattern is exploited at scale, it decays. A model that backtests beautifully on 2019-2022 data can fail in a new volatility regime. Serious desks therefore treat validation, not model choice, as the hard part.
+</p>
+<h3>Why deep reinforcement learning is attractive here</h3>
+<p>
+    Trading is naturally a sequential decision problem: an action (buy, hold, sell, size) changes the state (inventory, market impact) and yields a delayed, risk-adjusted reward. That framing is exactly what <b>reinforcement learning (RL)</b> addresses. Rather than predicting price and bolting on a rule, RL agents learn a policy directly against a reward that can bake in transaction costs and risk penalties.
+</p>
+<div class="mermaid">
+flowchart TD
+    S[State: prices, order book, inventory] --> P[Policy network]
+    P --> A[Action: buy / hold / sell + size]
+    A --> E[Market environment + execution]
+    E --> R[Reward: PnL minus cost and risk penalty]
+    E --> S2[Next state]
+    R --> P
+    S2 --> P
+</div>
+<h3>The validation traps</h3>
+<ul>
+  <li><b>Lookahead bias:</b> accidentally using information not available at decision time — a shockingly common bug that inflates backtests.</li>
+  <li><b>Overfitting via repeated backtesting:</b> testing enough strategies guarantees one looks great by chance. Techniques such as the deflated Sharpe ratio and combinatorial purged cross-validation exist specifically to counter this.</li>
+  <li><b>Ignoring market impact:</b> a strategy that assumes it can trade size at the last quoted price is fiction; realistic slippage and impact models are mandatory.</li>
+</ul>
+
+<h2 id="genai">Generative AI and LLMs on the desk</h2>
+<p>
+    The clearest new development since this article first went up is the arrival of <b>large language models</b> in production financial workflows rather than demos. The high-value uses are unglamorous and text-heavy, which is exactly where LLMs are strong and where the cost of a mistake is bounded by human review.
+</p>
+<ul>
+  <li><b>Document intelligence:</b> extracting terms from contracts, summarizing filings, and parsing KYC documents.</li>
+  <li><b>Compliance and surveillance:</b> screening communications and flagging potential market abuse, with an LLM triaging and a human adjudicating.</li>
+  <li><b>Analyst copilots:</b> retrieval-augmented assistants that answer questions grounded in a firm's own filings, research, and policy documents.</li>
+</ul>
+<p>
+    Two engineering realities dominate these deployments. First, <b>retrieval-augmented generation (RAG)</b> is preferred over fine-tuning on proprietary data because it keeps a citation trail — essential when an auditor asks <em>why</em> the system said something. Second, <b>hallucination is treated as an operational risk</b>: outputs are constrained to grounded sources, confidence is surfaced, and anything customer-facing or trade-affecting stays behind a human checkpoint. Domain-specific efforts such as BloombergGPT demonstrated the appetite for finance-tuned models, but most institutions get further, faster, by grounding general models on their own corpus.
+</p>
+
+<h2 id="challenges">Key challenges and risks</h2>
+<p>
+    Despite its advantages, deploying AI in financial systems comes with technical, ethical, and regulatory challenges. These must be addressed carefully to ensure fairness, transparency, and system resilience.
+</p>
+<ul>
+    <li><b>Data Quality and Bias:</b>
+        Financial data may contain hidden biases, missing values, or outdated information. Poor data quality can propagate errors in credit decisions or fraud detection, leading to reputational and financial risks.
+    </li>
+    <li><b>Model Drift and Explainability:</b>
+        Models trained on historical data may degrade over time as economic conditions, market patterns, or user behavior evolve. Furthermore, complex models like deep neural networks are difficult to interpret, making it challenging to explain decisions to regulators or clients.
+    </li>
+    <li><b>Regulatory Constraints and Auditability:</b>
+        Financial regulators require that AI systems remain auditable and transparent. This creates tension between innovation and compliance, especially in areas involving sensitive data or automated decision-making.
+    </li>
+    <li><b>Latency and Reliability:</b>
+        In domains such as high-frequency trading, even a few milliseconds of delay can lead to substantial losses. AI models must therefore be optimized for both accuracy and performance under heavy computational loads.
+    </li>
+    <li><b>Cybersecurity and Data Privacy:</b>
+        The integration of AI introduces new attack surfaces. Adversarial attacks can manipulate inputs to fool models, while privacy breaches can expose confidential financial data.
+    </li>
+</ul>
+<h3>The regulatory backdrop in 2025-2026</h3>
+<p>
+    The compliance conversation has become concrete rather than aspirational. The EU AI Act classifies creditworthiness assessment as a high-risk use, attaching obligations around data governance, human oversight, and documentation. In the United States, model risk management guidance long applied to statistical models (the SR 11-7 framework) is now the lens through which supervisors view ML, and fair-lending law continues to require that adverse-action reasons be genuine, not post-hoc rationalizations. The practical upshot: <em>documentation and monitoring are not overhead, they are the deliverable.</em>
+</p>
+
+<h2 id="explainability">Explainability and model risk management</h2>
+<p>
+    Because "why" is a first-class requirement, explainability tooling is part of the model, not an afterthought. Two techniques anchor most practice:
+</p>
+<table>
+  <thead>
+    <tr><th>Technique</th><th>What it gives you</th><th>Best used for</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>SHAP (Shapley additive explanations)</td><td>Consistent per-feature contribution to a single prediction</td><td>Adverse-action reasons, global feature importance</td></tr>
+    <tr><td>LIME</td><td>A local linear approximation around one prediction</td><td>Quick, model-agnostic spot checks</td></tr>
+    <tr><td>Counterfactuals</td><td>The minimal input change that flips the decision</td><td>Actionable "what would approve me" feedback</td></tr>
+    <tr><td>Monotonic constraints</td><td>Guaranteed directionality by construction</td><td>Building defensible models up front</td></tr>
+  </tbody>
+</table>
+<p>
+    SHAP is the workhorse for credit because its additive attributions map cleanly onto the requirement to enumerate the top reasons a decision went the way it did. Crucially, an explanation is only trustworthy if the model is stable — which loops back to monitoring.
+</p>
+
+<h2 id="mlops">Responsible AI and MLOps in finance</h2>
+<p>
+    To maintain trust and performance, financial organizations are adopting <b>MLOps</b> (Machine Learning Operations) — a framework that standardizes model development, deployment, and monitoring. It ensures that AI systems remain reliable and compliant even as data and environments evolve.
+</p>
+<ul>
+    <li><b>Model Versioning and Governance:</b> Track every model version, its training data, and parameters for auditability and regulatory review.</li>
+    <li><b>Continuous Monitoring:</b> Detect model drift, performance degradation, or data anomalies in production to prevent erroneous decisions.</li>
+    <li><b>Incident Response:</b> Establish procedures to roll back or deactivate malfunctioning models immediately to protect customer interests.</li>
+    <li><b>Ethical Oversight:</b> Implement fairness checks and transparency dashboards to ensure AI systems align with both business objectives and ethical standards.</li>
+</ul>
+<h3>Monitoring drift: covariate vs concept</h3>
+<p>
+    Not all drift is the same, and the response differs by type. <b>Covariate drift</b> is a change in the input distribution — a new customer segment, a new merchant category. <b>Concept drift</b> is a change in the relationship between inputs and the label — the same behavior now means something different, which is exactly what happens when fraudsters adapt. Concept drift is the dangerous one because the model can look statistically healthy on inputs while its decisions silently rot.
+</p>
+<div class="mermaid">
+flowchart TD
+    A[Live predictions and delayed labels] --> B{Drift detector}
+    B -->|Input distribution shifted| C[Covariate drift alert]
+    B -->|Input to label mapping shifted| D[Concept drift alert]
+    C --> E[Investigate features / retrain window]
+    D --> F[Retrain with recent labels or roll back]
+    E --> G[Shadow deploy challenger]
+    F --> G
+    G --> H{Challenger beats champion?}
+    H -->|Yes| I[Promote with approval + audit log]
+    H -->|No| A
+</div>
+<h3>Champion-challenger and safe rollout</h3>
+<p>
+    New models earn production through a controlled contest. The incumbent (<em>champion</em>) keeps serving decisions while a <em>challenger</em> runs in shadow mode on the same live traffic without affecting outcomes. Only when the challenger demonstrably wins on the metrics that matter — and passes fairness and stability checks — is it promoted, and every promotion is logged with its approver and evidence. This gives you the auditability trail regulators expect while still letting the system improve.
+</p>
+
+<h2 id="future">The future of AI in finance</h2>
+<p>
+    The future of AI in finance will focus on <b>autonomous decision-making</b> combined with <b>human oversight</b>. Generative AI will play a larger role in risk scenario simulations, personalized financial planning, and regulatory documentation. Quantum machine learning may further revolutionize portfolio optimization and option pricing.
+</p>
+<p>
+    The nearer-term trajectory is more concrete than quantum. <b>Agentic systems</b> — LLMs that plan, call tools, and act rather than just answer — are moving into back-office operations such as reconciliation, dispute handling, and compliance research, always with a human checkpoint on consequential actions. <b>Privacy-preserving learning</b> (federated training and, more cautiously, differential privacy) lets institutions collaborate on fraud signals without pooling raw customer data. And synthetic data is increasingly used to test and stress models on rare events that history has not yet supplied. The common thread is that each advance is being adopted through the same governance funnel described above, not around it.
+</p>
+
+<h2 id="takeaways">Takeaways</h2>
+<ul>
+  <li><b>The pipeline is the product.</b> Model accuracy is one node in a loop that includes features, decision policy, monitoring, and governance — and the loop is where finance lives or dies.</li>
+  <li><b>Constraints are load-bearing.</b> Latency budgets, class imbalance, non-stationarity, and adverse-action requirements shape architecture more than any leaderboard.</li>
+  <li><b>Explainability is a design input.</b> SHAP and monotonic constraints exist because "why" is a regulatory question, not a nice-to-have.</li>
+  <li><b>Generative AI arrived through the side door.</b> Its biggest wins are document- and compliance-heavy workflows grounded by RAG and gated by humans.</li>
+  <li><b>Governance enables speed.</b> Champion-challenger rollout, drift detection, and audit logs are what let institutions ship AI aggressively without losing the trust of regulators and customers.</li>
+</ul>
+<p>
+    Ultimately, success in AI-driven finance will depend on how well institutions balance innovation with responsibility. By combining technological advancement with robust governance, the financial sector can build systems that are not only intelligent and profitable but also fair, transparent, and secure.
+</p>

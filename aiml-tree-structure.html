@@ -2,99 +2,848 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Complete AI & Machine Learning Ecosystem 2025</title>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.5/dist/mermaid.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete AI & Machine Learning Mind Map 2025</title>
 
-  <!-- MathJax for Formulas -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_HTML"></script>
+  <!-- No-FOUC theme (shares the site's localStorage 'theme' key) -->
+  <script>
+    (function () {
+      try { if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark'); } catch (e) {}
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Self-hosted Mermaid (no CDN) -->
+  <script src="assets/js/mermaid.min.js"></script>
+  <!-- Self-hosted pan/zoom for the big map (no CDN) -->
+  <script src="assets/js/svg-pan-zoom.min.js"></script>
+
+  <!-- Self-hosted MathJax for Formulas (no CDN) -->
+  <script src="assets/mathjax/MathJax.js?config=TeX-AMS_HTML"></script>
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
-      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      skipStartupTypeset: true   /* don't typeset raw Mermaid source; we typeset after render */
     });
   </script>
 
   <style>
-    body { margin:0; padding:40px; background:#f8fafc; font-family:'Crimson Pro',serif; color:#000; }
+    body { margin:0; padding:40px; background:#f8fafc; font-family:'Montserrat',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#000; }
     h1 { text-align:center; font-size:3rem; margin-bottom:40px; color:#1e293b; }
     .mermaid { background:white; padding:50px; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.12); overflow-x:auto; }
+
+    /* ---- Sticky page bar ---- */
+    .pagebar { position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:20px;
+               margin:-40px -40px 30px; padding:12px 28px; background:rgba(17,46,81,0.98);
+               box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+    .pagebar a { color:#fff; text-decoration:none; font-weight:600; font-size:1.02rem; opacity:0.9; }
+    .pagebar a:hover { opacity:1; text-decoration:underline; }
+    .pagebar .brand { font-weight:700; margin-right:auto; font-size:1.15rem; }
+    .pagebar .brand span { color:#fde68a; }
+
+    /* ---- Floating back-to-top ---- */
+    .to-top { position:fixed; right:26px; bottom:26px; z-index:60; width:50px; height:50px;
+              border:none; border-radius:50%; background:#112e51; color:#fff; font-size:1.5rem;
+              cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.25); opacity:0; visibility:hidden;
+              transition:opacity .25s, visibility .25s; }
+    .to-top.show { opacity:1; visibility:visible; }
+    .to-top:hover { background:#1a4480; }
+
+    /* ---- Map pan/zoom viewport (added only when the lib initializes) ---- */
+    #mapDiagram.pz-enabled { height:80vh; min-height:480px; padding:8px; overflow:hidden;
+                             position:relative; cursor:grab; }
+    #mapDiagram.pz-enabled:active { cursor:grabbing; }
+    #mapDiagram.pz-enabled > svg { width:100% !important; height:100% !important; max-width:none !important; display:block; }
+    .pz-note { display:none; text-align:center; color:#64748b; font-size:0.98rem; margin:12px 0 0; }
+    #mapDiagram.pz-enabled + .pz-note { display:block; }
     .mermaid .label { line-height:1.6 !important; } /* ensures one bullet per line */
+    .hint { text-align:center; color:#475569; font-size:1.15rem; margin:-20px 0 30px; }
+    .hint a { color:#005ea2; font-weight:600; text-decoration:none; }
+    .hint a:hover { text-decoration:underline; }
+    .hint .dash { border-bottom:2px dashed #0f766e; padding-bottom:1px; }
+    .mermaid .clickable-node { cursor:pointer; }
+
+    /* ---- Algorithm diagrams section ---- */
+    .algo-title { text-align:center; font-size:2.4rem; color:#1e293b; margin:70px 0 6px; }
+    .algo-sub { text-align:center; color:#475569; font-size:1.2rem; margin:0 0 30px; }
+    .toc { max-width:1100px; margin:0 auto 40px; background:white; border-radius:16px; padding:24px 32px;
+           box-shadow:0 10px 30px rgba(0,0,0,0.08); }
+    .toc h3 { margin:0 0 12px; color:#1e293b; }
+    .toc ul { columns:3; -webkit-columns:3; list-style:none; padding:0; margin:0; }
+    .toc li { margin:6px 0; }
+    .toc a { color:#005ea2; text-decoration:none; }
+    .toc a:hover { text-decoration:underline; }
+    section.algo { max-width:1100px; margin:0 auto 46px; }
+    section.algo h2 { color:#166534; font-size:1.9rem; border-bottom:3px solid #d97706; padding-bottom:8px; }
+    section.algo .desc { color:#334155; font-size:1.15rem; margin:8px 0 18px; }
+    .top { text-align:right; margin-top:8px; }
+    .top a { color:#94a3b8; text-decoration:none; font-size:0.95rem; }
+
+    /* ---- Mobile ---- */
+    @media (max-width: 720px) {
+      body { padding:20px; }
+      h1 { font-size:2rem; margin-bottom:24px; }
+      .pagebar { margin:-20px -20px 24px; padding:10px 16px; gap:14px; flex-wrap:wrap; }
+      .pagebar .brand { font-size:1rem; }
+      .mermaid { padding:20px; }
+      .toc ul { columns:1; -webkit-columns:1; }
+      .algo-title { font-size:1.8rem; }
+      section.algo h2 { font-size:1.5rem; }
+      .scroll-note { display:block; }
+    }
+    .scroll-note { display:none; text-align:center; color:#64748b; font-size:0.95rem; margin:0 0 16px; }
+
+    /* ---- Theme toggle button ---- */
+    .theme-btn { margin-left:4px; width:34px; height:34px; border:none; border-radius:50%;
+                 background:rgba(255,255,255,0.18); color:#fff; font-size:1.05rem; cursor:pointer;
+                 line-height:1; display:inline-flex; align-items:center; justify-content:center; }
+    .theme-btn:hover { background:rgba(255,255,255,0.32); }
+
+    /* ---- Dark mode (Mermaid cards stay light so diagrams remain readable) ---- */
+    html.dark body { background:#0f172a; color:#e2e8f0; }
+    html.dark h1, html.dark .algo-title { color:#e2e8f0; }
+    html.dark .hint, html.dark .algo-sub, html.dark section.algo .desc { color:#94a3b8; }
+    html.dark .hint a, html.dark .toc a, html.dark .top a { color:#5eead4; }
+    html.dark .hint .dash { border-bottom-color:#5eead4; }
+    html.dark .toc { background:#1e293b; box-shadow:0 10px 30px rgba(0,0,0,0.4); }
+    html.dark .toc h3 { color:#e2e8f0; }
+    html.dark section.algo h2 { color:#4ade80; }
+    html.dark .mermaid { background:#f7fafc; box-shadow:0 15px 40px rgba(0,0,0,0.5); }
+    html.dark .scroll-note { color:#94a3b8; }
   </style>
 </head>
 <body>
-  <h1>Complete AI & Machine Learning Ecosystem (2025)</h1>
+  <div class="pagebar">
+    <a class="brand" href="/#home">Rushikesh<span>.</span> &nbsp;/&nbsp; AI&amp;ML Map</a>
+    <a href="/#home">&#8592; Portfolio</a>
+    <a href="#top">Mind Map</a>
+    <a href="#algorithms">Algorithm Diagrams</a>
+    <button class="theme-btn" id="themeBtn" type="button" title="Toggle light / dark" aria-label="Toggle light / dark theme"></button>
+  </div>
 
-  <div class="mermaid">
-    graph TD
-        ROOT["Artificial Intelligence & Machine Learning"]:::main
+  <span id="top"></span>
+  <h1>Complete AI &amp; Machine Learning Mind Map (2025)</h1>
+  <p class="scroll-note">Tip: the map is wide &mdash; swipe / scroll horizontally to explore, or tap a highlighted node.</p>
+  <p class="hint">Nodes with a <span class="dash">dashed teal border</span> are clickable &mdash; jump to a diagram of how that algorithm works.
+     &nbsp;<a href="#algorithms">Jump to algorithm diagrams &#8595;</a></p>
 
-        %% Supervised - Split into Classification & Regression
-        ROOT --> SUP["Supervised Learning"]:::main
-        SUP --> CLS["Classification<br/>• Logistic Regression: $P(y=1|x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}}$<br/>• SVM: Maximize margin $2 / ||w||$<br/>• Decision Trees: Entropy = $-\sum p_i \log p_i$<br/>• Random Forest: Bagging + Trees<br/>• KNN: Euclidean Distance $\sqrt{\sum (x_i - y_i)^2}$<br/>• Naive Bayes: $P(y|x) = \frac{P(x|y)P(y)}{P(x)}$<br/>• XGBoost: Gradient Boosting + Trees<br/>• LightGBM: Leaf-wise Trees<br/>• CatBoost: Categorical Handling<br/>• Neural Networks: Softmax Output"]:::sub
-        SUP --> REG["Regression<br/>• Linear: $y = \beta_0 + \beta_1 x + \epsilon$<br/>• Polynomial: $y = \beta_0 + \beta_1 x + \beta_2 x^2 + ...$<br/>• Ridge: L2 Reg. $\lambda \sum \beta_i^2$<br/>• Lasso: L1 Reg. $\lambda \sum |\beta_i|$<br/>• ElasticNet: L1 + L2 Combo<br/>• SVR: Epsilon-Tube Margin<br/>• Gradient Boosting: Sequential Trees"]:::sub
+  <div class="mermaid" id="mapDiagram">
+    graph LR
+        ROOT(("Artificial Intelligence<br/>&<br/>Machine Learning")):::root
 
-        %% Unsupervised - Split into Clustering & Dim Reduction
-        ROOT --> UNS["Unsupervised Learning"]:::main
-        UNS --> CLU["Clustering<br/>• K-Means: Minimize $\sum ||x_i - \mu_j||^2$<br/>• Hierarchical: Dendrogram Distance<br/>• DBSCAN: Density-Based $\epsilon$-Neighborhood<br/>• OPTICS: Variable Density<br/>• Gaussian Mixture: EM Algo $P(x) = \sum \pi_k N(x|\mu_k, \Sigma_k)$<br/>• Mean Shift: Kernel Bandwidth"]:::sub
-        UNS --> DIM["Dimensionality Reduction<br/>• PCA: Eigen Decomposition $\Sigma = U \Lambda U^T$<br/>• Kernel PCA: Non-Linear Mapping<br/>• t-SNE: KL Divergence Min.<br/>• UMAP: Manifold Approximation<br/>• Autoencoders: Reconstruction Loss<br/>• LDA: Class Separation<br/>• ICA: Independent Components"]:::sub
+        %% ============ LEFT SIDE (branches flow into the center) ============
 
-        %% Semi & RL - Split Subtopics
-        ROOT --> SEMI["Semi-Supervised Learning<br/>• Self-Training: Iterative Labeling<br/>• Label Propagation: Graph Diffusion<br/>• Co-Training: Multi-View Features"]:::sub
-        ROOT --> RL["Reinforcement Learning<br/>• Q-Learning: $Q(s,a) = r + \gamma \max Q(s',a')$<br/>• SARSA: On-Policy Update<br/>• DQN / DDQN: Neural Q-Approx.<br/>• PPO: Clipped Surrogate<br/>• A2C / A3C: Advantage Actor-Critic<br/>• SAC: Entropy Regularized"]:::sub
+        %% Supervised
+        CLS["Classification<br/>• Logistic Regression: $P(y=1|x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1 x)}}$<br/>• SVM: Maximize margin $2 / ||w||$<br/>• Decision Trees: Entropy = $-\sum p_i \log p_i$<br/>• Random Forest: Bagging + Trees<br/>• KNN: Euclidean Distance $\sqrt{\sum (x_i - y_i)^2}$<br/>• Naive Bayes: $P(y|x) = \frac{P(x|y)P(y)}{P(x)}$<br/>• XGBoost: Gradient Boosting + Trees<br/>• LightGBM: Leaf-wise Trees<br/>• CatBoost: Categorical Handling<br/>• Neural Networks: Softmax Output"]:::sub
+        REG_S["Regression<br/>• Linear: $y = \beta_0 + \beta_1 x + \epsilon$<br/>• Polynomial: $y = \beta_0 + \beta_1 x + \beta_2 x^2 + ...$<br/>• Ridge: L2 Reg. $\lambda \sum \beta_i^2$<br/>• Lasso: L1 Reg. $\lambda \sum |\beta_i|$<br/>• ElasticNet: L1 + L2 Combo<br/>• SVR: Epsilon-Tube Margin<br/>• Gradient Boosting: Sequential Trees"]:::sub
+        CLS --- SUP["Supervised<br/>Learning"]:::main
+        REG_S --- SUP
+        SUP --- ROOT
 
-        %% Deep Learning - Split Architectures
-        ROOT --> DL["Deep Learning"]:::main
-        DL --> ANN["ANN / MLP<br/>• Feedforward: $h = \sigma(Wx + b)$<br/>• Backpropagation: Chain Rule $\frac{\partial L}{\partial w}$"]:::sub
-        DL --> CNN["CNN<br/>• Convolution: $ (f * g)(i,j) = \sum f(m,n) g(i-m,j-n) $<br/>• Pooling: Max/Avg<br/>• ResNet: Skip Connections<br/>• YOLO: Bounding Boxes<br/>• U-Net: Encoder-Decoder<br/>• EfficientNet: Compound Scaling<br/>• MobileNet: Depthwise Conv."]:::sub
-        DL --> RNN["RNN<br/>• Vanilla: $h_t = \tanh(W h_{t-1} + U x_t)$<br/>• LSTM: Gates (Forget/Input/Output)<br/>• GRU: Update/Reset Gates<br/>• Bi-directional: Forward + Backward<br/>• Seq2Seq: Encoder-Decoder"]:::sub
-        DL --> TRANS["Transformers<br/>• Attention: $ \text{Attn} = \text{softmax}(QK^T / \sqrt{d}) V $<br/>• BERT: Masked LM<br/>• GPT: Autoregressive<br/>• LLaMA: Efficient Training<br/>• Mistral: Sliding Window<br/>• Grok: xAI Model<br/>• ViT: Patch Embeddings<br/>• Mamba: State Space"]:::sub
-        DL --> LLM["Large Language Models<br/>• Gemini: Multimodal<br/>• Claude: Constitutional AI<br/>• PaLM: Pathways<br/>• Qwen: Chinese Focus<br/>• Mixtral: MoE"]:::sub
-        DL --> GEN["Generative Models<br/>• GANs: Min-Max $V(G,D)$<br/>• Diffusion: Denoising $p(x_{t-1}|x_t)$<br/>• Stable Diffusion: Latent Space<br/>• DALL·E: CLIP Guided<br/>• Sora: Video Diffusion"]:::sub
+        %% Unsupervised
+        CLU["Clustering<br/>• K-Means: Minimize $\sum ||x_i - \mu_j||^2$<br/>• Hierarchical: Dendrogram Distance<br/>• DBSCAN: Density-Based $\epsilon$-Neighborhood<br/>• OPTICS: Variable Density<br/>• Gaussian Mixture: EM Algo $P(x) = \sum \pi_k N(x|\mu_k, \Sigma_k)$<br/>• Mean Shift: Kernel Bandwidth"]:::sub
+        DIM["Dimensionality Reduction<br/>• PCA: Eigen Decomposition $\Sigma = U \Lambda U^T$<br/>• Kernel PCA: Non-Linear Mapping<br/>• t-SNE: KL Divergence Min.<br/>• UMAP: Manifold Approximation<br/>• Autoencoders: Reconstruction Loss<br/>• LDA: Class Separation<br/>• ICA: Independent Components"]:::sub
+        CLU --- UNS["Unsupervised<br/>Learning"]:::main
+        DIM --- UNS
+        UNS --- ROOT
 
-        %% Domains - Split
-        ROOT --> DOM["Domains"]:::main
-        DOM --> CV["Computer Vision<br/>• Object Detection: IoU<br/>• Segmentation: Dice Coeff.<br/>• Pose Estimation: Keypoints<br/>• OCR: CTC Loss"]:::sub
-        DOM --> NLP["Natural Language Processing<br/>• NER: Entity F1<br/>• Sentiment: Polarity Scores<br/>• Translation: BLEU<br/>• Summarization: ROUGE"]:::sub
-        DOM --> AUDIO["Audio & Speech<br/>• ASR: WER Metric<br/>• TTS: MOS Score<br/>• Whisper: CTC<br/>• Wav2Vec: Self-Supervised<br/>• HuBERT: Clustering<br/>• VALL-E: Codec<br/>• AudioLM: Tokenization"]:::sub
-        DOM --> MULTI["Multimodal<br/>• CLIP: Contrastive Loss<br/>• LLaVA: Vision-Language<br/>• Flamingo: Few-Shot<br/>• ImageBind: Bind Modalities<br/>• Kosmos: Unified"]:::sub
+        %% Semi-Supervised
+        SEMI["Semi-Supervised Learning<br/>• Self-Training: Iterative Labeling<br/>• Label Propagation: Graph Diffusion<br/>• Co-Training: Multi-View Features"]:::sub
+        SEMI --- ROOT
 
-        %% Core - Split
-        ROOT --> CORE["Core Components"]:::main
-        CORE --> OPT["Optimizers<br/>• SGD: $\theta = \theta - \eta \nabla L$<br/>• Adam: Bias-Corrected Moments<br/>• AdamW: Decoupled Decay<br/>• RMSprop: Adaptive LR<br/>• Lion: Sign Momentum<br/>• LAMB: Layer-Wise"]:::sub
-        CORE --> LOSS["Loss Functions<br/>• Cross-Entropy: $-\sum y \log \hat{y}$<br/>• MSE: $\frac{1}{n} \sum (y - \hat{y})^2$<br/>• Focal: Modulated CE<br/>• Contrastive: NT-Xent<br/>• CTC: Alignment"]:::sub
-        CORE --> REG["Regularization<br/>• Dropout: Random Mask<br/>• BatchNorm: $\hat{x} = \gamma (x - \mu)/\sigma + \beta$<br/>• LayerNorm: Per-Feature<br/>• Weight Decay: L2 on Weights<br/>• Augmentation: Random Transforms"]:::sub
+        %% Reinforcement Learning
+        RL["Reinforcement Learning<br/>• Q-Learning: $Q(s,a) = r + \gamma \max Q(s',a')$<br/>• SARSA: On-Policy Update<br/>• DQN / DDQN: Neural Q-Approx.<br/>• PPO: Clipped Surrogate<br/>• A2C / A3C: Advantage Actor-Critic<br/>• SAC: Entropy Regularized"]:::sub
+        RL --- ROOT
 
-        %% Advanced - Split
-        ROOT --> ADV["Advanced Techniques"]:::main
-        ADV --> ENS["Ensemble Methods<br/>• Bagging: Bootstrap Agg.<br/>• Boosting: Weighted Errors<br/>• XGBoost: 2nd-Order Grad.<br/>• LightGBM: GOSS<br/>• CatBoost: Ordered Boost."]:::sub
-        ADV --> TRANSF["Transfer Learning<br/>• Fine-Tuning: Last Layers<br/>• Prompt Tuning: Soft Prompts<br/>• Few-Shot: In-Context<br/>• Zero-Shot: Pre-Trained"]:::sub
+        %% Deep Learning
+        ANN["ANN / MLP<br/>• Feedforward: $h = \sigma(Wx + b)$<br/>• Backpropagation: Chain Rule $\frac{\partial L}{\partial w}$"]:::sub
+        CNN["CNN<br/>• Convolution: $ (f * g)(i,j) = \sum f(m,n) g(i-m,j-n) $<br/>• Pooling: Max/Avg<br/>• ResNet: Skip Connections<br/>• YOLO: Bounding Boxes<br/>• U-Net: Encoder-Decoder<br/>• EfficientNet: Compound Scaling<br/>• MobileNet: Depthwise Conv."]:::sub
+        RNN["RNN<br/>• Vanilla: $h_t = \tanh(W h_{t-1} + U x_t)$<br/>• LSTM: Gates (Forget/Input/Output)<br/>• GRU: Update/Reset Gates<br/>• Bi-directional: Forward + Backward<br/>• Seq2Seq: Encoder-Decoder"]:::sub
+        TRANS["Transformers<br/>• Attention: $ \text{Attn} = \text{softmax}(QK^T / \sqrt{d}) V $<br/>• BERT: Masked LM<br/>• GPT: Autoregressive<br/>• LLaMA: Efficient Training<br/>• Mistral: Sliding Window<br/>• Grok: xAI Model<br/>• ViT: Patch Embeddings<br/>• Mamba: State Space"]:::sub
+        LLM["Large Language Models<br/>• Gemini: Multimodal<br/>• Claude: Constitutional AI<br/>• PaLM: Pathways<br/>• Qwen: Chinese Focus<br/>• Mixtral: MoE"]:::sub
+        GEN["Generative Models<br/>• GANs: Min-Max $V(G,D)$<br/>• Diffusion: Denoising $p(x_{t-1}|x_t)$<br/>• Stable Diffusion: Latent Space<br/>• DALL·E: CLIP Guided<br/>• Sora: Video Diffusion"]:::sub
+        GNN["Graph Neural Networks<br/>• Message Passing<br/>• GCN: Spectral Convolution<br/>• GAT: Attention on Graphs<br/>• GraphSAGE: Neighbor Sampling<br/>• GIN: Expressive Power"]:::sub
+        ANN --- DL["Deep<br/>Learning"]:::main
+        CNN --- DL
+        RNN --- DL
+        TRANS --- DL
+        LLM --- DL
+        GEN --- DL
+        GNN --- DL
+        DL --- ROOT
 
-        %% Foundations - Split
-        ROOT --> FOUND["Foundations"]:::main
-        FOUND --> MATH["Mathematics"]:::main
-        MATH --> LA["Linear Algebra<br/>• Vectors: Dot Product $u \cdot v$<br/>• Matrices: Det(A)<br/>• SVD: $A = U \Sigma V^T$<br/>• Eigen: $A v = \lambda v$"]:::sub
-        MATH --> CALC["Calculus<br/>• Derivatives: $f'(x)$<br/>• Gradients: $\nabla f$<br/>• Chain Rule: $(f \circ g)' = f' g'$"]:::sub
-        MATH --> PROB["Probability & Stats<br/>• Distributions: PDF/PMF<br/>• Bayes: $P(A|B) = P(B|A)P(A)/P(B)$<br/>• MLE: Argmax Log-Lik."]:::sub
-        FOUND --> EVAL["Evaluation<br/>• Accuracy / F1: $2PR/(P+R)$<br/>• ROC-AUC: TPR vs FPR<br/>• BLEU / ROUGE: N-Gram<br/>• FID / IS: Generative<br/>• Cross-Val: K-Fold"]:::sub
+        %% LLM Engineering & GenAI Ops
+        RAG["Retrieval-Augmented Generation<br/>• Chunking + Embeddings<br/>• Vector DB: FAISS / Pinecone / Chroma<br/>• Retriever + Reranker<br/>• Context Injection<br/>• Grounded Generation"]:::sub
+        AGENT["Agents & Tool Use<br/>• ReAct: Reason + Act<br/>• Function / Tool Calling<br/>• Planning + Memory<br/>• Multi-Agent Orchestration<br/>• LangChain / LlamaIndex"]:::sub
+        PROMPT["Prompt Engineering<br/>• Zero / Few-Shot<br/>• Chain-of-Thought<br/>• Self-Consistency<br/>• Tree-of-Thoughts<br/>• Structured Output"]:::sub
+        FTUNE["Fine-Tuning & Alignment<br/>• Full FT vs PEFT<br/>• LoRA / QLoRA<br/>• Adapters / Prefix Tuning<br/>• RLHF: PPO on Reward Model<br/>• DPO / ORPO: Preference Opt."]:::sub
+        LLMEVAL["Evaluation & Guardrails<br/>• LLM-as-Judge<br/>• RAGAS / MMLU / HELM<br/>• Hallucination + Groundedness<br/>• Safety / Jailbreak Defense"]:::sub
+        RAG --- LLMENG["LLM<br/>Engineering"]:::main
+        AGENT --- LLMENG
+        PROMPT --- LLMENG
+        FTUNE --- LLMENG
+        LLMEVAL --- LLMENG
+        LLMENG --- ROOT
 
-        %% Frameworks - Split
-        ROOT --> FRAME["Frameworks & Tools"]:::main
-        FRAME --> SK["Scikit-learn<br/>• Pipelines<br/>• Grid Search"]:::sub
-        FRAME --> TORCH["PyTorch<br/>• Dynamic Graphs<br/>• Lightning: Trainer<br/>• TorchVision: Datasets"]:::sub
-        FRAME --> TF["TensorFlow<br/>• Static Graphs<br/>• Keras: Sequential<br/>• TF Hub: Pre-Trained"]:::sub
-        FRAME --> HF["Hugging Face<br/>• Transformers Lib.<br/>• Datasets Hub"]:::sub
-        FRAME --> TOOLS["Others<br/>• JAX: Autodiff<br/>• Gradio: UI<br/>• Streamlit: Apps<br/>• OpenCV: CV<br/>• W&B: Logging"]:::sub
+        %% ============ RIGHT SIDE (branches flow out from the center) ============
 
+        %% Domains
+        CV["Computer Vision<br/>• Object Detection: IoU<br/>• Segmentation: Dice Coeff.<br/>• Pose Estimation: Keypoints<br/>• OCR: CTC Loss"]:::sub
+        NLP["Natural Language Processing<br/>• NER: Entity F1<br/>• Sentiment: Polarity Scores<br/>• Translation: BLEU<br/>• Summarization: ROUGE"]:::sub
+        AUDIO["Audio & Speech<br/>• ASR: WER Metric<br/>• TTS: MOS Score<br/>• Whisper: CTC<br/>• Wav2Vec: Self-Supervised<br/>• HuBERT: Clustering<br/>• VALL-E: Codec<br/>• AudioLM: Tokenization"]:::sub
+        MULTI["Multimodal<br/>• CLIP: Contrastive Loss<br/>• LLaVA: Vision-Language<br/>• Flamingo: Few-Shot<br/>• ImageBind: Bind Modalities<br/>• Kosmos: Unified"]:::sub
+        TS["Time Series & Forecasting<br/>• ARIMA / SARIMA<br/>• Exponential Smoothing<br/>• Prophet<br/>• DeepAR / N-BEATS<br/>• Temporal Fusion Transformer"]:::sub
+        RECSYS["Recommender Systems<br/>• Collaborative Filtering<br/>• Matrix Factorization: SVD / ALS<br/>• Content-Based Filtering<br/>• Factorization Machines<br/>• Two-Tower / Neural CF"]:::sub
+        ROOT --- DOM["Domains"]:::main
+        DOM --- CV
+        DOM --- NLP
+        DOM --- AUDIO
+        DOM --- MULTI
+        DOM --- TS
+        DOM --- RECSYS
+
+        %% Core Components
+        OPT["Optimizers<br/>• SGD: $\theta = \theta - \eta \nabla L$<br/>• Adam: Bias-Corrected Moments<br/>• AdamW: Decoupled Decay<br/>• RMSprop: Adaptive LR<br/>• Lion: Sign Momentum<br/>• LAMB: Layer-Wise"]:::sub
+        LOSS["Loss Functions<br/>• Cross-Entropy: $-\sum y \log \hat{y}$<br/>• MSE: $\frac{1}{n} \sum (y - \hat{y})^2$<br/>• Focal: Modulated CE<br/>• Contrastive: NT-Xent<br/>• CTC: Alignment"]:::sub
+        REGU["Regularization<br/>• Dropout: Random Mask<br/>• BatchNorm: $\hat{x} = \gamma (x - \mu)/\sigma + \beta$<br/>• LayerNorm: Per-Feature<br/>• Weight Decay: L2 on Weights<br/>• Augmentation: Random Transforms"]:::sub
+        ROOT --- CORE["Core<br/>Components"]:::main
+        CORE --- OPT
+        CORE --- LOSS
+        CORE --- REGU
+
+        %% Advanced Techniques
+        ENS["Ensemble Methods<br/>• Bagging: Bootstrap Agg.<br/>• Boosting: Weighted Errors<br/>• XGBoost: 2nd-Order Grad.<br/>• LightGBM: GOSS<br/>• CatBoost: Ordered Boost."]:::sub
+        TRANSF["Transfer Learning<br/>• Fine-Tuning: Last Layers<br/>• Prompt Tuning: Soft Prompts<br/>• Few-Shot: In-Context<br/>• Zero-Shot: Pre-Trained"]:::sub
+        PROBM["Probabilistic Models<br/>• Gaussian Processes<br/>• Hidden Markov Models<br/>• Bayesian Networks<br/>• MCMC / Variational Inference<br/>• Kalman Filters"]:::sub
+        ROOT --- ADV["Advanced<br/>Techniques"]:::main
+        ADV --- ENS
+        ADV --- TRANSF
+        ADV --- PROBM
+
+        %% Foundations
+        LA["Linear Algebra<br/>• Vectors: Dot Product $u \cdot v$<br/>• Matrices: Det(A)<br/>• SVD: $A = U \Sigma V^T$<br/>• Eigen: $A v = \lambda v$"]:::sub
+        CALC["Calculus<br/>• Derivatives: $f'(x)$<br/>• Gradients: $\nabla f$<br/>• Chain Rule: $(f \circ g)' = f' g'$"]:::sub
+        PROB["Probability & Stats<br/>• Distributions: PDF/PMF<br/>• Bayes: $P(A|B) = P(B|A)P(A)/P(B)$<br/>• MLE: Argmax Log-Lik."]:::sub
+        EVAL["Evaluation<br/>• Accuracy / F1: $2PR/(P+R)$<br/>• ROC-AUC: TPR vs FPR<br/>• BLEU / ROUGE: N-Gram<br/>• FID / IS: Generative<br/>• Cross-Val: K-Fold"]:::sub
+        ROOT --- FOUND["Foundations"]:::main
+        FOUND --- MATH["Mathematics"]:::main
+        MATH --- LA
+        MATH --- CALC
+        MATH --- PROB
+        FOUND --- EVAL
+
+        %% Frameworks & Tools
+        SK["Scikit-learn<br/>• Pipelines<br/>• Grid Search"]:::sub
+        TORCH["PyTorch<br/>• Dynamic Graphs<br/>• Lightning: Trainer<br/>• TorchVision: Datasets"]:::sub
+        TF["TensorFlow<br/>• Static Graphs<br/>• Keras: Sequential<br/>• TF Hub: Pre-Trained"]:::sub
+        HF["Hugging Face<br/>• Transformers Lib.<br/>• Datasets Hub"]:::sub
+        TOOLS["Others<br/>• JAX: Autodiff<br/>• Gradio: UI<br/>• Streamlit: Apps<br/>• OpenCV: CV<br/>• W&B: Logging"]:::sub
+        ROOT --- FRAME["Frameworks<br/>& Tools"]:::main
+        FRAME --- SK
+        FRAME --- TORCH
+        FRAME --- TF
+        FRAME --- HF
+        FRAME --- TOOLS
+
+        %% MLOps & Deployment
+        SERVE["Serving & Inference<br/>• REST / gRPC APIs<br/>• TorchServe / Triton<br/>• vLLM / TGI (LLM serving)<br/>• Batch vs Real-Time"]:::sub
+        OPTZ["Model Optimization<br/>• Quantization: INT8 / 4-bit<br/>• Distillation: Teacher → Student<br/>• Pruning<br/>• ONNX / TensorRT"]:::sub
+        MONITOR["Monitoring & Lifecycle<br/>• Data / Concept Drift<br/>• Tracking: W&B / MLflow<br/>• CI/CD + Model Registry<br/>• Feature Store"]:::sub
+        ROOT --- MLOPS["MLOps &<br/>Deployment"]:::main
+        MLOPS --- SERVE
+        MLOPS --- OPTZ
+        MLOPS --- MONITOR
+
+        %% Responsible AI
+        XAI["Explainability (XAI)<br/>• SHAP: Shapley Values<br/>• LIME: Local Surrogates<br/>• Grad-CAM: Saliency Maps<br/>• Integrated Gradients"]:::sub
+        FAIR["Fairness & Ethics<br/>• Bias Metrics<br/>• Demographic Parity<br/>• Equalized Odds<br/>• Data / Label Bias"]:::sub
+        PRIV["Privacy & Robustness<br/>• Differential Privacy<br/>• Federated Learning<br/>• Adversarial Robustness<br/>• Model / Data Security"]:::sub
+        ROOT --- RAI["Responsible<br/>AI"]:::main
+        RAI --- XAI
+        RAI --- FAIR
+        RAI --- PRIV
+
+        classDef root fill:#0f766e,stroke:#134e4a,stroke-width:4px,color:white,font-weight:bold,font-size:20px
         classDef main fill:#15803d,stroke:#166534,stroke-width:3px,color:white,font-weight:bold
         classDef sub fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:black,font-weight:500
+
+        %% Clickable nodes -> algorithm diagrams (adds a dashed teal accent)
+        classDef clickable stroke:#0f766e,stroke-width:4px,stroke-dasharray:6 3
+        class SUP,CLS,CLU,DIM,CNN,RNN,TRANS,LLM,GEN,RL,OPT,ENS,NLP,CV,MULTI,RAG,FTUNE,GNN,MLOPS clickable
+
+        click SUP "#logistic-regression" "Logistic Regression diagram"
+        click CLS "#decision-tree" "Decision Tree diagram"
+        click ENS "#random-forest" "Random Forest diagram"
+        click CLU "#k-means" "K-Means clustering diagram"
+        click DIM "#pca" "PCA diagram"
+        click OPT "#gradient-descent" "Gradient Descent diagram"
+        click CNN "#cnn" "CNN architecture diagram"
+        click RNN "#rnn-lstm" "RNN / LSTM diagram"
+        click TRANS "#transformer" "Transformer attention diagram"
+        click LLM "#llm" "LLM generation & training diagram"
+        click GEN "#gan" "GAN & Diffusion diagrams"
+        click RL "#q-learning" "Q-Learning diagram"
+        click NLP "#nlp" "NLP pipeline diagram"
+        click CV "#computer-vision" "Object detection pipeline diagram"
+        click MULTI "#clip" "CLIP multimodal diagram"
+        click RAG "#rag" "RAG pipeline diagram"
+        click FTUNE "#fine-tuning" "Fine-tuning & alignment diagram"
+        click GNN "#gnn" "Graph neural network diagram"
+        click MLOPS "#mlops" "MLOps lifecycle diagram"
   </div>
+  <p class="pz-note">Scroll to zoom &middot; drag to pan &middot; use the on-map controls to reset. Click a highlighted node to jump to its diagram.</p>
+
+  <!-- ================================================================= -->
+  <!-- ======================= ALGORITHM DIAGRAMS ====================== -->
+  <!-- ================================================================= -->
+  <h2 class="algo-title" id="algorithms">Algorithm Diagrams</h2>
+  <p class="algo-sub">How the flagship algorithms actually work &mdash; flow &amp; architecture</p>
+
+  <div class="toc" id="algo-top">
+    <h3>Contents</h3>
+    <ul>
+      <li><a href="#logistic-regression">Logistic Regression</a></li>
+      <li><a href="#decision-tree">Decision Tree</a></li>
+      <li><a href="#random-forest">Random Forest</a></li>
+      <li><a href="#k-means">K-Means Clustering</a></li>
+      <li><a href="#pca">PCA</a></li>
+      <li><a href="#gradient-descent">Gradient Descent</a></li>
+      <li><a href="#cnn">CNN</a></li>
+      <li><a href="#rnn-lstm">RNN / LSTM</a></li>
+      <li><a href="#transformer">Transformer Attention</a></li>
+      <li><a href="#gan">GAN</a></li>
+      <li><a href="#diffusion">Diffusion Model</a></li>
+      <li><a href="#q-learning">Q-Learning (RL)</a></li>
+      <li><a href="#llm">LLM (generation &amp; training)</a></li>
+      <li><a href="#nlp">NLP Pipeline</a></li>
+      <li><a href="#computer-vision">Object Detection (CV)</a></li>
+      <li><a href="#clip">CLIP (Multimodal)</a></li>
+      <li><a href="#rag">RAG Pipeline</a></li>
+      <li><a href="#fine-tuning">Fine-Tuning &amp; Alignment</a></li>
+      <li><a href="#gnn">Graph Neural Network</a></li>
+      <li><a href="#mlops">MLOps Lifecycle</a></li>
+    </ul>
+  </div>
+
+  <!-- ================= LOGISTIC REGRESSION ================= -->
+  <section class="algo" id="logistic-regression">
+    <h2>Logistic Regression</h2>
+    <p class="desc">A linear score is squashed by the sigmoid into a probability, then thresholded into a class.</p>
+    <div class="mermaid">
+      graph LR
+        X["Input Features<br/>$x_1, x_2, \dots, x_n$"]:::io --> Z["Linear Combination<br/>$z = \beta_0 + \sum_i \beta_i x_i$"]:::proc
+        Z --> S["Sigmoid<br/>$\sigma(z)=\frac{1}{1+e^{-z}}$"]:::proc
+        S --> P["Probability<br/>$P(y=1\mid x)=\sigma(z)$"]:::proc
+        P --> T{"$P \geq 0.5$ ?"}:::dec
+        T -->|Yes| C1["Class 1"]:::io
+        T -->|No| C0["Class 0"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= DECISION TREE ================= -->
+  <section class="algo" id="decision-tree">
+    <h2>Decision Tree</h2>
+    <p class="desc">Recursive if/else splits chosen to maximize information gain (minimize entropy) until leaves hold a class.</p>
+    <div class="mermaid">
+      graph TD
+        R{"Feature A &lt; t&#8321; ?<br/>split on max info gain"}:::dec
+        R -->|Yes| N1{"Feature B &lt; t&#8322; ?"}:::dec
+        R -->|No| N2{"Feature C &lt; t&#8323; ?"}:::dec
+        N1 -->|Yes| L1["Leaf: Class 0"]:::io
+        N1 -->|No| L2["Leaf: Class 1"]:::io
+        N2 -->|Yes| L3["Leaf: Class 1"]:::io
+        N2 -->|No| L4["Leaf: Class 0"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= RANDOM FOREST ================= -->
+  <section class="algo" id="random-forest">
+    <h2>Random Forest</h2>
+    <p class="desc">Many trees trained on bootstrap samples of the data; their votes are aggregated to reduce variance.</p>
+    <div class="mermaid">
+      graph TD
+        D["Training Data"]:::io --> B1["Bootstrap<br/>Sample 1"]:::proc
+        D --> B2["Bootstrap<br/>Sample 2"]:::proc
+        D --> B3["Bootstrap<br/>Sample 3"]:::proc
+        B1 --> T1["Decision Tree 1"]:::proc
+        B2 --> T2["Decision Tree 2"]:::proc
+        B3 --> T3["Decision Tree 3"]:::proc
+        T1 --> V["Aggregate<br/>Majority Vote / Average"]:::dec
+        T2 --> V
+        T3 --> V
+        V --> P["Final Prediction"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= K-MEANS ================= -->
+  <section class="algo" id="k-means">
+    <h2>K-Means Clustering</h2>
+    <p class="desc">Alternates between assigning points to the nearest centroid and recomputing centroids until stable.</p>
+    <div class="mermaid">
+      graph TD
+        A["Choose number of clusters $k$"]:::io --> B["Initialize $k$ centroids randomly"]:::proc
+        B --> C["Assign each point to nearest centroid<br/>$\arg\min_j \lVert x_i - \mu_j \rVert^2$"]:::proc
+        C --> Dn["Recompute centroids<br/>$\mu_j = \frac{1}{|C_j|}\sum_{x_i \in C_j} x_i$"]:::proc
+        Dn --> E{"Centroids moved?"}:::dec
+        E -->|Yes| C
+        E -->|No| F["Final Clusters"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= PCA ================= -->
+  <section class="algo" id="pca">
+    <h2>Principal Component Analysis (PCA)</h2>
+    <p class="desc">Finds orthogonal directions of maximum variance via eigen-decomposition of the covariance matrix, then projects onto the top-k.</p>
+    <div class="mermaid">
+      graph LR
+        A["Data Matrix $X$"]:::io --> B["Standardize<br/>zero mean, unit variance"]:::proc
+        B --> C["Covariance Matrix<br/>$\Sigma = \frac{1}{n} X^{T} X$"]:::proc
+        C --> Dn["Eigen Decomposition<br/>$\Sigma = U \Lambda U^{T}$"]:::proc
+        Dn --> E["Sort by eigenvalue<br/>keep top-$k$ components"]:::proc
+        E --> F["Project<br/>$Z = X U_k$"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= GRADIENT DESCENT ================= -->
+  <section class="algo" id="gradient-descent">
+    <h2>Gradient Descent</h2>
+    <p class="desc">The workhorse optimizer: repeatedly step parameters downhill along the negative gradient of the loss.</p>
+    <div class="mermaid">
+      graph TD
+        A["Initialize parameters $\theta$"]:::io --> B["Forward pass:<br/>compute loss $L(\theta)$"]:::proc
+        B --> C["Compute gradient $\nabla_\theta L$"]:::proc
+        C --> Dn["Update<br/>$\theta \leftarrow \theta - \eta\, \nabla_\theta L$"]:::proc
+        Dn --> E{"Converged?<br/>$\lVert \nabla L \rVert < \varepsilon$"}:::dec
+        E -->|No| B
+        E -->|Yes| F["Optimal $\theta^{*}$"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= CNN ================= -->
+  <section class="algo" id="cnn">
+    <h2>Convolutional Neural Network (CNN)</h2>
+    <p class="desc">Stacked conv + pooling layers extract hierarchical spatial features, then dense layers classify.</p>
+    <div class="mermaid">
+      graph LR
+        IN["Input Image<br/>$H \times W \times 3$"]:::io --> C1["Conv + ReLU<br/>feature maps"]:::conv
+        C1 --> P1["Max Pool<br/>downsample"]:::pool
+        P1 --> C2["Conv + ReLU<br/>deeper features"]:::conv
+        C2 --> P2["Max Pool"]:::pool
+        P2 --> FL["Flatten"]:::proc
+        FL --> FC["Fully Connected"]:::proc
+        FC --> OUT["Softmax<br/>class probabilities"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef conv fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef pool fill:#ffe4e6,stroke:#e11d48,stroke-width:2px,color:#000;
+        classDef proc fill:#e0e7ff,stroke:#4f46e5,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= RNN / LSTM ================= -->
+  <section class="algo" id="rnn-lstm">
+    <h2>RNN / LSTM (unrolled)</h2>
+    <p class="desc">Hidden state carries information across time steps; LSTM gates control what to keep, forget, and output.</p>
+    <div class="mermaid">
+      graph LR
+        X1["$x_1$"]:::io --> H1["LSTM Cell<br/>forget / input / output gates"]:::proc
+        X2["$x_2$"]:::io --> H2["LSTM Cell"]:::proc
+        X3["$x_3$"]:::io --> H3["LSTM Cell"]:::proc
+        H1 -->|"$h_1, c_1$"| H2
+        H2 -->|"$h_2, c_2$"| H3
+        H1 --> O1["$\hat{y}_1$"]:::out
+        H2 --> O2["$\hat{y}_2$"]:::out
+        H3 --> O3["$\hat{y}_3$"]:::out
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef out fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= TRANSFORMER ================= -->
+  <section class="algo" id="transformer">
+    <h2>Transformer &mdash; Scaled Dot-Product Attention</h2>
+    <p class="desc">Each token attends to every other token via Query/Key/Value projections; a residual + feed-forward block follows.</p>
+    <div class="mermaid">
+      graph TD
+        IN["Input Embeddings<br/>+ Positional Encoding"]:::io --> QKV["Linear Projections"]:::proc
+        QKV --> Q["Q (queries)"]:::proc
+        QKV --> K["K (keys)"]:::proc
+        QKV --> V["V (values)"]:::proc
+        Q --> SC["Scores<br/>$QK^{T}/\sqrt{d_k}$"]:::proc
+        K --> SC
+        SC --> SM["Softmax<br/>attention weights"]:::proc
+        SM --> M["Weighted Sum<br/>$\text{softmax}\!\left(\frac{QK^{T}}{\sqrt{d_k}}\right)V$"]:::proc
+        V --> M
+        M --> AN["Add &amp; Norm"]:::proc
+        AN --> FF["Feed Forward"]:::proc
+        FF --> OUT["Contextual Output"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= GAN ================= -->
+  <section class="algo" id="gan">
+    <h2>Generative Adversarial Network (GAN)</h2>
+    <p class="desc">A generator and discriminator play a min-max game: $\min_G \max_D V(D,G)$. G learns to fool D; D learns to spot fakes.</p>
+    <div class="mermaid">
+      graph LR
+        Z["Random Noise $z$"]:::io --> G["Generator $G$"]:::proc
+        G --> FAKE["Fake Sample $G(z)$"]:::proc
+        REAL["Real Data $x$"]:::io --> D["Discriminator $D$"]:::proc
+        FAKE --> D
+        D --> OUT{"Real or Fake?"}:::dec
+        OUT -->|"backprop loss"| G
+        OUT -->|"backprop loss"| D
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= DIFFUSION ================= -->
+  <section class="algo" id="diffusion">
+    <h2>Diffusion Model</h2>
+    <p class="desc">A forward process gradually adds noise to data; a learned reverse process denoises pure noise back into a sample.</p>
+    <div class="mermaid">
+      graph LR
+        subgraph FWD["Forward process $q$ &mdash; add noise"]
+          direction LR
+          X0["$x_0$<br/>data"]:::io --> XM["$x_t$"]:::noise --> XT["$x_T$<br/>pure noise"]:::noise
+        end
+        subgraph REV["Reverse process $p_\theta$ &mdash; learned denoising"]
+          direction LR
+          XT2["$x_T$<br/>pure noise"]:::noise --> XM2["$x_{t-1}$<br/>$p_\theta(x_{t-1}\mid x_t)$"]:::proc --> X0G["$x_0$<br/>generated"]:::io
+        end
+        XT -.->|"start sampling"| XT2
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef noise fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= Q-LEARNING ================= -->
+  <section class="algo" id="q-learning">
+    <h2>Q-Learning (Reinforcement Learning)</h2>
+    <p class="desc">An agent interacts with an environment, receives rewards, and updates a value table toward the Bellman target.</p>
+    <div class="mermaid">
+      graph LR
+        A["Agent<br/>policy $\pi$"]:::io -->|"action $a_t$"| E["Environment"]:::proc
+        E -->|"reward $r_t$,<br/>next state $s_{t+1}$"| A
+        A --> U["Update Q-value<br/>$Q(s,a) \leftarrow Q(s,a) + \alpha\,[\, r + \gamma \max_{a'} Q(s',a') - Q(s,a)\,]$"]:::dec
+        U -->|"repeat"| A
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= LLM ================= -->
+  <section class="algo" id="llm">
+    <h2>Large Language Model &mdash; Generation &amp; Training</h2>
+    <p class="desc">Trained in stages (pretrain &rarr; supervised fine-tune &rarr; RLHF), then generates text autoregressively one token at a time.</p>
+    <div class="mermaid">
+      graph LR
+        subgraph TRAIN["Training pipeline"]
+          direction LR
+          PT["Pre-training<br/>next-token on web-scale text"]:::proc --> SFT["Supervised Fine-Tuning<br/>instruction pairs"]:::proc --> RLHF["RLHF / DPO<br/>align to human preference"]:::proc
+        end
+        subgraph GENr["Autoregressive generation"]
+          direction LR
+          P["Prompt tokens"]:::io --> EMB["Embed + Positional"]:::proc
+          EMB --> BLK["N &times; Transformer Blocks<br/>self-attention + FFN"]:::proc
+          BLK --> LOG["Next-token logits"]:::proc
+          LOG --> SM["Softmax + sample<br/>(temperature / top-p)"]:::dec
+          SM --> TOK["Emit token"]:::io
+          TOK -->|"append, repeat"| EMB
+        end
+        RLHF -.->|"deploy weights"| BLK
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= NLP PIPELINE ================= -->
+  <section class="algo" id="nlp">
+    <h2>NLP Pipeline</h2>
+    <p class="desc">Raw text is tokenized and embedded, passed through a language model, and routed to a task-specific head.</p>
+    <div class="mermaid">
+      graph LR
+        T["Raw Text"]:::io --> TK["Tokenize<br/>(subword / BPE)"]:::proc
+        TK --> EM["Embeddings<br/>+ positional"]:::proc
+        EM --> MD["Language Model<br/>(Transformer encoder/decoder)"]:::proc
+        MD --> H1["NER head<br/>entity F1"]:::out
+        MD --> H2["Sentiment head<br/>polarity"]:::out
+        MD --> H3["Translation<br/>BLEU"]:::out
+        MD --> H4["Summarization<br/>ROUGE"]:::out
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef out fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= COMPUTER VISION ================= -->
+  <section class="algo" id="computer-vision">
+    <h2>Computer Vision &mdash; Object Detection</h2>
+    <p class="desc">A CNN backbone extracts features; a detection head predicts boxes + classes, then Non-Max Suppression removes duplicates.</p>
+    <div class="mermaid">
+      graph LR
+        IN["Input Image"]:::io --> BB["CNN Backbone<br/>(ResNet / EfficientNet)"]:::proc
+        BB --> FM["Feature Maps"]:::proc
+        FM --> AN["Anchors / Region Proposals"]:::proc
+        AN --> HD["Detection Head<br/>class + box regression"]:::proc
+        HD --> NMS["Non-Max Suppression<br/>filter by IoU"]:::dec
+        NMS --> OUT["Bounding Boxes + Labels"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= CLIP / MULTIMODAL ================= -->
+  <section class="algo" id="clip">
+    <h2>CLIP &mdash; Contrastive Multimodal Learning</h2>
+    <p class="desc">Image and text encoders are trained to align matching pairs in a shared embedding space via a contrastive loss.</p>
+    <div class="mermaid">
+      graph LR
+        IMG["Image"]:::io --> IE["Image Encoder<br/>(ViT / CNN)"]:::proc
+        TXT["Text Caption"]:::io --> TE["Text Encoder<br/>(Transformer)"]:::proc
+        IE --> EMB["Shared Embedding Space"]:::proc
+        TE --> EMB
+        EMB --> SIM["Cosine Similarity Matrix<br/>image &harr; text"]:::proc
+        SIM --> L["Contrastive Loss<br/>pull matched pairs together"]:::dec
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= RAG ================= -->
+  <section class="algo" id="rag">
+    <h2>Retrieval-Augmented Generation (RAG)</h2>
+    <p class="desc">Documents are embedded into a vector store; at query time the most relevant passages are retrieved and injected into the prompt so the LLM answers from grounded context.</p>
+    <div class="mermaid">
+      graph LR
+        DOCS["Documents"]:::io --> CH["Chunk + Embed"]:::proc --> VDB[("Vector DB<br/>FAISS / Pinecone")]:::store
+        Q["User Query"]:::io --> QE["Embed Query"]:::proc
+        QE --> RET["Retrieve top-k<br/>similarity search"]:::proc
+        VDB --> RET
+        RET --> RR["Rerank<br/>most relevant"]:::proc
+        RR --> CTX["Build Context<br/>query + passages"]:::proc
+        CTX --> LLM["LLM"]:::proc
+        LLM --> ANS["Grounded Answer<br/>+ citations"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef store fill:#ede9fe,stroke:#7c3aed,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= FINE-TUNING & ALIGNMENT ================= -->
+  <section class="algo" id="fine-tuning">
+    <h2>Fine-Tuning &amp; Alignment (LoRA + RLHF/DPO)</h2>
+    <p class="desc">PEFT adapts a frozen base model by training tiny low-rank matrices; alignment then steers the model toward human preferences via a reward model (RLHF) or directly (DPO).</p>
+    <div class="mermaid">
+      graph LR
+        subgraph PEFT["Parameter-Efficient Fine-Tuning (LoRA)"]
+          direction LR
+          BASE["Pretrained LLM<br/>frozen weights $W$"]:::proc --> LORA["Train low-rank adapters<br/>$\Delta W = B A$"]:::hi --> TUNED["Task-adapted model<br/>$W + \Delta W$"]:::io
+        end
+        subgraph ALIGN["Preference Alignment"]
+          direction LR
+          SFT["SFT model"]:::proc --> RM["Reward Model<br/>from human prefs"]:::proc
+          RM --> RLHF["RLHF (PPO)<br/>maximize reward"]:::hi
+          SFT --> DPO["or DPO / ORPO<br/>direct preference opt."]:::hi
+          RLHF --> AL["Aligned model"]:::io
+          DPO --> AL
+        end
+        TUNED -.->|"start from adapted weights"| SFT
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef hi fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= GNN ================= -->
+  <section class="algo" id="gnn">
+    <h2>Graph Neural Network &mdash; Message Passing</h2>
+    <p class="desc">Each node updates its representation by aggregating messages from its neighbors; stacking L layers grows the receptive field to L hops.</p>
+    <div class="mermaid">
+      graph LR
+        G["Graph<br/>nodes + edges"]:::io --> AGG["Aggregate neighbors<br/>$m_v = \sum_{u \in N(v)} h_u$"]:::proc
+        AGG --> UPD["Update node<br/>$h_v' = \sigma(W\,[\,h_v \,\Vert\, m_v\,])$"]:::proc
+        UPD --> STK["Stack $L$ layers<br/>$L$-hop receptive field"]:::proc
+        STK --> RO["Readout<br/>node / edge / graph task"]:::io
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <!-- ================= MLOPS LIFECYCLE ================= -->
+  <section class="algo" id="mlops">
+    <h2>MLOps Lifecycle</h2>
+    <p class="desc">A continuous loop: track training, register versions, optimize for inference, deploy, monitor for drift, and retrain when performance degrades.</p>
+    <div class="mermaid">
+      graph LR
+        DATA["Data + Features"]:::io --> TR["Train + Track<br/>W&B / MLflow"]:::proc
+        TR --> REG["Model Registry<br/>versioning"]:::proc
+        REG --> OPT["Optimize<br/>quantize / distill / ONNX"]:::proc
+        OPT --> DEP["Deploy &amp; Serve<br/>Triton / vLLM"]:::proc
+        DEP --> MON["Monitor<br/>drift + metrics"]:::dec
+        MON -->|"retrain trigger"| DATA
+        classDef io fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#000;
+        classDef proc fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#000;
+        classDef dec fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#000;
+    </div>
+    <p class="top"><a href="#algo-top">&#8593; top</a></p>
+  </section>
+
+  <button class="to-top" id="toTop" title="Back to top" aria-label="Back to top">&#8593;</button>
 
   <script>
     mermaid.initialize({
-      startOnLoad: true,
+      startOnLoad: false,   // we trigger render manually, after fonts are ready
       theme: 'neutral',
+      securityLevel: 'loose',
       flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
     });
+
+    // Grow any label box whose content overflows it (handles web-font / MathJax reflow).
+    // No-op for boxes that already fit, so it can't shrink or disturb a correct layout.
+    function fitLabels() {
+      document.querySelectorAll('.mermaid svg g.node').forEach(function (node) {
+        var fo = node.querySelector('foreignObject');
+        var rect = node.querySelector('rect');           // skip diamonds/polygons
+        if (!fo || !rect) return;
+        var div = fo.firstElementChild;
+        if (!div) return;
+        var needW = Math.ceil(div.scrollWidth);
+        var needH = Math.ceil(div.scrollHeight);
+        var curW = parseFloat(fo.getAttribute('width')) || 0;
+        var curH = parseFloat(fo.getAttribute('height')) || 0;
+        if (needW <= curW + 1 && needH <= curH + 1) return;   // already fits
+        var w = Math.max(needW, curW), h = Math.max(needH, curH), pad = 8;
+        fo.setAttribute('width', w);
+        fo.setAttribute('height', h);
+        var lbl = fo.closest('g.label');
+        if (lbl) lbl.setAttribute('transform', 'translate(' + (-w / 2) + ', ' + (-h / 2) + ')');
+        rect.setAttribute('width', w + pad * 2);
+        rect.setAttribute('height', h + pad * 2);
+        rect.setAttribute('x', -(w / 2 + pad));
+        rect.setAttribute('y', -(h / 2 + pad));
+      });
+    }
+
+    // Pan/zoom the big map only (progressive enhancement — no-op if lib absent)
+    function initMapPanZoom() {
+      if (typeof svgPanZoom !== 'function') return;
+      var container = document.getElementById('mapDiagram');
+      if (!container || container.classList.contains('pz-enabled')) return;
+      var svg = container.querySelector('svg');
+      if (!svg) return;
+      container.classList.add('pz-enabled');
+      svg.style.maxWidth = 'none';
+      svg.style.width = '100%';
+      svg.style.height = '100%';
+      try {
+        svgPanZoom(svg, {
+          zoomEnabled: true, controlIconsEnabled: true, fit: true, center: true,
+          minZoom: 0.2, maxZoom: 20, zoomScaleSensitivity: 0.3, dblClickZoomEnabled: false
+        });
+      } catch (e) { container.classList.remove('pz-enabled'); }
+    }
+
+    function typesetMath() {
+      if (window.MathJax && window.MathJax.Hub) {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+        MathJax.Hub.Queue(fitLabels);          // reflow boxes once math is laid out
+        MathJax.Hub.Queue(function () { setTimeout(function () { fitLabels(); initMapPanZoom(); }, 250); });
+      } else {
+        fitLabels();
+        initMapPanZoom();
+      }
+    }
+
+    async function renderMermaid() {
+      try {
+        if (document.fonts && document.fonts.load) {
+          await Promise.all([
+            document.fonts.load("400 16px 'Montserrat'"),
+            document.fonts.load("500 16px 'Montserrat'"),
+            document.fonts.load("600 16px 'Montserrat'"),
+            document.fonts.load("700 16px 'Montserrat'")
+          ]);
+          await document.fonts.ready;   // ensure the web font is applied before measuring
+        }
+      } catch (e) { /* fall back to default fonts */ }
+      await mermaid.run();
+      typesetMath();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', renderMermaid);
+    } else {
+      renderMermaid();
+    }
+
+    // Floating back-to-top button
+    (function () {
+      var btn = document.getElementById('toTop');
+      if (!btn) return;
+      window.addEventListener('scroll', function () {
+        btn.classList.toggle('show', window.scrollY > 400);
+      }, { passive: true });
+      btn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+
+    // Dark-mode toggle (persists to the same 'theme' key the portfolio uses)
+    (function () {
+      var btn = document.getElementById('themeBtn');
+      if (!btn) return;
+      function sync() { btn.textContent = document.documentElement.classList.contains('dark') ? '☀' : '☾'; }
+      sync();
+      btn.addEventListener('click', function () {
+        var dark = document.documentElement.classList.toggle('dark');
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+        sync();
+      });
+    })();
   </script>
 </body>
 </html>

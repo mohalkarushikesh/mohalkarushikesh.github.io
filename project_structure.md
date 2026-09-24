@@ -8,7 +8,7 @@ piece of client-side JavaScript is `assets/js/app.js`, which persists the dark/l
 ## Directory layout
 
 ```
-rushikesh-cts.github.io/
+mohalkarushikesh.github.io/
 ├── _config.yml                # Jekyll site config (title, url, plugins, permalinks, SEO defaults)
 ├── index.html                 # Home page (layout: default) — data-driven via Liquid
 ├── 404.html                   # Custom not-found page
@@ -102,6 +102,6 @@ python preview_build.py && python -m http.server 4000 --directory _site
 
 ## Deployment
 
-Push to the default branch of the `rushikesh-cts.github.io` repo. GitHub Pages runs Jekyll and
+Push to the default branch of the `mohalkarushikesh.github.io` repo. GitHub Pages runs Jekyll and
 serves the built site at the root. If you use a custom domain, update `url` in `_config.yml` and add
 a `CNAME` file.
