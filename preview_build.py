@@ -155,6 +155,26 @@ def write(rel, text):
     with open(dest, "w", encoding="utf-8") as f:
         f.write(text)
 
+def build_listing_cards(posts):
+    cards = []
+    for p in posts:
+        cat = html.escape(str(p.get("category", "AI/ML")))
+        d_str = p["date"].strftime("%b %d, %Y") if isinstance(p["date"], (date, datetime)) else str(p["date"])
+        title = html.escape(str(p.get("title", "")))
+        desc = html.escape(str(p.get("description", "")))
+        url = p.get("url", "#")
+        card = f'''      <article class="card b-card reveal">
+        <div class="meta">
+          <span class="tag">{cat}</span>
+          <span>{d_str}</span>
+        </div>
+        <h3>{title}</h3>
+        <p>{desc}</p>
+        <a class="more" href="{url}">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </article>'''
+        cards.append(card)
+    return "\n\n".join(cards)
+
 # ---------- clean output ----------
 if os.path.exists(OUT):
     shutil.rmtree(OUT)
@@ -163,12 +183,32 @@ os.makedirs(OUT, exist_ok=True)
 # ---------- home ----------
 with open(os.path.join(ROOT, "index.html"), encoding="utf-8") as f:
     fm, body = split_front_matter(f.read())
-write("index.html", render_with_layouts(fm, None, True, body))
+
+# Dynamically inject top 6 posts into home
+home_rendered = render_with_layouts(fm, None, True, body)
+top_6_cards = build_listing_cards(SITE["posts"][:6])
+home_rendered = re.sub(
+    r'<div class="grid-cards">\s*<article.*?</div\s*>\s*</section\s*>',
+    f'<div class="grid-cards">\n{top_6_cards}\n    </div>\n  </div>\n</section>',
+    home_rendered,
+    flags=re.S
+)
+write("index.html", home_rendered)
 
 # ---------- blog listing ----------
 with open(os.path.join(ROOT, "blogs", "index.html"), encoding="utf-8") as f:
     fm, body = split_front_matter(f.read())
-write("blogs/index.html", render_with_layouts(fm, None, True, body))
+
+blogs_rendered = render_with_layouts(fm, None, True, body)
+all_cards = build_listing_cards(SITE["posts"])
+blogs_rendered = re.sub(
+    r'<div class="listing">\s*<article.*?</div\s*>\s*</section\s*>',
+    f'<div class="listing">\n{all_cards}\n    </div>\n  </div>\n</section>',
+    blogs_rendered,
+    flags=re.S
+)
+blogs_rendered = re.sub(r'\d+\s+deep dives', f'{len(SITE["posts"])} deep dives', blogs_rendered)
+write("blogs/index.html", blogs_rendered)
 
 # ---------- thanks page ----------
 with open(os.path.join(ROOT, "thanks.html"), encoding="utf-8") as f:
