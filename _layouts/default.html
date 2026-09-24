@@ -41,11 +41,7 @@
   <!-- Navbar -->
   <span id="top"></span>
   <nav class="navbar">
-    <!-- Masthead: Branding · Hamburger · Theme toggle -->
-    <div class="wrap nav-top">
-      <div class="nav-side nav-side-left">
-        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
-      </div>
+    <div class="wrap nav-container">
       <a href="{{ '/' | relative_url }}#home" class="brand">
         <div class="ai-seal-badge">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -53,24 +49,25 @@
           </svg>
         </div>
         <div class="brand-text-group">
-          <span class="brand-agency">AI &amp; ML ENGINEER</span>
           <span class="brand-name">Rushikesh Mohalkar</span>
+          <span class="brand-agency">AI &amp; ML Engineer</span>
         </div>
       </a>
-      <div class="nav-side nav-side-right">
-        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
-      </div>
-    </div>
 
-    <!-- Primary navigation -->
-    <div class="nav-menu">
-      <a class="link" href="{{ '/' | relative_url }}#home">Home</a>
-      <a class="link" href="{{ '/' | relative_url }}#about">About</a>
-      <a class="link" href="{{ '/' | relative_url }}#projects">Projects</a>
-      <a class="link" href="{{ '/aiml-tree-structure.html' | relative_url }}">AI/ML Map</a>
-      <a class="link" href="{{ '/blogs/' | relative_url }}">Blogs</a>
-      <a class="link" href="{{ '/' | relative_url }}#resume">Resume</a>
-      <a class="link" href="{{ '/' | relative_url }}#contact">Contact</a>
+      <div class="nav-menu">
+        <a class="link" href="{{ '/' | relative_url }}#home">Home</a>
+        <a class="link" href="{{ '/' | relative_url }}#about">About</a>
+        <a class="link" href="{{ '/' | relative_url }}#projects">Projects</a>
+        <a class="link" href="{{ '/aiml-tree-structure.html' | relative_url }}">AI/ML Map</a>
+        <a class="link" href="{{ '/blogs/' | relative_url }}">Blogs</a>
+        <a class="link" href="{{ '/' | relative_url }}#resume">Resume</a>
+        <a class="link" href="{{ '/' | relative_url }}#contact">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" title="Toggle theme" aria-label="Toggle light / dark theme"></button>
+        <label class="hamburger" for="nav-switch" title="Menu"><span></span></label>
+      </div>
     </div>
   </nav>
 
