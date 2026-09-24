@@ -37,7 +37,17 @@
       var body = message + '\n\n—\n' + name + (email ? '\n' + email : '');
       window.location.href = 'mailto:' + to +
         '?subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(body);
+  /* ---------------- Brand Logo Click (Scroll to Top) ---------------- */
+  var brandLinks = document.querySelectorAll('a.brand');
+  brandLinks.forEach(function (brand) {
+    brand.addEventListener('click', function (e) {
+      var navSwitch = document.getElementById('nav-switch');
+      if (navSwitch) navSwitch.checked = false;
+      var href = brand.getAttribute('href');
+      if (href === '#home' || href === '#top' || href === '#') {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
-  }
+  });
 })();
