@@ -25,10 +25,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
 
-  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924090451" />
 
-  <title>Natural Language Processing Revolution</title>
-<meta name="description" content="A deep, engineer-oriented tour of the NLP revolution: from n-grams and CRFs to transformers, instruction-tuned LLMs, attention internals, tokenization, parameter-efficient fine-tuning, RAG, agents, evaluation, and responsible deployment.">
+  <title>Speculative Decoding & Medusa Heads: Accelerating LLM Token Generation</title>
+<meta name="description" content="Scaling LLM inference throughput: draft-target model speculative sampling, tree-based verification, and multi-head parallel token prediction with Medusa.">
 </head>
 
 <body>
@@ -80,17 +80,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
         All articles
       </a>
-      <span class="eyebrow">NLP</span>
-      <h1 class="post-title" style="margin-top: 16px;">Natural Language Processing Revolution</h1>
-      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A deep, engineer-oriented tour of the NLP revolution: from n-grams and CRFs to transformers, instruction-tuned LLMs, attention internals, tokenization, parameter-efficient fine-tuning, RAG, agents, evaluation, and responsible deployment.</p>
+      <span class="eyebrow">Inference Optimization</span>
+      <h1 class="post-title" style="margin-top: 16px;">Speculative Decoding & Medusa Heads: Accelerating LLM Token Generation</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">Scaling LLM inference throughput: draft-target model speculative sampling, tree-based verification, and multi-head parallel token prediction with Medusa.</p>
       <div class="post-meta">
         <time datetime="2025-04-19">Apr 19, 2025</time>
         <span>·</span>
-        <span>15 min read</span>
+        <span>3 min read</span>
         <span>·</span>
         <span>By </span>
         
-          <span class="pill">NLP</span><span class="pill">transformers</span><span class="pill">large language models</span><span class="pill">attention</span>
+          <span class="pill">Speculative Decoding</span><span class="pill">Medusa</span><span class="pill">LLM Inference</span><span class="pill">KV Cache</span>
         
       </div>
     </div>
@@ -98,393 +98,110 @@
 
   <div class="wrap">
     <div class="post-body">
-      <p>Natural Language Processing (NLP) has evolved from early statistical models like n‑grams and Conditional Random Fields (CRFs) to today’s transformer-based architectures and instruction‑tuned Large Language Models (LLMs). Modern NLP systems are built on massive self-supervised pretraining on diverse text corpora, followed by fine-tuning or prompt engineering for domain-specific tasks. This allows models to generalize across languages, topics, and contexts, enabling unprecedented accuracy in understanding and generating human language.</p>
+      <p>Autoregressive Large Language Model (LLM) generation is strictly <strong>memory-bandwidth bound</strong>. For an 70B parameter model in 16-bit precision, generating a single output token requires loading 140GB of model parameters from GPU VRAM into registers, regardless of whether the batch size is 1 or 16. <strong>Speculative Decoding</strong> and <strong>Medusa Multi-Head Decoding</strong> break this memory latency wall by predicting multiple candidate tokens per forward pass and verifying them in parallel.</p>
 
-        <blockquote>The shift from hand-engineered features to learned representations at scale is the single change that turned NLP from a research curiosity into everyday infrastructure.</blockquote>
+<blockquote>Autoregressive generation runs 1 token per forward pass; Speculative Decoding generates K tokens per forward pass with mathematical equivalence.</blockquote>
 
-        <!-- Table of Contents -->
-        <nav aria-label="Table of Contents">
-            <h2>Table of Contents</h2>
-            <ul>
-                <li><a href="#section1">Introduction</a></li>
-                <li><a href="#history">A Short History: From N-grams to LLMs</a></li>
-                <li><a href="#section2">Key Components of Modern NLP</a></li>
-                <li><a href="#tokenization">Tokenization and Embeddings in Depth</a></li>
-                <li><a href="#section3">Transformer Architecture</a></li>
-                <li><a href="#attention">Self-Attention: The Mechanics</a></li>
-                <li><a href="#pretraining">Pretraining Objectives and Scaling</a></li>
-                <li><a href="#finetuning">Adaptation: Fine-tuning, PEFT, and Alignment</a></li>
-                <li><a href="#rag">Retrieval-Augmented Generation and Agents</a></li>
-                <li><a href="#section4">Applications Across Industries</a></li>
-                <li><a href="#evaluation">Evaluation and Benchmarks</a></li>
-                <li><a href="#section5">Responsible Deployment</a></li>
-                <li><a href="#section6">Future Outlook</a></li>
-            </ul>
-        </nav>
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#memory-bound">The memory bandwidth wall in autoregressive decoding</a></li>
+    <li><a href="#speculative-math">Speculative decoding algorithm & acceptance probability</a></li>
+    <li><a href="#medusa-arch">Medusa: Single-model speculative decoding with parallel heads</a></li>
+    <li><a href="#tree-attention">Tree-based verification & custom attention masks</a></li>
+    <li><a href="#python-implementation">Python implementation of Speculative Sampling verification</a></li>
+    <li><a href="#takeaways">Inference optimization benchmarks</a></li>
+  </ul>
+</nav>
 
-        <h2 id="section1">Introduction</h2>
-        <p>NLP enables machines to generalize across languages, topics, and contexts, achieving unprecedented accuracy in understanding and generating human language. The revolution is driven by transformers, attention mechanisms, and large-scale pretraining, which together allow models to capture meaning beyond surface-level word patterns.</p>
-        <p>What makes the current era distinctive is not any single algorithm but the convergence of three trends: architectures that parallelize across sequence positions, self-supervised objectives that turn the entire internet into free training signal, and hardware plus distributed-training software that make trillion-token training runs feasible. The result is a class of models that behave less like task-specific classifiers and more like general-purpose text engines you steer with instructions.</p>
+<h2 id="memory-bound">The memory bandwidth wall in autoregressive decoding</h2>
+<p>On an NVIDIA H100 GPU (3.3 TB/s memory bandwidth), reading a 70B parameter model (140GB in FP16) takes approximately 42 milliseconds per token. Arithmetic intensity (FLOPS / byte) during single-user batch-1 decoding is less than 2, leaving over 95% of the GPU's compute FLOPS idle!</p>
 
-        <h2 id="history">A Short History: From N-grams to LLMs</h2>
-        <p>It helps to see the transformer moment as one step in a long lineage. Each generation solved a limitation of the previous one.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Era</th>
-                    <th>Representative approach</th>
-                    <th>Core idea</th>
-                    <th>Main limitation it exposed</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Statistical NLP</td>
-                    <td>N-gram language models, HMMs, CRFs</td>
-                    <td>Count-based probabilities over short windows</td>
-                    <td>No long-range context; sparse counts</td>
-                </tr>
-                <tr>
-                    <td>Static embeddings</td>
-                    <td>word2vec, GloVe</td>
-                    <td>Words as dense vectors from co-occurrence</td>
-                    <td>One vector per word — no sense disambiguation</td>
-                </tr>
-                <tr>
-                    <td>Recurrent networks</td>
-                    <td>LSTM, GRU, seq2seq with attention</td>
-                    <td>Hidden state carries context over time</td>
-                    <td>Sequential compute; long-range decay</td>
-                </tr>
-                <tr>
-                    <td>Transformers</td>
-                    <td>BERT, GPT, T5</td>
-                    <td>Self-attention over the whole sequence</td>
-                    <td>Quadratic attention cost; data hunger</td>
-                </tr>
-                <tr>
-                    <td>Instruction-tuned LLMs</td>
-                    <td>Chat and reasoning models</td>
-                    <td>Pretrain, then align to human instructions</td>
-                    <td>Hallucination, alignment, cost, evaluation</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>The through-line is a steady move away from features engineered by humans toward representations learned directly from data, and from narrow task models toward general models adapted after the fact.</p>
+<h2 id="speculative-math">Speculative decoding algorithm & acceptance probability</h2>
+<p>Speculative Decoding pairs a small, fast <strong>Draft Model</strong> (e.g. Llama-3 8B) with a large <strong>Target Model</strong> (e.g. Llama-3 70B):</p>
 
-        <h2 id="section2">Key Components of Modern NLP</h2>
-        <ul>
-            <li><strong>Tokenization and Embeddings:</strong> Text is broken into tokens or subword units, represented as dense vectors capturing semantic meaning.</li>
-            <li><strong>Transformer Architectures:</strong> Encoders, decoders, and attention mechanisms capture long-range dependencies and relationships in text.</li>
-            <li><strong>Pretraining Objectives:</strong> Masked language modeling, next-token prediction, and contrastive learning capture general language patterns.</li>
-            <li><strong>Parameter-efficient Fine-tuning:</strong> LoRA, adapters, and prompt tuning allow customization without retraining the entire model.</li>
-        </ul>
-        <p>These four components form a pipeline. Raw text becomes token IDs, token IDs become vectors, vectors flow through stacked transformer blocks trained by a self-supervised objective, and a small amount of downstream adaptation aligns the general model to a specific job. The sections below unpack each stage.</p>
+<ol>
+  <li>The Draft Model generates <code>K</code> candidate tokens speculatively in <code>K</code> rapid forward passes.</li>
+  <li>The Target Model runs a <strong>single batch forward pass</strong> over all <code>K</code> tokens simultaneously.</li>
+  <li>A modified rejection sampling rule determines how many tokens are accepted:</li>
+</ol>
 
-        <h2 id="tokenization">Tokenization and Embeddings in Depth</h2>
-        <p>Before a model sees text, a tokenizer converts characters into a sequence of integer IDs. Modern systems almost universally use subword tokenization, which strikes a balance between character-level flexibility and word-level efficiency. The dominant families are Byte-Pair Encoding (BPE), WordPiece, and unigram-based SentencePiece.</p>
-        <ul>
-            <li><strong>Byte-Pair Encoding (BPE):</strong> Starts from bytes or characters and greedily merges the most frequent adjacent pairs until the vocabulary reaches a target size. Byte-level BPE guarantees any input is representable with no unknown token.</li>
-            <li><strong>WordPiece:</strong> Similar merging strategy, but chooses merges that maximize training-corpus likelihood rather than raw frequency. Used by the BERT family.</li>
-            <li><strong>Unigram (SentencePiece):</strong> Starts from a large candidate vocabulary and prunes it probabilistically, which handles languages without whitespace word boundaries well.</li>
-        </ul>
-        <p>Subword tokenization is why an unseen word like <code>tokenization</code> can be split into known pieces such as <code>token</code> and <code>ization</code>. It also explains a class of practical quirks: token counts do not equal word counts, numbers and code fragment awkwardly, and non-English scripts often consume more tokens per character, which affects both cost and effective context length.</p>
-        <pre><code>Text:    "Transformers reshaped NLP."
-Tokens:  ["Transform", "ers", " reshaped", " N", "LP", "."]
-IDs:     [ 41284,      388,   47649,      426,  6480, 13 ]</code></pre>
-        <p>Each ID indexes a row in an embedding matrix, producing a dense vector. Unlike static word2vec or GloVe vectors, transformer embeddings become <em>contextual</em> once they pass through attention layers: the vector for "bank" differs between "river bank" and "central bank." Because self-attention itself is order-agnostic, models add <strong>positional information</strong> — learned position embeddings in early models, and rotary position embeddings (RoPE) in most current LLMs, which encode relative position and extrapolate more gracefully to longer sequences.</p>
+<pre><code>Acceptance Condition:
+For each token i in 1..K:
+r = Uniform(0, 1)
+if r <= min(1, P_target(x_i) / P_draft(x_i)):
+    Accept token x_i
+else:
+    Reject token x_i and sample next token from max(0, P_target(x) - P_draft(x))
+    Break speculative verification loop
+</code></pre>
 
-        <h2 id="section3">Transformer Architecture</h2>
-        <blockquote>"Attention is all you need — the transformer architecture reshaped NLP forever."</blockquote>
-        <p>The transformer architecture introduced in 2017 is the backbone of modern NLP. It relies on self-attention to weigh the importance of each token relative to others, enabling models to capture context across entire sequences.</p>
-        <p>A transformer is a stack of identical blocks. Each block has two sub-layers: a multi-head self-attention layer and a position-wise feed-forward network, each wrapped with a residual connection and layer normalization. Three structural variants dominate depending on the task.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Variant</th>
-                    <th>Attention pattern</th>
-                    <th>Best suited for</th>
-                    <th>Examples</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Encoder-only</td>
-                    <td>Bidirectional (sees full context)</td>
-                    <td>Classification, retrieval, embeddings</td>
-                    <td>BERT, RoBERTa</td>
-                </tr>
-                <tr>
-                    <td>Decoder-only</td>
-                    <td>Causal (left-to-right)</td>
-                    <td>Open-ended generation, chat</td>
-                    <td>GPT family, Llama, most modern LLMs</td>
-                </tr>
-                <tr>
-                    <td>Encoder-decoder</td>
-                    <td>Bidirectional encode, causal decode</td>
-                    <td>Translation, summarization</td>
-                    <td>T5, BART</td>
-                </tr>
-            </tbody>
-        </table>
+<p>Because the Target Model runs a single forward pass over all <code>K</code> tokens, any accepted tokens effectively cost <code>0</code> extra memory bandwidth loads!</p>
 
-        <!-- Mermaid Diagram -->
-        <div class="mermaid">
-        graph TD
-            A["Input Tokens"] --> B["Embedding Layer"]
-            B --> C["Self-Attention Mechanism"]
-            C --> D["Feed Forward Network"]
-            D --> E["Encoder Output"]
-            E --> F["Decoder with Attention"]
-            F --> G["Final Output (Predicted Text)"]
-        </div>
+<h2 id="medusa-arch">Medusa: Single-model speculative decoding with parallel heads</h2>
+<p>Medusa eliminates the need for a separate draft model altogether by attaching multiple lightweight ResNet/MLP <strong>decoding heads</strong> to the main model's top hidden state:</p>
 
-        <p>The diagram above shows the classic encoder-decoder flow. Most of today's chat and reasoning models are the decoder-only variant, where a single stack both reads the prompt and generates the continuation one token at a time.</p>
+<pre><code>                       +----------------------+
+                       | Base LLM Backbone    |
+                       +----------+-----------+
+                                  | (Hidden State H_t)
+         +------------------------+------------------------+
+         |                        |                        |
++--------v-------+       +--------v-------+       +--------v-------+
+| Medusa Head 1  |       | Medusa Head 2  |       | Medusa Head 3  |
+| Predicts t+1   |       | Predicts t+2   |       | Predicts t+3   |
++----------------+       +----------------+       +----------------+
+</code></pre>
 
-        <h2 id="attention">Self-Attention: The Mechanics</h2>
-        <p>Self-attention is the operation that lets every token look at every other token. Each token's embedding is projected into three vectors: a <strong>query</strong>, a <strong>key</strong>, and a <strong>value</strong>. The model scores how relevant every key is to a given query, normalizes those scores into weights, and produces a weighted sum of the values.</p>
-        <pre><code>Attention(Q, K, V) = softmax( (Q · Kᵀ) / √d_k ) · V</code></pre>
-        <p>The scaling factor <code>√d_k</code> keeps the dot products from growing large enough to saturate the softmax. "Multi-head" attention runs this operation several times in parallel with different learned projections, letting different heads specialize — some track syntax, some track coreference, some track long-range topic. A causal mask sets future positions to negative infinity before the softmax so a generation model cannot peek ahead.</p>
-        <div class="mermaid">
-        flowchart TD
-            X["Token embeddings"] --> Q["Query projection"]
-            X --> K["Key projection"]
-            X --> V["Value projection"]
-            Q --> S["Score = Q · Kᵀ / √d_k"]
-            K --> S
-            S --> M["Apply causal mask (decoder only)"]
-            M --> W["softmax → attention weights"]
-            V --> O["Weighted sum of values"]
-            W --> O
-            O --> H["Concat heads → output projection"]
-        </div>
-        <h3>The Cost of Attention and How It Is Managed</h3>
-        <p>Naive self-attention is O(n²) in sequence length n, both in compute and memory, which is the central obstacle to long context. A wave of engineering has pushed that limit outward:</p>
-        <ul>
-            <li><strong>FlashAttention:</strong> An IO-aware, exact attention kernel that tiles the computation to avoid materializing the full attention matrix in high-bandwidth memory, cutting memory use and speeding training and inference.</li>
-            <li><strong>Grouped-query and multi-query attention:</strong> Share key/value projections across heads to shrink the inference-time key-value cache, which is often the memory bottleneck for long generations.</li>
-            <li><strong>Mixture-of-Experts (MoE):</strong> Route each token through only a small subset of feed-forward "experts," so total parameter count grows without a proportional increase in per-token compute.</li>
-            <li><strong>Sparse and sliding-window attention:</strong> Restrict attention to local neighborhoods plus a few global tokens, trading some global reach for linear-ish scaling.</li>
-        </ul>
-        <p>Together these techniques are why context windows expanded from a few hundred tokens in early models to the very long contexts common in 2025 systems, enabling whole-document and multi-document reasoning.</p>
+<h2 id="tree-attention">Tree-based verification & custom attention masks</h2>
+<p>Rather than evaluating a single linear candidate sequence, Medusa constructs a <strong>tree of candidate token paths</strong>. Using custom 2D Tree Attention masks, the Target Model evaluates up to 64 candidate paths simultaneously in one forward pass.</p>
 
-        <h2 id="pretraining">Pretraining Objectives and Scaling</h2>
-        <p>Pretraining is where a model learns language from raw text without human labels. The objective determines what the model becomes good at.</p>
-        <ul>
-            <li><strong>Causal (next-token) language modeling:</strong> Predict the next token given all previous ones. Naturally suited to generation; the objective behind decoder-only LLMs.</li>
-            <li><strong>Masked language modeling (MLM):</strong> Randomly hide tokens and predict them from both sides. Produces strong bidirectional representations for understanding tasks.</li>
-            <li><strong>Span corruption:</strong> Mask contiguous spans and regenerate them, used by encoder-decoder models to unify understanding and generation.</li>
-            <li><strong>Contrastive objectives:</strong> Pull matching text pairs together and push mismatched pairs apart in vector space; the foundation of modern sentence and retrieval embeddings.</li>
-        </ul>
-        <h3>Scaling Laws</h3>
-        <p>Empirical scaling laws show that loss falls predictably as a power law in model size, dataset size, and compute. A widely cited refinement (the Chinchilla result) argued that many early large models were undertrained: for a fixed compute budget, model size and training tokens should grow together roughly in proportion. In practice this reoriented the field toward training smaller models on much more data, which also lowers inference cost — a decisive factor once a model is deployed to millions of users. The current frontier layers a second scaling axis on top: spending more compute at <em>inference</em> time, letting a model generate and refine intermediate reasoning before answering.</p>
+<h2 id="python-implementation">Python implementation of Speculative Sampling verification</h2>
 
-        <h2 id="finetuning">Adaptation: Fine-tuning, PEFT, and Alignment</h2>
-        <p>A pretrained base model is knowledgeable but not necessarily helpful, safe, or on-format. Adaptation closes that gap. There is a spectrum of options ordered by cost.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Technique</th>
-                    <th>What changes</th>
-                    <th>Cost</th>
-                    <th>When to use</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Prompting / in-context learning</td>
-                    <td>Nothing — examples in the prompt</td>
-                    <td>Lowest</td>
-                    <td>Quick tasks, prototyping, few-shot steering</td>
-                </tr>
-                <tr>
-                    <td>Prompt / prefix tuning</td>
-                    <td>A few learned soft-prompt vectors</td>
-                    <td>Low</td>
-                    <td>Many tasks sharing one frozen backbone</td>
-                </tr>
-                <tr>
-                    <td>LoRA / QLoRA (adapters)</td>
-                    <td>Small low-rank weight deltas</td>
-                    <td>Moderate</td>
-                    <td>Domain or style adaptation on limited hardware</td>
-                </tr>
-                <tr>
-                    <td>Full fine-tuning</td>
-                    <td>All model weights</td>
-                    <td>Highest</td>
-                    <td>Large data, maximal control, distinct behavior</td>
-                </tr>
-            </tbody>
-        </table>
-        <h3>Parameter-Efficient Fine-Tuning</h3>
-        <p>LoRA (Low-Rank Adaptation) freezes the original weights and learns a small pair of low-rank matrices whose product is added to selected weight matrices. Because rank is tiny relative to the full dimension, you train a fraction of a percent of the parameters, store adapters as megabytes rather than gigabytes, and hot-swap them per task. QLoRA extends this by keeping the frozen base model in 4-bit quantized form, so adaptation of large models fits on a single accelerator.</p>
-        <pre><code># Sketch: LoRA on attention projections with the PEFT library
-from peft import LoraConfig, get_peft_model
+<pre><code>import torch
 
-config = LoraConfig(
-    r=16,                 # rank of the update
-    lora_alpha=32,        # scaling
-    target_modules=["q_proj", "v_proj"],
-    lora_dropout=0.05,
-    task_type="CAUSAL_LM",
-)
-model = get_peft_model(base_model, config)
-model.print_trainable_parameters()   # typically < 1% of total</code></pre>
-        <h3>Alignment</h3>
-        <p>Instruction tuning teaches the base model to follow directions using curated instruction-response pairs. Preference alignment then optimizes the model toward outputs humans prefer. The classic pipeline is Reinforcement Learning from Human Feedback (RLHF): train a reward model on human preference comparisons, then optimize the policy against it with PPO. A simpler and increasingly common alternative, Direct Preference Optimization (DPO), skips the separate reward model and optimizes directly on preference pairs with a classification-style loss. Variants using AI-generated feedback (RLAIF / constitutional approaches) reduce the human labeling burden.</p>
-        <div class="mermaid">
-        flowchart TD
-            A["Raw web + code corpus"] --> B["Pretraining (next-token)"]
-            B --> C["Base model"]
-            C --> D["Instruction tuning (SFT)"]
-            D --> E["Preference alignment (RLHF / DPO)"]
-            E --> F["Aligned assistant model"]
-            F --> G["Task adaptation (LoRA / prompting)"]
-        </div>
+def verify_speculative_tokens(
+    target_logits: torch.Tensor, # Shape: (K+1, Vocab_Size)
+    draft_logits: torch.Tensor,  # Shape: (K, Vocab_Size)
+    draft_tokens: torch.Tensor   # Shape: (K,)
+) -> torch.Tensor:
+    """
+    Executes lossless rejection sampling for speculative verification.
+    """
+    accepted_tokens = []
+    K = draft_tokens.shape[0]
+    
+    target_probs = torch.softmax(target_logits, dim=-1)
+    draft_probs = torch.softmax(draft_logits, dim=-1)
 
-        <h2 id="rag">Retrieval-Augmented Generation and Agents</h2>
-        <p>LLMs have two structural weaknesses: their knowledge is frozen at training time, and they can state falsehoods fluently. Retrieval-Augmented Generation (RAG) addresses both by fetching relevant documents at query time and grounding the answer in them.</p>
-        <div class="mermaid">
-        flowchart TD
-            Q["User query"] --> EMB["Embed query"]
-            EMB --> VS["Vector store similarity search"]
-            DOCS["Document corpus"] --> CHUNK["Chunk + embed"]
-            CHUNK --> VS
-            VS --> TOPK["Top-k relevant chunks"]
-            TOPK --> PROMPT["Augmented prompt: query + context"]
-            Q --> PROMPT
-            PROMPT --> LLM["LLM generation"]
-            LLM --> ANS["Grounded answer with citations"]
-        </div>
-        <p>A production RAG system is more than a nearest-neighbor lookup. Practical builds add a retrieval-and-rerank stage (a fast bi-encoder retriever followed by a slower cross-encoder reranker), hybrid search that blends dense vectors with sparse keyword scoring (BM25), careful chunking that respects document structure, and evaluation that separately measures retrieval quality and answer faithfulness. When knowledge changes often, updating the index is far cheaper than retraining the model.</p>
-        <h3>From RAG to Agents and Tool Use</h3>
-        <p>The next step is letting the model act rather than only answer. Tool or function calling lets an LLM emit a structured request — a search, a database query, a calculation — receive the result, and continue reasoning. An <em>agent</em> loops this: plan, call a tool, observe, and revise until the goal is met. Emerging standards for describing tools and context to models, along with orchestration frameworks, are turning these patterns from bespoke glue code into reusable infrastructure. The engineering caution is real: each tool call is a place where errors compound, so guardrails, timeouts, and verification steps matter as much as the model itself.</p>
+    for i in range(K):
+        token_id = draft_tokens[i].item()
+        p_target = target_probs[i, token_id].item()
+        p_draft = draft_probs[i, token_id].item()
 
-        <h2 id="section4">Applications Across Industries</h2>
-        <ul>
-            <li><strong>Conversational AI:</strong> Chatbots, virtual assistants, and customer support systems provide human-like interactions at scale.</li>
-            <li><strong>Text Understanding and Generation:</strong> Summarization, translation, question answering, and sentiment analysis help businesses extract insights.</li>
-            <li><strong>Information Retrieval:</strong> Retrieval-Augmented Generation (RAG), semantic search, and knowledge extraction improve decision-making.</li>
-            <li><strong>Healthcare, Finance, and Legal:</strong> NLP enables automated document review, medical note summarization, fraud detection, and compliance analysis.</li>
-        </ul>
-        <p>A pattern worth noting across these verticals: the highest-value deployments in 2025 rarely replace a human end-to-end. They compress the expensive first-draft or triage step — drafting a clinical note, surfacing the three contract clauses that need review, clustering support tickets — and route the judgment call to a person. This framing keeps a human accountable while capturing most of the efficiency.</p>
+        # Rejection sampling condition
+        r = torch.rand(1).item()
+        if r <= min(1.0, p_target / (p_draft + 1e-8)):
+            accepted_tokens.append(token_id)
+        else:
+            # Resample replacement token from adjusted distribution
+            diff_dist = torch.clamp(target_probs[i] - draft_probs[i], min=0)
+            resampled_token = torch.multinomial(diff_dist / diff_dist.sum(), 1).item()
+            accepted_tokens.append(resampled_token)
+            return torch.tensor(accepted_tokens) # Terminate early on rejection
 
-        <!-- Comparison Table -->
-        <h3>NLP Before vs After Transformers</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Aspect</th>
-                    <th>Pre-Transformer NLP</th>
-                    <th>Transformer-based NLP</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Context Handling</td>
-                    <td>Limited to local context (n-grams, RNNs)</td>
-                    <td>Global context via self-attention</td>
-                </tr>
-                <tr>
-                    <td>Training Data</td>
-                    <td>Smaller, task-specific datasets</td>
-                    <td>Massive web-scale corpora</td>
-                </tr>
-                <tr>
-                    <td>Generalization</td>
-                    <td>Weak transfer across tasks</td>
-                    <td>Strong zero-shot and few-shot learning</td>
-                </tr>
-                <tr>
-                    <td>Computation</td>
-                    <td>Sequential (RNNs, LSTMs)</td>
-                    <td>Parallelizable attention layers</td>
-                </tr>
-                <tr>
-                    <td>Performance</td>
-                    <td>Good for small tasks, limited scalability</td>
-                    <td>State-of-the-art across diverse NLP benchmarks</td>
-                </tr>
-            </tbody>
-        </table>
+    # If all K tokens accepted, sample 1 extra token from target distribution
+    final_token = torch.multinomial(target_probs[K], 1).item()
+    accepted_tokens.append(final_token)
+    return torch.tensor(accepted_tokens)
+</code></pre>
 
-        <h2 id="evaluation">Evaluation and Benchmarks</h2>
-        <p>Evaluating generative models is harder than evaluating classifiers, because there is rarely a single correct output. The field uses a layered set of methods, each with blind spots.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Method</th>
-                    <th>Measures</th>
-                    <th>Strength</th>
-                    <th>Weakness</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Reference metrics (BLEU, ROUGE, BERTScore)</td>
-                    <td>Overlap with gold text</td>
-                    <td>Cheap, reproducible</td>
-                    <td>Penalize valid paraphrases</td>
-                </tr>
-                <tr>
-                    <td>Task benchmarks (MMLU, GSM8K, HumanEval)</td>
-                    <td>Knowledge, math, coding accuracy</td>
-                    <td>Comparable across models</td>
-                    <td>Contamination; saturates over time</td>
-                </tr>
-                <tr>
-                    <td>Human preference arenas</td>
-                    <td>Head-to-head win rate</td>
-                    <td>Reflects real preference</td>
-                    <td>Slow, costly, subjective</td>
-                </tr>
-                <tr>
-                    <td>LLM-as-judge</td>
-                    <td>Automated quality scoring</td>
-                    <td>Scalable, flexible rubrics</td>
-                    <td>Judge bias; needs calibration</td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Two practical cautions. First, benchmark <em>contamination</em> — test data leaking into training corpora — inflates scores and is hard to detect, so a rising benchmark number does not always mean a better model. Second, for any real product you should build a small, private evaluation set that reflects your actual inputs; public leaderboards are a weak proxy for your use case. Faithfulness and hallucination checks deserve their own dedicated evals, especially for RAG systems where the answer must be traceable to retrieved evidence.</p>
-
-        <h2 id="section5">Responsible Deployment</h2>
-        <blockquote>"Responsible NLP deployment requires balancing innovation with fairness, transparency, and safety."</blockquote>
-        <p>
-            Deploying NLP responsibly requires careful attention to ethical and safety considerations. Bias in training data can lead to unfair or harmful outputs, while hallucinations in generative models can misinform users.
-            Best practices include:
-        </p>
-        <ul>
-            <li>Human-in-the-loop evaluation for critical applications.</li>
-            <li>Continuous monitoring of outputs to detect bias or errors.</li>
-            <li>Grounding responses in verified knowledge sources.</li>
-            <li>Adhering to compliance standards in regulated industries like healthcare and finance.</li>
-        </ul>
-        <h3>An Expanded Risk Checklist</h3>
-        <p>Beyond the fundamentals above, several concerns have moved from research papers into deployment checklists:</p>
-        <ul>
-            <li><strong>Prompt injection and data exfiltration:</strong> When a model reads untrusted content or calls tools, that content can carry instructions that hijack behavior. Treat retrieved text as untrusted input and constrain what tools can do.</li>
-            <li><strong>Hallucination containment:</strong> Prefer grounded, cited answers; expose uncertainty; and add verification steps for high-stakes outputs rather than relying on the model's fluency.</li>
-            <li><strong>Privacy and data handling:</strong> Avoid training on sensitive user data without consent, and be aware that models can memorize and regurgitate rare training strings.</li>
-            <li><strong>Fairness auditing:</strong> Measure performance disaggregated across languages, dialects, and demographic slices, not just in aggregate.</li>
-            <li><strong>Provenance and disclosure:</strong> Watermarking and clear labeling of AI-generated content, aligned with emerging regulation such as the EU AI Act's transparency obligations.</li>
-            <li><strong>Cost and latency budgets:</strong> Responsible does not only mean safe; a model that is too slow or expensive to monitor will not be monitored well.</li>
-        </ul>
-
-        <h2 id="section6">Future Outlook</h2>
-        <p>The NLP revolution continues to expand the boundaries of human-computer interaction. Future directions include:</p>
-        <ul>
-            <li><strong>Multimodal integration:</strong> Combining text with vision, audio, and structured data for richer understanding.</li>
-            <li><strong>Efficiency:</strong> Developing smaller, faster models that can run on edge devices.</li>
-            <li><strong>Bias mitigation:</strong> Creating fairer models by improving training data diversity and evaluation metrics.</li>
-            <li><strong>Domain-specific LLMs:</strong> Tailoring models for medicine, law, and education to maximize impact.</li>
-        </ul>
-        <p>Layered on top of these, a few themes look likely to define the next couple of years. <strong>Inference-time reasoning</strong> — spending compute to think before answering — is reshaping how we trade off model size against quality. <strong>Long-context and retrieval</strong> are converging so that models can reason over entire codebases or case files while staying grounded. <strong>Small, specialized, and on-device models</strong>, sharpened by distillation from larger teachers, are making capable NLP private and cheap. And <strong>agentic systems</strong> that plan and use tools are shifting the engineering challenge from "get one good answer" to "orchestrate many reliable steps." The open research questions — faithful reasoning, robust evaluation, and alignment that scales — remain the ones that matter most.</p>
-
-        <br><br>
-        <p><strong>NLP is not just a technology — it’s a revolution redefining how humans and machines communicate.</strong></p>
+<h2 id="takeaways">Inference optimization benchmarks</h2>
+<ol>
+  <li><strong>2x-3x Speedup on Batch 1:</strong> Speculative Decoding doubles generation throughput without modifying output distribution quality.</li>
+  <li><strong>Zero Quality Loss:</strong> The rejection sampling math guarantees exact distributional equivalence to standard greedy/sampled decoding.</li>
+  <li><strong>Medusa for Single-Model Deployments:</strong> Medusa heads add less than 2% parameter footprint while delivering 2.2x speedups without draft model overhead.</li>
+</ol>
 
     </div>
 
@@ -492,7 +209,7 @@ model.print_trainable_parameters()   # typically < 1% of total</code></pre>
       <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
       <div class="share">
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
-           href="https://twitter.com/intent/tweet?text=Natural+Language+Processing+Revolution&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fnatural-language-processing-revolution%2F">Share on X</a>
+           href="https://twitter.com/intent/tweet?text=Speculative+Decoding+%26+Medusa+Heads%3A+Accelerating+LLM+Token+Generation&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fnatural-language-processing-revolution%2F">Share on X</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
            href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fnatural-language-processing-revolution%2F">Share on LinkedIn</a>
       </div>
@@ -545,7 +262,7 @@ model.print_trainable_parameters()   # typically < 1% of total</code></pre>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </a>
 
-  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+  <script src="../../assets/js/app.js?v=20260924090451" defer></script>
 </body>
 </html>
 

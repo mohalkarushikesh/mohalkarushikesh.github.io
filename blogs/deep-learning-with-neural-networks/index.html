@@ -25,10 +25,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
 
-  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924090451" />
 
-  <title>Deep Learning with Neural Networks</title>
-<meta name="description" content="In-depth guide to deep learning — neural network fundamentals, activation and loss functions, optimizers, regularization, modern architectures (CNN, RNN, Transformers), a practical training playbook, and where the field is heading in 2025-2026.">
+  <title>Direct Preference Optimization (DPO) & Alignment: Beyond RLHF with PPO</title>
+<meta name="description" content="A rigorous mathematical breakdown of LLM alignment techniques: Bradley-Terry preference modeling, PPO loss dynamics, DPO implicit reward derivation, KTO, and ORPO.">
 </head>
 
 <body>
@@ -80,17 +80,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
         All articles
       </a>
-      <span class="eyebrow">Deep Learning</span>
-      <h1 class="post-title" style="margin-top: 16px;">Deep Learning with Neural Networks</h1>
-      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">In-depth guide to deep learning — neural network fundamentals, activation and loss functions, optimizers, regularization, modern architectures (CNN, RNN, Transformers), a practical training playbook, and where the field is heading in 2025-2026.</p>
+      <span class="eyebrow">LLM Alignment</span>
+      <h1 class="post-title" style="margin-top: 16px;">Direct Preference Optimization (DPO) & Alignment: Beyond RLHF with PPO</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A rigorous mathematical breakdown of LLM alignment techniques: Bradley-Terry preference modeling, PPO loss dynamics, DPO implicit reward derivation, KTO, and ORPO.</p>
       <div class="post-meta">
         <time datetime="2025-02-22">Feb 22, 2025</time>
         <span>·</span>
-        <span>12 min read</span>
+        <span>4 min read</span>
         <span>·</span>
         <span>By </span>
         
-          <span class="pill">Deep Learning</span><span class="pill">Neural Networks</span><span class="pill">CNN</span><span class="pill">RNN</span>
+          <span class="pill">DPO</span><span class="pill">RLHF</span><span class="pill">PPO</span><span class="pill">LLM Alignment</span>
         
       </div>
     </div>
@@ -98,318 +98,107 @@
 
   <div class="wrap">
     <div class="post-body">
-      <p>
-            Deep learning represents a subfield of machine learning that relies on neural networks — models inspired by the human brain’s structure and functioning.
-            These networks consist of layers of interconnected nodes (neurons) that transform input data into increasingly abstract representations.
-            With large datasets and computational power, deep learning systems can achieve remarkable accuracy in complex tasks such as image recognition,
-            natural language understanding, speech generation, and even strategic gameplay.
-        </p>
+      <p>Aligning Large Language Models (LLMs) with human intent historically relied on <strong>Reinforcement Learning from Human Feedback (RLHF)</strong> using Proximal Policy Optimization (PPO). However, PPO pipeline setups are notoriously unstable — requiring four separate models in GPU memory simultaneously (Policy, Reference, Reward, and Value Critic). <strong>Direct Preference Optimization (DPO)</strong> simplifies preference learning by mathematically reparameterizing the reward function directly in terms of the policy, eliminating the need for a separate reward model or RL critic loop.</p>
 
-        <blockquote>Depth lets a network learn a hierarchy of representations; good optimization and regularization are what let it actually generalize.</blockquote>
+<blockquote>RLHF with PPO optimizes a policy against an explicit scalar reward model; DPO proves that the optimal policy can be derived directly from preference pairs via an implicit reward function.</blockquote>
 
-        <!-- Table of Contents -->
-        <nav aria-label="Table of Contents">
-            <h2>Table of Contents</h2>
-            <ul>
-                <li><a href="#fundamentals">1. Neural Network Fundamentals</a></li>
-                <li><a href="#forward-back">2. Forward and Backward Passes</a></li>
-                <li><a href="#activations">3. Activation Functions in Detail</a></li>
-                <li><a href="#optimizers">4. Loss Functions and Optimizers</a></li>
-                <li><a href="#regularization">5. Regularization and Normalization</a></li>
-                <li><a href="#architectures">6. Popular Architectures</a></li>
-                <li><a href="#training">7. Training Deep Neural Networks</a></li>
-                <li><a href="#debugging">8. A Practical Debugging Playbook</a></li>
-                <li><a href="#scaling">9. Scaling, Compute, and Modern Practice (2025-2026)</a></li>
-                <li><a href="#future">10. The Future of Deep Learning</a></li>
-            </ul>
-        </nav>
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#rlhf-ppo">The classical RLHF / PPO objective</a></li>
+    <li><a href="#dpo-derivation">Mathematical derivation of DPO</a></li>
+    <li><a href="#dpo-loss">The DPO loss function explained</a></li>
+    <li><a href="#alignment-variants">Beyond DPO: KTO, ORPO & SimPO</a></li>
+    <li><a href="#python-implementation">Python implementation with PyTorch & TRL</a></li>
+    <li><a href="#takeaways">Engineering best practices for preference tuning</a></li>
+  </ul>
+</nav>
 
-        <h2 id="fundamentals">1. Neural Network Fundamentals</h2>
-        <p>
-            At its core, a neural network processes input data through a sequence of layers, each applying mathematical transformations and nonlinear functions.
-            These nonlinear activations enable networks to capture intricate relationships within data.
-        </p>
-        <p>
-            A single layer computes an affine transform followed by a nonlinearity: <code>h = f(Wx + b)</code>, where <code>W</code> is a weight matrix,
-            <code>b</code> a bias vector, and <code>f</code> an activation function. Stacking such layers is what makes a network "deep." Without the
-            nonlinearity <code>f</code>, any stack of layers would collapse into a single linear map, so the activation is what gives depth its expressive power.
-        </p>
-        <ul>
-            <li><b>Activation Functions:</b> Determine how signals pass between layers. Common examples include:
-                <ul>
-                    <li><b>ReLU (Rectified Linear Unit):</b> Fast and effective, sets negative values to zero, helping prevent vanishing gradients.</li>
-                    <li><b>GELU (Gaussian Error Linear Unit):</b> Smooths ReLU’s behavior, often used in transformer architectures like BERT.</li>
-                    <li><b>Sigmoid and Tanh:</b> Classic nonlinear functions that squash inputs into limited ranges, often used in older architectures.</li>
-                </ul>
-            </li>
-            <li><b>Loss Functions:</b> Quantify how far predictions are from true labels.
-                <ul>
-                    <li><b>Cross-Entropy Loss:</b> Common for classification problems.</li>
-                    <li><b>Mean Squared Error (MSE):</b> Used in regression tasks.</li>
-                </ul>
-            </li>
-            <li><b>Optimizers:</b> Algorithms that adjust model weights to minimize loss.
-                <ul>
-                    <li><b>SGD (Stochastic Gradient Descent):</b> Simple yet effective for many problems.</li>
-                    <li><b>Adam:</b> Combines momentum and adaptive learning rates for faster convergence.</li>
-                    <li><b>Learning Rate Schedulers:</b> Gradually adjust learning rates for stable training.</li>
-                </ul>
-            </li>
-            <li><b>Regularization Techniques:</b> Prevent overfitting by controlling model complexity.
-                <ul>
-                    <li><b>Dropout:</b> Randomly disables neurons during training.</li>
-                    <li><b>Weight Decay:</b> Penalizes large weights to improve generalization.</li>
-                    <li><b>Batch Normalization:</b> Stabilizes and accelerates training by normalizing intermediate outputs.</li>
-                </ul>
-            </li>
-        </ul>
+<h2 id="rlhf-ppo">The classical RLHF / PPO objective</h2>
+<p>In standard RLHF, given a prompt <code>x</code> and model response <code>y</code>, we train a Reward Model <code>r_theta(x, y)</code> on pairwise human preferences <code>(y_w > y_l)</code> using the Bradley-Terry preference model:</p>
 
-        <p>The high-level flow from raw input to a trained model looks like this:</p>
-        <div class="mermaid">
-        flowchart TD
-            A[Input data] --> B[Affine layer Wx + b]
-            B --> C[Nonlinear activation f]
-            C --> D[More hidden layers]
-            D --> E[Output layer]
-            E --> F[Loss function]
-            F --> G[Backpropagation: gradients]
-            G --> H[Optimizer updates W, b]
-            H --> B
-        </div>
-
-        <h2 id="forward-back">2. Forward and Backward Passes</h2>
-        <p>
-            Training alternates between two directions of computation. The <b>forward pass</b> pushes an input through every layer to produce a
-            prediction and a scalar loss. The <b>backward pass</b> applies the chain rule of calculus (backpropagation) to compute the gradient of
-            the loss with respect to every parameter, moving from the output back toward the input.
-        </p>
-        <p>
-            Concretely, if layer <code>ℓ</code> computes <code>z = W·a + b</code> and <code>a' = f(z)</code>, backpropagation combines the gradient
-            arriving from the next layer with the local derivative <code>f'(z)</code> to produce the gradient flowing to the previous layer. Two failure
-            modes dominate deep stacks:
-        </p>
-        <ul>
-            <li><b>Vanishing gradients:</b> repeated multiplication by small derivatives (as with sigmoid/tanh in deep nets) shrinks gradients toward zero, so early layers barely learn.</li>
-            <li><b>Exploding gradients:</b> repeated multiplication by large values blows gradients up, destabilizing training. Gradient clipping and careful initialization are the standard remedies.</li>
-        </ul>
-        <p>
-            Modern initialization schemes address this directly: <b>Kaiming (He) initialization</b> pairs well with ReLU-family activations, while
-            <b>Xavier (Glorot) initialization</b> suits tanh-like activations. Residual connections and normalization layers, discussed below, further
-            keep gradient magnitudes well-behaved across dozens or hundreds of layers.
-        </p>
-
-        <h2 id="activations">3. Activation Functions in Detail</h2>
-        <p>
-            The choice of activation shapes both expressiveness and gradient flow. The table below compares the most common options and where they fit today.
-        </p>
-        <table>
-            <thead>
-                <tr><th>Activation</th><th>Behavior</th><th>Strengths</th><th>Watch-outs</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Sigmoid</td><td>Squashes to (0, 1)</td><td>Interpretable as probability; used in output gates</td><td>Saturates; vanishing gradients; not zero-centered</td></tr>
-                <tr><td>Tanh</td><td>Squashes to (-1, 1)</td><td>Zero-centered; historically used in RNNs</td><td>Still saturates at extremes</td></tr>
-                <tr><td>ReLU</td><td>max(0, x)</td><td>Cheap; sparse activations; mitigates vanishing gradients</td><td>"Dying ReLU" — neurons stuck at zero</td></tr>
-                <tr><td>Leaky ReLU / PReLU</td><td>Small slope for x &lt; 0</td><td>Avoids dead neurons</td><td>Extra hyperparameter or learned slope</td></tr>
-                <tr><td>GELU</td><td>Smooth, probabilistic gating</td><td>Default in BERT/GPT-style transformers</td><td>Slightly costlier than ReLU</td></tr>
-                <tr><td>SiLU / Swish</td><td>x · sigmoid(x)</td><td>Smooth; strong in vision and modern LLMs</td><td>Non-monotonic; costlier</td></tr>
-            </tbody>
-        </table>
-        <p>
-            A useful rule of thumb: reach for <b>ReLU</b> as a fast baseline in convolutional and MLP layers, and use <b>GELU</b> or <b>SiLU/Swish</b>
-            inside transformer feed-forward blocks, where they are now the de facto standard. Gated variants such as <b>SwiGLU</b> — a gated linear unit
-            using a SiLU gate — are widely used in recent large language models.
-        </p>
-
-        <h2 id="optimizers">4. Loss Functions and Optimizers</h2>
-        <h3>Choosing a loss</h3>
-        <ul>
-            <li><b>Cross-entropy</b> for classification, paired with a softmax (multi-class) or sigmoid (multi-label) output.</li>
-            <li><b>Mean Squared Error / Mean Absolute Error</b> for regression; MAE is more robust to outliers.</li>
-            <li><b>Contrastive and InfoNCE losses</b> for self-supervised and representation learning, where the goal is to pull matching pairs together and push mismatches apart.</li>
-        </ul>
-        <h3>Choosing an optimizer</h3>
-        <p>
-            SGD with momentum remains a strong, well-understood baseline — especially for convolutional vision models, where it often generalizes slightly
-            better. <b>Adam</b> and its weight-decay-corrected variant <b>AdamW</b> are the workhorses for transformers and most large-scale training,
-            because adaptive per-parameter learning rates handle the wildly different gradient scales that arise in deep, heterogeneous models.
-        </p>
-        <table>
-            <thead>
-                <tr><th>Optimizer</th><th>Key idea</th><th>Typical use</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>SGD + Momentum</td><td>Accumulates a velocity term to smooth updates</td><td>CNNs; when best generalization matters</td></tr>
-                <tr><td>Adam</td><td>Per-parameter adaptive rates from 1st/2nd moment estimates</td><td>General default; fast early convergence</td></tr>
-                <tr><td>AdamW</td><td>Adam with decoupled weight decay</td><td>Transformers and LLM pretraining</td></tr>
-                <tr><td>Lion / Adafactor</td><td>Memory-efficient sign- or factored-moment updates</td><td>Very large models where optimizer state is costly</td></tr>
-            </tbody>
-        </table>
-        <h3>Learning rate schedules</h3>
-        <p>
-            The schedule often matters as much as the optimizer. A common recipe is a short <b>linear warmup</b> (to avoid early instability) followed by
-            <b>cosine decay</b> toward a small final value. Warmup is especially important for transformers trained with AdamW.
-        </p>
-        <pre><code># PyTorch: AdamW with warmup + cosine decay
-import torch
-from torch.optim import AdamW
-from torch.optim.lr_scheduler import OneCycleLR
-
-optimizer = AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)
-scheduler = OneCycleLR(optimizer, max_lr=3e-4,
-                       total_steps=num_steps, pct_start=0.05)
-
-for step, (x, y) in enumerate(loader):
-    optimizer.zero_grad()
-    loss = criterion(model(x), y)
-    loss.backward()
-    torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)  # tame exploding grads
-    optimizer.step()
-    scheduler.step()
+<pre><code>P(y_w > y_l | x) = sigmoid( r_theta(x, y_w) - r_theta(x, y_l) )
 </code></pre>
 
-        <h2 id="regularization">5. Regularization and Normalization</h2>
-        <p>
-            Deep networks have enormous capacity, so preventing overfitting is central. Regularization constrains what the model can represent; normalization
-            keeps the optimization landscape well-conditioned.
-        </p>
-        <ul>
-            <li><b>Dropout:</b> randomly zeroes activations during training, forcing redundant, robust representations. Disabled at inference.</li>
-            <li><b>Weight decay (L2):</b> shrinks weights toward zero, discouraging over-reliance on any single feature.</li>
-            <li><b>Data augmentation:</b> often the single most effective regularizer — it expands the effective dataset (see the training section).</li>
-            <li><b>Early stopping:</b> halt when validation loss stops improving.</li>
-            <li><b>Label smoothing:</b> softens hard targets to reduce overconfidence and improve calibration.</li>
-        </ul>
-        <h3>Batch, Layer, and beyond</h3>
-        <p>
-            <b>Batch Normalization</b> normalizes each feature across the mini-batch and is standard in CNNs. <b>Layer Normalization</b> normalizes across
-            features within a single example and is the default in transformers, since it does not depend on batch statistics — important for variable-length
-            sequences and small batches. Recent large models often adopt <b>RMSNorm</b>, a simplified, slightly cheaper variant of layer norm.
-        </p>
+<p>Then, PPO optimizes the policy <code>pi_theta(y|x)</code> against <code>r_theta</code> with a KL-divergence penalty relative to the reference SFT model <code>pi_ref</code>:</p>
 
-        <h2 id="architectures">6. Popular Architectures</h2>
-        <p>
-            Different neural network architectures are designed for specific data modalities and problem types.
-            Each architecture introduces unique inductive biases that make them well-suited to particular tasks.
-        </p>
-        <ul>
-            <li><b>CNNs (Convolutional Neural Networks):</b> Primarily used for image and spatial data.
-                They use convolutional filters to detect patterns like edges, textures, and shapes. Modern architectures like ResNet and EfficientNet leverage residual connections to train very deep models effectively.
-            </li>
-            <li><b>RNNs (Recurrent Neural Networks):</b> Designed for sequential data such as text, time series, or speech.
-                Variants like <b>LSTM</b> (Long Short-Term Memory) and <b>GRU</b> (Gated Recurrent Unit) can capture long-term dependencies and avoid gradient vanishing issues.
-            </li>
-            <li><b>Transformers:</b> The current standard for modeling sequences.
-                They use self-attention mechanisms to capture global relationships within data. Models like BERT, GPT, and Vision Transformers (ViT) have transformed how we handle text, vision, and multimodal data.
-            </li>
-        </ul>
-        <p>The chart below maps common data modalities to the architectures that carry the right inductive bias:</p>
-        <div class="mermaid">
-        flowchart TD
-            A[Data modality] --> B[Images / grids]
-            A --> C[Sequences: text, audio, time series]
-            A --> D[Multimodal: text + image]
-            B --> B1[CNN: ResNet, EfficientNet]
-            B --> B2[Vision Transformer ViT]
-            C --> C1[RNN / LSTM / GRU]
-            C --> C2[Transformer: BERT, GPT]
-            D --> D1[CLIP-style dual encoders]
-            D --> D2[Multimodal transformers]
-        </div>
-        <h3>Inductive biases at a glance</h3>
-        <table>
-            <thead>
-                <tr><th>Architecture</th><th>Inductive bias</th><th>Strength</th><th>Limitation</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>CNN</td><td>Locality + translation equivariance</td><td>Data-efficient on images</td><td>Limited global context per layer</td></tr>
-                <tr><td>RNN / LSTM</td><td>Sequential recurrence</td><td>Natural for streaming/time series</td><td>Hard to parallelize; long-range decay</td></tr>
-                <tr><td>Transformer</td><td>Global self-attention</td><td>Long-range dependencies; scales well</td><td>Quadratic cost in sequence length</td></tr>
-            </tbody>
-        </table>
-        <p>
-            A notable 2020s trend is the blurring of these lines: Vision Transformers apply attention to image patches, while efficient architectures
-            revisit convolution- and recurrence-like ideas for long sequences. <b>State-space models</b> such as the Mamba family have emerged as a
-            competitive alternative to attention for very long sequences, offering near-linear scaling in sequence length.
-        </p>
+<pre><code>max_pi E [ r_theta(x, y) - beta * KL( pi_theta(y|x) || pi_ref(y|x) ) ]
+</code></pre>
 
-        <h2 id="training">7. Training Deep Neural Networks</h2>
-        <p>
-            Successful deep learning requires more than just a good model — it depends on data quality, hyperparameter choices, and training strategies.
-            The process of model training involves numerous iterations of forward and backward passes, constantly fine-tuning weights to minimize loss.
-        </p>
-        <ul>
-            <li><b>Data Preprocessing and Augmentation:</b> Clean and normalize input data, and use augmentations (rotation, cropping, noise addition) to improve generalization.</li>
-            <li><b>Hyperparameter Tuning:</b> Optimize learning rate, batch size, depth, and regularization terms using techniques like grid search, random search, or Bayesian optimization.</li>
-            <li><b>Monitoring and Early Stopping:</b> Track metrics (accuracy, F1-score, loss) to prevent overfitting and save checkpoints of the best-performing model.</li>
-            <li><b>Scalability:</b> Use GPUs/TPUs and frameworks like PyTorch Lightning or TensorFlow’s Keras API to efficiently scale experiments.</li>
-        </ul>
+<h2 id="dpo-derivation">Mathematical derivation of DPO</h2>
+<p>Rafailov et al. (2023) demonstrated that the exact closed-form solution for the optimal policy <code>pi_*</code> in the RLHF objective can be expressed as:</p>
 
-        <p>
-            A practical approach for beginners is to start with a simple architecture and train it on a small dataset.
-            Verify the training pipeline by intentionally overfitting the model on a small subset of data — this ensures your model, loss, and optimizer work correctly.
-            Once validated, scale the data and model size to improve real-world performance.
-        </p>
+<pre><code>pi_*(y|x) = (1 / Z(x)) * pi_ref(y|x) * exp( (1 / beta) * r(x, y) )
+</code></pre>
 
-        <h3>Transfer learning and fine-tuning</h3>
-        <p>
-            Training from scratch is rarely the fastest path. Instead, start from a pretrained backbone and adapt it to your task. Options range from
-            freezing the backbone and training only a new head, to full fine-tuning, to <b>parameter-efficient fine-tuning (PEFT)</b> methods such as
-            <b>LoRA</b> that update only a small number of injected low-rank matrices. PEFT has become the default way to specialize large models on
-            modest hardware, since it avoids storing and updating billions of parameters.
-        </p>
+<p>Rearranging this equation yields the exact relationship between the implicit ground-truth reward <code>r(x, y)</code> and the policy ratios:</p>
 
-        <h2 id="debugging">8. A Practical Debugging Playbook</h2>
-        <p>
-            Most training problems fall into a handful of recognizable patterns. This checklist maps symptoms to likely causes and fixes.
-        </p>
-        <table>
-            <thead>
-                <tr><th>Symptom</th><th>Likely cause</th><th>What to try</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Loss is NaN or explodes</td><td>Learning rate too high; unstable gradients</td><td>Lower LR; add warmup; clip gradients; check for divide-by-zero</td></tr>
-                <tr><td>Loss flat from step 0</td><td>Broken data pipeline; wrong loss/label alignment</td><td>Overfit a tiny batch; verify labels and shapes</td></tr>
-                <tr><td>Train good, val poor</td><td>Overfitting</td><td>More augmentation, dropout, weight decay, early stopping</td></tr>
-                <tr><td>Train and val both poor</td><td>Underfitting / too little capacity</td><td>Bigger model, longer training, better features</td></tr>
-                <tr><td>Slow, noisy convergence</td><td>Bad LR schedule or batch size</td><td>Add warmup + cosine decay; tune batch size</td></tr>
-            </tbody>
-        </table>
-        <p>
-            The single most valuable diagnostic remains the "overfit one batch" test: if the model cannot drive the loss to near zero on a handful of
-            examples, there is a bug in the data, loss, or optimizer wiring — not a modeling problem.
-        </p>
+<pre><code>r(x, y) = beta * log( pi_theta(y|x) / pi_ref(y|x) ) + beta * log( Z(x) )
+</code></pre>
 
-        <h2 id="scaling">9. Scaling, Compute, and Modern Practice (2025-2026)</h2>
-        <p>
-            The dominant story of the last few years is <b>scale</b>. Empirical scaling laws describe how loss improves predictably as parameters, data,
-            and compute grow together, and this observation reshaped how frontier systems are built. A few practical themes define current practice:
-        </p>
-        <ul>
-            <li><b>Mixed precision and lower-bit formats:</b> training in <code>bfloat16</code> or FP16 is standard, and inference increasingly uses 8-bit and 4-bit quantization to cut memory and cost.</li>
-            <li><b>Distributed training:</b> data, tensor, and pipeline parallelism (via tools like PyTorch FSDP and DeepSpeed) spread models across many accelerators.</li>
-            <li><b>Mixture-of-Experts (MoE):</b> routing each token to a few specialized sub-networks increases capacity without a proportional increase in compute per token — a common design in recent large models.</li>
-            <li><b>Self-supervised and multimodal pretraining:</b> models learn general representations from unlabeled text, images, and audio, then adapt to downstream tasks with far less labeled data.</li>
-            <li><b>Efficient long-context methods:</b> FlashAttention-style kernels and state-space models make longer sequences tractable.</li>
-        </ul>
-        <p>
-            For most engineers, the practical implication is that you rarely pretrain from scratch. The high-leverage skills are curating data,
-            fine-tuning or adapting pretrained backbones efficiently, evaluating rigorously, and serving models cost-effectively.
-        </p>
+<p>Substituting this implicit reward expression directly into the Bradley-Terry preference probability cancels out the intractable partition function <code>Z(x)</code>!</p>
 
-        <h2 id="future">10. The Future of Deep Learning</h2>
-        <p>
-            Deep learning continues to evolve, with breakthroughs in multimodal models, self-supervised learning, and neural architecture search.
-            Emerging paradigms like <b>foundation models</b> and <b>generative AI</b> are pushing the boundaries of what machines can understand and create.
-            As compute and data availability increase, neural networks will become integral components of intelligent systems across industries —
-            from healthcare and finance to autonomous systems and creative applications.
-        </p>
-        <p>
-            Looking ahead, several directions stand out: <b>agentic systems</b> that plan and use tools, tighter coupling of retrieval with generation to
-            ground models in external knowledge, continued work on <b>efficiency</b> (sparsity, quantization, distillation) to bring large-model capability
-            to the edge, and growing attention to <b>alignment, interpretability, and safety</b> as these systems take on higher-stakes roles. The
-            fundamentals in this article — good representations, stable optimization, and honest evaluation — remain the foundation on which all of it is built.
-        </p>
+<h2 id="dpo-loss">The DPO loss function explained</h2>
+<p>The resulting <strong>DPO Loss Function</strong> evaluates directly over preferred responses <code>y_w</code> and dispreferred responses <code>y_l</code>:</p>
+
+<pre><code>L_DPO(pi_theta; pi_ref) = - E_(x, y_w, y_l) [ log sigmoid( beta * log( pi_theta(y_w|x) / pi_ref(y_w|x) ) - beta * log( pi_theta(y_l|x) / pi_ref(y_l|x) ) ) ]
+</code></pre>
+
+<p>Notice how DPO acts as an adaptive gradient force:</p>
+<ul>
+  <li>If the reference model already assigns high probability to <code>y_w</code> relative to <code>y_l</code>, the gradient update is small.</li>
+  <li>If the policy model degrades on <code>y_w</code> or increases probability on dispreferred response <code>y_l</code>, the loss penalty spikes heavily.</li>
+</ul>
+
+<h2 id="alignment-variants">Beyond DPO: KTO, ORPO & SimPO</h2>
+<ul>
+  <li><strong>KTO (Kahneman-Tversky Optimization):</strong> Does not require paired preference data <code>(y_w, y_l)</code>. Learns from single binary signals (thumbs up / thumbs down) based on prospect theory.</li>
+  <li><strong>ORPO (Odds Ratio Preference Optimization):</strong> Combines SFT loss and preference alignment into a single training step, eliminating the need for a reference model <code>pi_ref</code> altogether.</li>
+  <li><strong>SimPO (Simple Preference Optimization):</strong> Replaces the reference model log ratio with an explicit length-normalized reward margin.</li>
+</ul>
+
+<h2 id="python-implementation">Python implementation with PyTorch & TRL</h2>
+
+<pre><code>import torch
+import torch.nn.functional as F
+
+def compute_dpo_loss(
+    policy_chosen_logps: torch.FloatTensor,
+    policy_rejected_logps: torch.FloatTensor,
+    ref_chosen_logps: torch.FloatTensor,
+    ref_rejected_logps: torch.FloatTensor,
+    beta: float = 0.1
+) -> torch.FloatTensor:
+    """
+    Computes exact Direct Preference Optimization (DPO) Loss.
+    """
+    # Compute log ratios between policy and reference model
+    pi_logratios = policy_chosen_logps - policy_rejected_logps
+    ref_logratios = ref_chosen_logps - ref_rejected_logps
+    
+    # Calculate implicit reward delta
+    logits = pi_logratios - ref_logratios
+    
+    # Negative log-sigmoid DPO loss
+    losses = -F.logsigmoid(beta * logits)
+    return losses.mean()
+
+# Example log probability calculation
+policy_chosen = torch.tensor([-1.2, -0.8])
+policy_rejected = torch.tensor([-3.4, -4.1])
+ref_chosen = torch.tensor([-1.5, -1.0])
+ref_rejected = torch.tensor([-2.8, -3.0])
+
+loss = compute_dpo_loss(policy_chosen, policy_rejected, ref_chosen, ref_rejected, beta=0.1)
+print(f"DPO Loss: {loss.item():.4f}")
+</code></pre>
+
+<h2 id="takeaways">Engineering best practices for preference tuning</h2>
+<ol>
+  <li><strong>Beta Hyperparameter Tuning:</strong> Keep <code>beta</code> between 0.01 and 0.1. Larger values strictly enforce reference model constraint; smaller values risk policy collapse.</li>
+  <li><strong>Data Cleanliness Over Volume:</strong> Filter out tie pairs where chosen and rejected completions are almost identical in quality.</li>
+  <li><strong>Use Length Normalization:</strong> Normalize log probabilities by token length to prevent DPO from exploiting response length bias.</li>
+</ol>
 
     </div>
 
@@ -417,7 +206,7 @@ for step, (x, y) in enumerate(loader):
       <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
       <div class="share">
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
-           href="https://twitter.com/intent/tweet?text=Deep+Learning+with+Neural+Networks&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fdeep-learning-with-neural-networks%2F">Share on X</a>
+           href="https://twitter.com/intent/tweet?text=Direct+Preference+Optimization+%28DPO%29+%26+Alignment%3A+Beyond+RLHF+with+PPO&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fdeep-learning-with-neural-networks%2F">Share on X</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
            href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fdeep-learning-with-neural-networks%2F">Share on LinkedIn</a>
       </div>
@@ -426,45 +215,6 @@ for step, (x, y) in enumerate(loader):
     
 
     
-    
-    <section class="related">
-      <h2 class="related-head">Related reading</h2>
-      <div class="related-grid">
-        
-        
-          
-          <a class="related-card" href="/blogs/Mamba-and-State-Space-Models/">
-            <span class="eyebrow">Deep Learning</span>
-            <h3>Mamba and State Space Models: The Transformer Challenger</h3>
-            <time datetime="2026-07-20">Jul 20, 2026</time>
-          </a>
-          
-          
-        
-          
-          <a class="related-card" href="/blogs/Mixture-of-Experts-Scaling-LLMs-Efficiently/">
-            <span class="eyebrow">Deep Learning</span>
-            <h3>Mixture-of-Experts: How Frontier LLMs Scale Efficiently</h3>
-            <time datetime="2026-06-28">Jun 28, 2026</time>
-          </a>
-          
-          
-        
-          
-          <a class="related-card" href="/blogs/Transformers-Plus-Plus-The-Next-Evolution-in-AI-Architecture/">
-            <span class="eyebrow">Deep Learning</span>
-            <h3>Transformers++: The Next Evolution in AI Architecture</h3>
-            <time datetime="2025-12-11">Dec 11, 2025</time>
-          </a>
-          
-          
-        
-          
-        
-          
-        
-      </div>
-    </section>
     
   </div>
 </article>
@@ -509,7 +259,7 @@ for step, (x, y) in enumerate(loader):
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </a>
 
-  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+  <script src="../../assets/js/app.js?v=20260924090451" defer></script>
 </body>
 </html>
 

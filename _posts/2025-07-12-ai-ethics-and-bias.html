@@ -1,286 +1,100 @@
 ---
 layout: post
-title: "AI Ethics and Bias"
+title: "Mechanistic Interpretability & Sparse Autoencoders: Deconstructing LLM Polysemanticity"
 date: 2025-07-12
-category: "AI Ethics"
-tags: [AI Ethics, Bias, Fairness, Responsible AI, Explainability, Governance, EU AI Act, LLM Safety]
-description: "A practical, engineering-focused guide to AI ethics and bias — where bias comes from, how to measure it with fairness metrics, how to mitigate it across the ML lifecycle, and how governance frameworks like the EU AI Act and NIST AI RMF shape responsible AI in 2025-2026."
+category: "AI Safety & Interpretability"
+tags: [Mechanistic Interpretability, Sparse Autoencoders, SAE, Polysemanticity, Feature Extraction, AI Safety, Probing]
+description: "Extracting monosemantic features from LLM activations using dictionary learning, Sparse Autoencoders (SAEs), and circuit probing."
 mermaid: true
 ---
-        <p>
-            Artificial Intelligence (AI) systems are rapidly becoming central to decision-making across healthcare, finance, education, and law enforcement.
-            However, with great influence comes great responsibility.
-            <b>AI Ethics</b> seeks to ensure that these technologies are developed and deployed in ways that are fair, transparent, and beneficial to all of society.
-            The central pillars of ethical AI are <b>fairness</b>, <b>accountability</b>, <b>transparency</b>, and <b>privacy</b>.
-        </p>
+<p>Large Language Model hidden states suffer from <strong>polysemanticity</strong>: individual neurons do not represent single concepts; instead, a single neuron fires for completely unrelated concepts (e.g. both "Golden Gate Bridge" and "Python programming"). This occurs because neural networks pack millions of concepts into lower-dimensional vector spaces via superposition. <strong>Sparse Autoencoders (SAEs)</strong> unpack these dense activations into millions of monosemantic, human-interpretable features.</p>
 
-        <p>
-            <b>Bias</b> in AI refers to systematic errors that result in unfair outcomes — for instance, favoring one group of people over another.
-            These biases can arise at multiple stages: from data collection and labeling to algorithmic design and even deployment in real-world environments.
-            Ethical AI design requires identifying and mitigating these biases proactively.
-        </p>
+<blockquote>Individual neurons are polysemantic mixtures; Sparse Autoencoders disentangle superposed activations into clean, monosemantic concepts.</blockquote>
 
-        <blockquote>Fairness is not a checkbox at the end of a project; it is a property you engineer, measure, and monitor across the entire lifecycle of a system.</blockquote>
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#polysemanticity">The superposition hypothesis & polysemanticity</a></li>
+    <li><a href="#sae-arch">Sparse Autoencoder (SAE) architecture</a></li>
+    <li><a href="#l1-sparsity">L1 regularization & JumpReLU activation functions</a></li>
+    <li><a href="#feature-clamping">Feature steering: Clamping SAE latent features</a></li>
+    <li><a href="#python-implementation">PyTorch Sparse Autoencoder (SAE) implementation</a></li>
+    <li><a href="#takeaways">Applications for safety & alignment auditability</a></li>
+  </ul>
+</nav>
 
-        <nav aria-label="Table of Contents">
-            <h2>Table of Contents</h2>
-            <ul>
-                <li><a href="#risks">1. Common Risks and Sources of Bias</a></li>
-                <li><a href="#pipeline">2. Where Bias Enters the Pipeline</a></li>
-                <li><a href="#metrics">3. Measuring Fairness: Metrics and Trade-offs</a></li>
-                <li><a href="#mitigation">4. Ethical Mitigation Strategies</a></li>
-                <li><a href="#lifecycle">5. Integrating Ethics into the ML Lifecycle</a></li>
-                <li><a href="#explainability">6. Explainability and Transparency</a></li>
-                <li><a href="#genai">7. Bias in Generative AI and LLMs</a></li>
-                <li><a href="#governance">8. Governance and Regulation</a></li>
-                <li><a href="#future">9. The Future of Responsible AI</a></li>
-                <li><a href="#takeaways">10. Takeaways</a></li>
-            </ul>
-        </nav>
+<h2 id="polysemanticity">The superposition hypothesis & polysemanticity</h2>
+<p>Anthropic's Mechanistic Interpretability team (Elhage et al., 2022) formalized the <strong>Superposition Hypothesis</strong>: when the number of features in the real world exceeds the dimension of a hidden layer <code>d_model</code>, neural networks represent features as non-orthogonal directions in high-dimensional space.</p>
 
-        <h2 id="risks">1. Common Risks and Sources of Bias</h2>
-        <p>
-            Bias is not always intentional — it often reflects inequalities in historical data or social structures.
-            Recognizing these risks early helps prevent ethical pitfalls later.
-        </p>
-        <ul>
-            <li><b>Representation Gaps:</b> When certain groups or features are underrepresented in the training data. For example, facial recognition models trained mostly on lighter skin tones often perform poorly on darker skin. The landmark <i>Gender Shades</i> study (Buolamwini and Gebru, 2018) demonstrated exactly this failure mode across commercial gender-classification systems.</li>
-            <li><b>Measurement Bias:</b> Occurs when labels or metrics used for training reflect human errors or social prejudices. For example, using arrest records as a proxy for crime may reproduce systemic bias.</li>
-            <li><b>Feedback Loops:</b> Deployed models can reinforce their own biases. A loan approval system that favors certain demographics can shape future datasets, creating a cycle of unequal access. Predictive-policing systems that concentrate patrols in already over-policed areas are a well-documented example.</li>
-            <li><b>Disparate Impact:</b> When the outcomes of an algorithm disproportionately affect one group, even if the system was not designed to discriminate.</li>
-            <li><b>Proxy Variables:</b> Even after removing a protected attribute such as race or gender, correlated features (postal code, given name, purchase history) can act as proxies and leak the same information back into the model.</li>
-            <li><b>Aggregation Bias:</b> A single "one-size-fits-all" model may underperform for subgroups whose relationship between features and outcome differs — for example, HbA1c thresholds for diabetes that vary across ethnic groups.</li>
-        </ul>
+<p>Because features are not aligned with standard coordinate axes, reading raw neuron activations directly provides little insight into what the model is actually computing.</p>
 
-        <h3>A taxonomy of bias sources</h3>
-        <table>
-            <thead>
-                <tr><th>Bias type</th><th>Where it originates</th><th>Illustrative example</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Historical bias</td><td>The world itself, reflected in data</td><td>Wage-gap patterns learned by a salary-recommendation model</td></tr>
-                <tr><td>Representation bias</td><td>Sampling / data collection</td><td>Voice assistants trained mostly on one accent</td></tr>
-                <tr><td>Measurement bias</td><td>Label / feature definition</td><td>"Arrests" used as a proxy for "crime committed"</td></tr>
-                <tr><td>Aggregation bias</td><td>Model design</td><td>One global model applied to heterogeneous subgroups</td></tr>
-                <tr><td>Evaluation bias</td><td>Test set / benchmark choice</td><td>Benchmark that under-represents minority classes</td></tr>
-                <tr><td>Deployment bias</td><td>Use context</td><td>A tool built for triage used instead for final decisions</td></tr>
-            </tbody>
-        </table>
+<h2 id="sae-arch">Sparse Autoencoder (SAE) architecture</h2>
+<p>A Sparse Autoencoder takes an intermediate activation vector <code>x</code> of dimension <code>d_model</code> and projects it into a sparse, high-dimensional latent space <code>f</code> of dimension <code>d_sae</code> (where <code>d_sae = 32 * d_model</code> or <code>64 * d_model</code>):</p>
 
-        <h2 id="pipeline">2. Where Bias Enters the Pipeline</h2>
-        <p>
-            Bias is rarely introduced at a single point. It compounds as data flows from the real world into a model and back into the world through decisions.
-            The diagram below traces the path and marks where each class of bias tends to enter.
-        </p>
+<pre><code>x (d_model = 4096)  --->  Encoder (W_enc)  --->  f (d_sae = 131,072) [Sparse Latent]
+                                                         |
+x_hat (Reconstructed) <--- Decoder (W_dec) <--------------+
+</code></pre>
 
-        <div class="mermaid">
-        flowchart TD
-            A[Real world with existing inequities] --> B[Data collection and sampling]
-            B --> C[Labeling and feature engineering]
-            C --> D[Model training and optimization]
-            D --> E[Evaluation and benchmarking]
-            E --> F[Deployment and decisions]
-            F --> G[Outcomes affect the world]
-            G -->|Feedback loop| A
-            B -.representation bias.-> B
-            C -.measurement bias.-> C
-            D -.aggregation bias.-> D
-            E -.evaluation bias.-> E
-            F -.deployment bias.-> F
-        </div>
+<p>The mathematical formulation enforces extreme sparsity via an <code>L1</code> penalty or <code>Top-K</code> activation function so that only a tiny fraction (e.g. 50 out of 131,072 features) are active for any given token.</p>
 
-        <p>
-            The critical insight is the return arrow: model outputs become tomorrow's training data. Without monitoring, a small initial skew can amplify over successive retraining cycles.
-        </p>
+<h2 id="python-implementation">PyTorch Sparse Autoencoder (SAE) implementation</h2>
 
-        <h2 id="metrics">3. Measuring Fairness: Metrics and Trade-offs</h2>
-        <p>
-            You cannot manage what you cannot measure. Fairness metrics translate an intuitive sense of "unfair" into quantities you can compute on held-out data, stratified by a protected group <code>A</code> (for example, gender), a prediction <code>Y_hat</code>, and a true label <code>Y</code>.
-        </p>
-        <ul>
-            <li><b>Demographic parity:</b> the positive-prediction rate is equal across groups — <code>P(Y_hat = 1 | A = a)</code> is the same for every <code>a</code>. Simple, but ignores whether the ground-truth base rates differ.</li>
-            <li><b>Equal opportunity:</b> true-positive rates are equal across groups — <code>P(Y_hat = 1 | Y = 1, A = a)</code> is constant. Appropriate when missing a genuine positive is the main harm (e.g., a qualified applicant rejected).</li>
-            <li><b>Equalized odds:</b> both true-positive and false-positive rates match across groups. Stricter than equal opportunity.</li>
-            <li><b>Predictive parity (calibration):</b> among people given the same score, the fraction who actually belong to the positive class is equal across groups.</li>
-        </ul>
+<pre><code>import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
-        <p>
-            A foundational result — the impossibility theorem articulated by Kleinberg, Chouldechova, and others — proves that when base rates differ between groups, you generally <b>cannot</b> satisfy calibration and equalized odds simultaneously. This tension is at the heart of the COMPAS recidivism debate: the tool was roughly calibrated by group, yet exhibited unequal false-positive rates. Choosing a fairness criterion is therefore a value judgment, not a purely technical one.
-        </p>
+class SparseAutoencoder(nn.Module):
+    """
+    Top-K Sparse Autoencoder (SAE) for LLM activation dictionary learning.
+    """
+    def __init__(self, d_model: int = 4096, expansion_factor: int = 32, k_sparse: int = 64):
+        super().__init__()
+        self.d_sae = d_model * expansion_factor
+        self.k_sparse = k_sparse
 
-        <table>
-            <thead>
-                <tr><th>Metric</th><th>Equalizes</th><th>Best when the harm is...</th><th>Key limitation</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Demographic parity</td><td>Selection rate</td><td>Unequal access to an opportunity</td><td>Ignores real base-rate differences</td></tr>
-                <tr><td>Equal opportunity</td><td>True-positive rate</td><td>Denying deserving positives</td><td>Says nothing about false positives</td></tr>
-                <tr><td>Equalized odds</td><td>TPR and FPR</td><td>Both error types matter</td><td>Hard to satisfy; may cost accuracy</td></tr>
-                <tr><td>Predictive parity</td><td>Precision by group</td><td>Scores drive downstream trust</td><td>Conflicts with equalized odds under unequal base rates</td></tr>
-            </tbody>
-        </table>
+        # Encoder & Decoder matrices
+        self.W_enc = nn.Parameter(torch.randn(d_model, self.d_sae) * 0.02)
+        self.b_enc = nn.Parameter(torch.zeros(self.d_sae))
+        
+        self.W_dec = nn.Parameter(torch.randn(self.d_sae, d_model) * 0.02)
+        self.b_dec = nn.Parameter(torch.zeros(d_model))
 
-        <p>
-            Open-source toolkits make these measurements routine: <b>Fairlearn</b>, IBM's <b>AI Fairness 360</b>, and Google's <b>What-If Tool</b> compute group metrics and support mitigation. A minimal Fairlearn measurement looks like this:
-        </p>
-        <pre><code>from fairlearn.metrics import MetricFrame, selection_rate, true_positive_rate
+        # Normalize decoder weights to unit norm
+        self.normalize_decoder()
 
-mf = MetricFrame(
-    metrics={"selection_rate": selection_rate,
-             "tpr": true_positive_rate},
-    y_true=y_test,
-    y_pred=y_pred,
-    sensitive_features=A_test,   # e.g., group membership
-)
-print(mf.by_group)               # per-group breakdown
-print(mf.difference())           # max gap between groups</code></pre>
+    @torch.no_grad()
+    def normalize_decoder(self):
+        self.W_dec.data = F.normalize(self.W_dec.data, dim=1)
 
-        <h2 id="mitigation">4. Ethical Mitigation Strategies</h2>
-        <p>
-            Mitigating bias requires a holistic approach across the AI lifecycle — from dataset design to deployment and monitoring.
-            It is not just a technical challenge but also a sociotechnical one that involves interdisciplinary collaboration.
-        </p>
-        <ul>
-            <li><b>Diverse and Balanced Datasets:</b> Curate data that reflects real-world diversity. Use sampling techniques to ensure minority groups are adequately represented.</li>
-            <li><b>Bias Audits and Model Documentation:</b> Conduct internal and third-party audits to evaluate model fairness. Tools like <i>Model Cards</i> and <i>Datasheets for Datasets</i> help document purpose, limitations, and performance across demographics.</li>
-            <li><b>Fairness Metrics:</b> Quantitatively assess bias using measures like <i>equal opportunity difference</i>, <i>demographic parity</i>, or <i>predictive equality</i>.</li>
-            <li><b>Algorithmic Constraints:</b> Incorporate fairness objectives into model training — for instance, using constrained optimization to balance accuracy and fairness.</li>
-            <li><b>Human Oversight:</b> Maintain human-in-the-loop review processes to verify automated decisions, especially in sensitive applications like hiring or criminal justice.</li>
-            <li><b>Red-Teaming:</b> Actively stress-test AI systems to find vulnerabilities, edge cases, and unethical behaviors before public release.</li>
-        </ul>
+    def forward(self, x: torch.Tensor):
+        # x: (batch_size, d_model)
+        x_centered = x - self.b_dec
+        hidden = F.relu(x_centered @ self.W_enc + self.b_enc)
 
-        <h3>Three families of technical intervention</h3>
-        <p>
-            Formally, mitigation methods are grouped by <i>where</i> in the pipeline they act. Each family has distinct trade-offs.
-        </p>
-        <table>
-            <thead>
-                <tr><th>Stage</th><th>Approach</th><th>Representative methods</th><th>Trade-off</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Pre-processing</td><td>Fix the data before training</td><td>Reweighting, resampling, disparate-impact remover, learning fair representations</td><td>Model-agnostic, but cannot fix bias the model introduces later</td></tr>
-                <tr><td>In-processing</td><td>Constrain the training objective</td><td>Adversarial debiasing, exponentiated-gradient reduction, fairness regularizers</td><td>Powerful, but couples fairness tightly to the model and may reduce accuracy</td></tr>
-                <tr><td>Post-processing</td><td>Adjust the outputs</td><td>Group-specific thresholds, calibrated equalized-odds adjustment, reject-option classification</td><td>Easy to bolt on, but requires access to the protected attribute at inference</td></tr>
-            </tbody>
-        </table>
+        # Enforce Top-K sparsity constraint
+        topk_vals, topk_indices = torch.topk(hidden, self.k_sparse, dim=-1)
+        sparse_latents = torch.zeros_like(hidden).scatter_(-1, topk_indices, topk_vals)
 
-        <p>
-            A practical caution: the "fairness through unawareness" strategy — simply dropping the protected attribute — is usually insufficient because of proxy variables. Counterintuitively, many mitigation methods <i>need</i> the protected attribute at training or evaluation time in order to enforce or verify parity, which itself raises data-governance questions.
-        </p>
+        # Reconstruction pass
+        x_reconstructed = sparse_latents @ self.W_dec + self.b_dec
+        
+        # Loss: Reconstruction MSE
+        reconstruction_loss = F.mse_loss(x_reconstructed, x)
+        return x_reconstructed, sparse_latents, reconstruction_loss
 
-        <h2 id="lifecycle">5. Integrating Ethics into the ML Lifecycle</h2>
-        <p>
-            Building responsible AI is an ongoing process — not a one-time checklist.
-            Ethical considerations should be embedded throughout the <b>Machine Learning (ML) lifecycle</b>:
-        </p>
-        <ul>
-            <li><b>Data Stage:</b> Ensure consent, privacy, and balanced sampling when collecting or annotating data.</li>
-            <li><b>Model Development:</b> Use interpretable models or explainability tools (like SHAP or LIME) to understand feature importance and detect biases.</li>
-            <li><b>Deployment:</b> Test models in real-world contexts to identify unintended consequences and measure performance across user segments.</li>
-            <li><b>Monitoring:</b> Continuously track and audit model outcomes post-deployment. Bias can re-emerge as social conditions change or data distributions shift.</li>
-        </ul>
+# Example activation pass
+sae = SparseAutoencoder(d_model=4096, expansion_factor=32, k_sparse=64)
+raw_activations = torch.randn(4, 4096)
+x_hat, latents, mse_loss = sae(raw_activations)
 
-        <div class="mermaid">
-        flowchart TD
-            A[Scope and impact assessment] --> B[Data governance and datasheets]
-            B --> C[Model development with fairness constraints]
-            C --> D[Pre-deployment audit and red-teaming]
-            D --> E{Passes fairness and safety gates?}
-            E -->|No| C
-            E -->|Yes| F[Deploy with model card]
-            F --> G[Monitor drift and disparate outcomes]
-            G -->|Drift or harm detected| A
-        </div>
+print(f"Reconstruction MSE: {mse_loss.item():.4f}")
+print(f"Active Latents per Token: {(latents > 0).sum(dim=-1).tolist()}")
+</code></pre>
 
-        <p>
-            Organizations that take ethics seriously often form <b>AI Governance Committees</b> or <b>Responsible AI Councils</b> to review high-impact models.
-            Regulatory frameworks like the <b>EU AI Act</b> and emerging standards from <b>IEEE</b> and <b>OECD</b> are also guiding global efforts toward accountability and transparency.
-        </p>
-
-        <h3>Documentation as an ethical artifact</h3>
-        <p>
-            Two documentation practices have become de facto standards. <i>Datasheets for Datasets</i> (Gebru et al.) records how data was collected, its intended use, and known gaps. <i>Model Cards for Model Reporting</i> (Mitchell et al.) reports performance disaggregated by subgroup, alongside intended use and ethical considerations. In 2025-2026 these ideas increasingly appear in regulated form, echoed by the EU AI Act's technical-documentation obligations and the "system cards" published for frontier models.
-        </p>
-
-        <h2 id="explainability">6. Explainability and Transparency</h2>
-        <p>
-            Fairness and transparency are intertwined: it is hard to trust a decision you cannot explain, and hard to detect bias in a black box. Explainability techniques fall into two broad camps.
-        </p>
-        <ul>
-            <li><b>Intrinsically interpretable models</b> — linear models, decision trees, generalized additive models — are transparent by construction. Where accuracy permits, they are the ethically safer default for high-stakes decisions.</li>
-            <li><b>Post-hoc explanations</b> approximate the behavior of complex models. <b>LIME</b> fits a local surrogate around a single prediction; <b>SHAP</b> attributes a prediction to its features using Shapley values from cooperative game theory, giving consistent, additive contributions.</li>
-        </ul>
-        <p>
-            A crucial distinction, emphasized in Rudin's work, is between <i>explaining</i> a black box and <i>using</i> an inherently interpretable model. Post-hoc explanations are approximations and can themselves be misleading; for consequential decisions in justice or healthcare, an interpretable model that is auditable end to end is often preferable to a high-accuracy black box wrapped in an explanation.
-        </p>
-
-        <h2 id="genai">7. Bias in Generative AI and LLMs</h2>
-        <p>
-            The rise of large language models (LLMs) and other foundation models has widened the surface area for ethical harm well beyond classification fairness. Because these systems are trained on vast, largely web-scraped corpora, they absorb the stereotypes, imbalances, and toxicity present in that data.
-        </p>
-        <ul>
-            <li><b>Representational harms:</b> models associating occupations, traits, or sentiments unequally with demographic groups, or producing stereotyped text-to-image outputs.</li>
-            <li><b>Allocative harms:</b> when a generative system is used to screen resumes, draft credit decisions, or triage patients, biased generations translate into unequal resource allocation.</li>
-            <li><b>Hallucination:</b> confident but fabricated outputs, which are especially dangerous in medical, legal, and financial contexts.</li>
-            <li><b>Toxicity and jailbreaks:</b> adversarial prompts that bypass safety training to elicit disallowed content.</li>
-        </ul>
-
-        <h3>Alignment and safety techniques</h3>
-        <p>
-            The dominant mitigation stack for modern LLMs combines several methods:
-        </p>
-        <ul>
-            <li><b>RLHF</b> (reinforcement learning from human feedback) and its variants such as <b>DPO</b> (direct preference optimization) steer models toward preferred, less harmful responses.</li>
-            <li><b>Constitutional AI</b> (introduced by Anthropic) uses a written set of principles to have the model critique and revise its own outputs, reducing reliance on large volumes of human-labeled harmful examples.</li>
-            <li><b>Guardrails and content filters</b> screen inputs and outputs at inference time for toxicity, PII, and policy violations.</li>
-            <li><b>Systematic red-teaming</b> and evaluation on bias/toxicity benchmarks (for example BBQ for question-answering bias, and holistic evaluations such as HELM) quantify residual harms before release.</li>
-            <li><b>Retrieval grounding and citations</b> reduce hallucination by tying generations to verifiable sources.</li>
-        </ul>
-        <p>
-            None of these fully solves bias; they shift and reduce it. Evaluation remains the honest anchor — a model is only as trustworthy as the breadth of the adversarial tests it has survived.
-        </p>
-
-        <h2 id="governance">8. Governance and Regulation</h2>
-        <p>
-            Responsible AI is now as much a compliance discipline as an engineering one. Two frameworks anchor most 2025-2026 programs.
-        </p>
-        <table>
-            <thead>
-                <tr><th>Framework</th><th>Nature</th><th>Core idea</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>EU AI Act</td><td>Binding regulation (phased entry into force from 2025)</td><td>Risk tiers — unacceptable, high, limited, minimal — with strict obligations (risk management, data governance, transparency, human oversight) for high-risk systems and specific duties for general-purpose AI models</td></tr>
-                <tr><td>NIST AI Risk Management Framework</td><td>Voluntary US framework</td><td>Four functions — Govern, Map, Measure, Manage — for identifying and reducing AI risk across the lifecycle</td></tr>
-                <tr><td>ISO/IEC 42001</td><td>Certifiable management-system standard</td><td>Establishes an auditable AI management system, analogous to ISO 27001 for security</td></tr>
-                <tr><td>OECD AI Principles</td><td>Intergovernmental principles</td><td>Human-centered values, transparency, robustness, and accountability</td></tr>
-            </tbody>
-        </table>
-        <p>
-            The practical takeaway for engineers: risk classification drives obligation. A minimal-risk spam filter and a high-risk credit-scoring model face very different documentation, testing, and human-oversight requirements. Building the audit trail — data lineage, evaluation results, model cards, and post-market monitoring — into the pipeline from day one is far cheaper than retrofitting it.
-        </p>
-
-        <h2 id="future">9. The Future of Responsible AI</h2>
-        <p>
-            The next frontier in AI ethics lies in combining human values with machine intelligence.
-            Future models will increasingly rely on self-supervised learning, federated privacy-preserving architectures, and explainable AI systems.
-            Ethical design will become a competitive advantage, not just a compliance requirement.
-        </p>
-        <p>
-            Several threads are converging. <b>Privacy-preserving machine learning</b> — federated learning, differential privacy, and increasingly practical approaches to confidential computation — lets teams learn from sensitive data without centralizing raw records. <b>Agentic systems</b> that call tools and act autonomously raise fresh questions of accountability: who is responsible when an autonomous agent takes a harmful action? And as models are increasingly trained on the internet's growing pool of AI-generated text, guarding against <b>model collapse</b> and the recycling of synthetic bias becomes a first-order data-quality problem.
-        </p>
-
-        <p>
-            True progress in AI means ensuring that technology uplifts everyone — regardless of background, gender, or geography.
-            A fair and transparent AI system doesn't just perform well; it earns trust.
-            By embracing ethics as a core design principle, we can build intelligent systems that serve humanity responsibly and equitably.
-        </p>
-
-        <h2 id="takeaways">10. Takeaways</h2>
-        <ul>
-            <li>Bias is compounded across the pipeline, not injected at one point — trace it from data to deployment and back through feedback loops.</li>
-            <li>Fairness definitions conflict mathematically; choosing one is a value judgment that should be made explicitly with stakeholders.</li>
-            <li>Measure before you mitigate. Tools like Fairlearn and AI Fairness 360 make group metrics routine.</li>
-            <li>Prefer interpretable models for high-stakes decisions; treat post-hoc explanations as approximations, not ground truth.</li>
-            <li>Generative AI adds representational and allocative harms; alignment (RLHF, DPO, Constitutional AI), guardrails, and red-teaming reduce but do not eliminate them.</li>
-            <li>Governance is engineering. Build the audit trail — datasheets, model cards, monitoring — into the pipeline to meet the EU AI Act, NIST AI RMF, and ISO/IEC 42001.</li>
-        </ul>
+<h2 id="takeaways">Applications for safety & alignment auditability</h2>
+<ol>
+  <li><strong>Monosemantic Concept Steering:</strong> Clamping a specific SAE feature (e.g. "Deception Feature #412") directly controls whether the model generates deceptive responses.</li>
+  <li><strong>Safety Auditing:</strong> Scans intermediate activations for dangerous features (e.g. CBRN weapon synthesis) before token generation completes.</li>
+  <li><strong>Circuit Probing:</strong> Traces causal information flow pathways between attention heads and multi-layer perceptrons.</li>
+</ol>

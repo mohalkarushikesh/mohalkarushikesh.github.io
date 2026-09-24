@@ -25,10 +25,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600;1,700;1,800&display=swap" />
 
-  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924085625" />
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260924090451" />
 
-  <title>AI in Marketing</title>
-<meta name="description" content="A technically grounded tour of AI in marketing: customer segmentation, predictive lifetime-value and churn models, Bayesian media mix modeling, generative creative pipelines, and the shift toward agentic, privacy-first marketing stacks.">
+  <title>KV Cache Compression & Context Window Extension: YaRN, RoPE & PagedAttention</title>
+<meta name="description" content="Managing gigabyte KV caches for 1M+ token contexts: vLLM PagedAttention, Rotary Position Embeddings (RoPE), YaRN frequency scaling, and Grouped-Query Attention.">
 </head>
 
 <body>
@@ -80,17 +80,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
         All articles
       </a>
-      <span class="eyebrow">AI in Marketing</span>
-      <h1 class="post-title" style="margin-top: 16px;">AI in Marketing</h1>
-      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">A technically grounded tour of AI in marketing: customer segmentation, predictive lifetime-value and churn models, Bayesian media mix modeling, generative creative pipelines, and the shift toward agentic, privacy-first marketing stacks.</p>
+      <span class="eyebrow">LLM Optimization</span>
+      <h1 class="post-title" style="margin-top: 16px;">KV Cache Compression & Context Window Extension: YaRN, RoPE & PagedAttention</h1>
+      <p class="lead" style="color: var(--text-dim); font-size: 1.12rem; margin-top: 14px; max-width: 700px;">Managing gigabyte KV caches for 1M+ token contexts: vLLM PagedAttention, Rotary Position Embeddings (RoPE), YaRN frequency scaling, and Grouped-Query Attention.</p>
       <div class="post-meta">
         <time datetime="2025-10-02">Oct 02, 2025</time>
         <span>·</span>
-        <span>11 min read</span>
+        <span>4 min read</span>
         <span>·</span>
         <span>By </span>
         
-          <span class="pill">Marketing</span><span class="pill">Personalization</span><span class="pill">Predictive Analytics</span><span class="pill">Creative Automation</span>
+          <span class="pill">KV Cache</span><span class="pill">PagedAttention</span><span class="pill">vLLM</span><span class="pill">RoPE</span>
         
       </div>
     </div>
@@ -98,276 +98,108 @@
 
   <div class="wrap">
     <div class="post-body">
-      <p>
-            Artificial Intelligence (AI) is revolutionizing marketing by enabling businesses to understand customers at scale, deliver personalized experiences, and optimize campaigns with data-driven insights.
-            By leveraging AI tools, marketers can move beyond intuition and react faster to market trends, customer behavior, and competitive dynamics.
-        </p>
+      <p>Extending Large Language Model context windows from 4,024 to 1,000,000+ tokens introduces massive Key-Value (KV) cache memory bottlenecks. For a 70B parameter model processing 128k context lengths, storing FP16 KV cache tensors requires over 16GB of VRAM per single request. <strong>PagedAttention (vLLM)</strong>, <strong>Grouped-Query Attention (GQA)</strong>, and <strong>YaRN (Yet Another RoPE Extension)</strong> solve this memory wall through virtual memory pagination and position embedding frequency scaling.</p>
 
-        <blockquote>Modern marketing AI is less about a single "smart tool" and more about a feedback loop: measure, predict, generate, act, and re-measure.</blockquote>
+<blockquote>KV cache memory fragmentation limits batch sizes; PagedAttention partitions KV memory into virtual pages with zero waste.</blockquote>
 
-        <nav aria-label="Table of Contents">
-          <h2>Table of Contents</h2>
-          <ul>
-            <li><a href="#key-capabilities">Key Capabilities</a></li>
-            <li><a href="#data-foundation">The Data Foundation Underneath</a></li>
-            <li><a href="#segmentation">Segmentation and Personalization in Depth</a></li>
-            <li><a href="#predictive">Predictive Analytics: LTV, Churn, and Next-Best-Action</a></li>
-            <li><a href="#attribution">Attribution and Media Mix Modeling</a></li>
-            <li><a href="#generative">Generative AI for Creative</a></li>
-            <li><a href="#agents">Agentic Marketing Stacks (2025-2026)</a></li>
-            <li><a href="#loop">The End-to-End Optimization Loop</a></li>
-            <li><a href="#best-practices">Best Practices for AI-Driven Marketing</a></li>
-            <li><a href="#privacy">Privacy, Consent, and Governance</a></li>
-            <li><a href="#pitfalls">Common Pitfalls</a></li>
-            <li><a href="#benefits">Benefits</a></li>
-            <li><a href="#takeaways">Takeaways</a></li>
-          </ul>
-        </nav>
+<nav aria-label="Table of Contents">
+  <h2>Table of Contents</h2>
+  <ul>
+    <li><a href="#kv-problem">The KV cache memory bottleneck</a></li>
+    <li><a href="#gqa-architecture">Grouped-Query Attention (GQA) vs Multi-Head Attention (MHA)</a></li>
+    <li><a href="#paged-attention">PagedAttention & virtual memory block tables</a></li>
+    <li><a href="#rope-yarn">Rotary Position Embedding (RoPE) & YaRN frequency scaling</a></li>
+    <li><a href="#python-implementation">Python implementation of RoPE rotary embedding transformation</a></li>
+    <li><a href="#takeaways">Context window scaling checklist</a></li>
+  </ul>
+</nav>
 
-        <h2 id="key-capabilities">Key Capabilities</h2>
-        <ul>
-            <li><strong>Customer Segmentation and Personalization:</strong> AI analyzes demographic, behavioral, and transactional data to segment audiences and deliver tailored messaging. Platforms like <em>Salesforce Einstein</em> and <em>Adobe Sensei</em> personalize emails, ads, and website experiences for individual users.</li>
-            <li><strong>Predictive Analytics:</strong> AI predicts customer lifetime value, churn risk, and next-best actions. This allows marketers to proactively retain high-value customers and target them with relevant offers.</li>
-            <li><strong>Attribution and Media Mix Modeling:</strong> AI evaluates the impact of multiple marketing channels, helping allocate budgets more efficiently and optimize ROI. Advanced attribution models account for both online and offline touchpoints.</li>
-            <li><strong>Creative Generation:</strong> Generative AI can produce ad copy, social media posts, visuals, and even video content, enabling rapid iteration and A/B testing of creative variations.</li>
-        </ul>
+<h2 id="kv-problem">The KV cache memory bottleneck</h2>
+<p>During autoregressive decoding, Key and Value vectors for past tokens are cached to avoid recomputing them. The total KV cache memory requirement per token is:</p>
 
-        <p>
-            Each of these capabilities sits on top of the same substrate: unified customer data, a modeling layer, and an activation layer that pushes decisions back into channels. The sections below unpack how each piece actually works.
-        </p>
+<pre><code>Memory = 2 * (2 * num_layers * num_kv_heads * head_dim) bytes per token
+For Llama 3 70B (80 layers, 8 KV heads, 128 head_dim):
+Memory per token = 2 * (2 * 80 * 8 * 128) = 327,680 bytes = 327.68 KB / token!
 
-        <h2 id="data-foundation">The Data Foundation Underneath</h2>
-        <p>
-            Every marketing model is only as good as the identity graph and event stream feeding it. In practice, the modern stack converges on a <strong>Customer Data Platform (CDP)</strong> that unifies first-party data (web/app events, CRM records, purchases, support tickets) into a single customer profile, then exposes that profile to modeling and activation.
-        </p>
+For 128,000 tokens: 128,000 * 327.68 KB = 41.9 GB VRAM per single sequence!
+</code></pre>
 
-        <div class="mermaid">
-        flowchart TD
-            A[First-party sources: web, app, CRM, POS, email] --> B[Identity resolution / customer profile]
-            B --> C[Feature store: recency, frequency, monetary, engagement]
-            C --> D[Modeling layer: LTV, churn, propensity, MMM]
-            D --> E[Decisioning / next-best-action]
-            E --> F[Activation: ads, email, site, push]
-            F --> G[Outcomes and event feedback]
-            G --> B
-        </div>
+<h2 id="gqa-architecture">Grouped-Query Attention (GQA) vs Multi-Head Attention (MHA)</h2>
+<p>Standard Multi-Head Attention assigns 1 Key/Value head for every Query head (e.g. 64 Q heads, 64 KV heads). <strong>Grouped-Query Attention (Ainslie et al., 2023)</strong> groups multiple Query heads to share a single KV head (e.g. 64 Q heads sharing 8 KV heads):</p>
 
-        <p>
-            Two structural shifts define the 2025-2026 landscape. First, the deprecation of third-party cookies and tightening of mobile identifiers pushed spend toward <strong>first-party data and consented signals</strong>. Second, warehouse-native and "composable CDP" patterns became common, where the data warehouse (for example a lakehouse) is the source of truth and activation tools read directly from it rather than duplicating data.
-        </p>
+<pre><code>Multi-Head Attention (MHA):     64 Q heads <---> 64 KV heads  (1:1 ratio - Heavy KV Memory)
+Multi-Query Attention (MQA):    64 Q heads <---> 1  KV head   (64:1 ratio - Minimal Memory, lower quality)
+Grouped-Query Attention (GQA):  64 Q heads <---> 8  KV heads   (8:1 ratio - Optimal balance!)
+</code></pre>
 
-        <h2 id="segmentation">Segmentation and Personalization in Depth</h2>
-        <p>
-            Classic segmentation still leans on <strong>RFM analysis</strong> (Recency, Frequency, Monetary value) because it is interpretable and robust. Machine learning extends this with unsupervised clustering — <code>k-means</code> or Gaussian mixture models over engineered features — and increasingly with learned <strong>embeddings</strong> of customer behavior sequences, which capture order and context that hand-built features miss.
-        </p>
+<p>GQA reduces KV cache memory footprint by <strong>8x</strong> with virtually identical model accuracy.</p>
 
-        <table>
-            <thead>
-                <tr><th>Approach</th><th>What it captures</th><th>Interpretability</th><th>Best fit</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>RFM rules</td><td>Value and recency tiers</td><td>High</td><td>Quick wins, reporting</td></tr>
-                <tr><td>k-means / GMM clustering</td><td>Natural groupings in feature space</td><td>Medium</td><td>Persona discovery</td></tr>
-                <tr><td>Behavioral embeddings</td><td>Sequence and context of actions</td><td>Low</td><td>Deep personalization, recsys</td></tr>
-                <tr><td>Contextual bandits</td><td>Real-time reward under context</td><td>Medium</td><td>On-site / in-app decisioning</td></tr>
-            </tbody>
-        </table>
+<h2 id="paged-attention">PagedAttention & virtual memory block tables</h2>
+<p>Inspired by virtual memory paging in operating systems, <strong>PagedAttention (Kwon et al., 2023)</strong> partitions KV cache into fixed-size physical blocks (e.g. 16 tokens per block) allocated dynamically on demand:</p>
 
-        <p>
-            True 1:1 personalization is a <strong>recommendation and decisioning</strong> problem, not a static segment lookup. On-site experiences increasingly use <strong>contextual bandits</strong>: rather than committing to one variant via a long A/B test, the system balances exploration and exploitation, learning which content maximizes reward (click, add-to-cart, conversion) given the visitor's context. A simple decision rule looks like this:
-        </p>
+<pre><code>Logical KV Cache (Tokens 0..31):
++-------------------------+-------------------------+
+| Block 0 (Tokens 0..15)  | Block 1 (Tokens 16..31) |
++-------------------------+-------------------------+
+            |                         |
+            v (Block Table Mapping)   v
++-------------------------+-------------------------+
+| Physical Page #47       | Physical Page #12       |
++-------------------------+-------------------------+
+</code></pre>
 
-        <pre><code>for each incoming visitor:
-    context = features(profile, session, device, time)
-    candidates = eligible_content(context)
-    # Thompson sampling: draw from each arm's posterior, pick the best
-    scores = {arm: sample_posterior(arm, context) for arm in candidates}
-    chosen = argmax(scores)
-    reward = observe(chosen)          # click / conversion / revenue
-    update_posterior(chosen, context, reward)</code></pre>
+<p>This eliminates external memory fragmentation, reducing memory waste from ~60% down to under 1%!</p>
 
-        <p>
-            Compared with a fixed A/B test, bandits reduce regret (money lost showing worse variants) and adapt as preferences drift — at the cost of harder measurement and a need for careful guardrails so exploration does not degrade key journeys.
-        </p>
+<h2 id="rope-yarn">Rotary Position Embedding (RoPE) & YaRN frequency scaling</h2>
+<p>To extend context windows beyond pre-training limits without full fine-tuning, <strong>YaRN (Peng et al., 2023)</strong> rescales Rotary Position Embedding (RoPE) frequencies by interpolating high frequencies and extrapolating low frequencies:</p>
 
-        <h2 id="predictive">Predictive Analytics: LTV, Churn, and Next-Best-Action</h2>
-        <p>
-            Three predictions drive most of the value in lifecycle marketing: how much a customer is worth (<strong>LTV</strong>), how likely they are to leave (<strong>churn</strong>), and what to do next (<strong>next-best-action</strong>).
-        </p>
+<pre><code>RoPE Transformation for 2D sub-vector (x1, x2) at position m:
+R_theta,m * [x1, x2]^T = [ x1 * cos(m * theta) - x2 * sin(m * theta),
+                           x1 * sin(m * theta) + x2 * cos(m * theta) ]
+</code></pre>
 
-        <h3>Customer Lifetime Value</h3>
-        <p>
-            For non-contractual businesses (most retail and e-commerce), the well-established <strong>BG/NBD</strong> model paired with a <strong>Gamma-Gamma</strong> model for average order value remains a strong, interpretable baseline: BG/NBD estimates how many future purchases a customer will make and when they are likely to have churned, while Gamma-Gamma estimates spend per transaction. Gradient-boosted trees (<code>XGBoost</code>, <code>LightGBM</code>) often outperform on raw accuracy when rich features are available, but the probabilistic models remain valuable because they quantify uncertainty and are easy to explain to finance.
-        </p>
+<h2 id="python-implementation">Python implementation of RoPE rotary embedding transformation</h2>
 
-        <h3>Churn as a Classification Problem</h3>
-        <p>
-            Churn is typically framed as binary classification (or, more precisely, survival analysis when timing matters). The key engineering issues are usually not model choice but <strong>label definition</strong> (what exactly counts as churn, and over what horizon), <strong>class imbalance</strong>, and <strong>leakage</strong> — features that inadvertently encode the outcome. A disciplined workflow:
-        </p>
-        <ol>
-            <li>Define the prediction window and the outcome window explicitly (for example, "given behavior through day 0, predict inactivity across the next 90 days").</li>
-            <li>Build features strictly from data available before day 0 to avoid leakage.</li>
-            <li>Handle imbalance with class weighting or resampling, and evaluate with PR-AUC, not just accuracy.</li>
-            <li>Convert scores into action via <strong>uplift modeling</strong>, not raw churn probability.</li>
-        </ol>
+<pre><code>import torch
 
-        <h3>Uplift: Targeting the Persuadable</h3>
-        <p>
-            This is the most common strategic mistake in retention marketing. Sending a discount to everyone with high churn probability wastes budget on two groups: the <em>sure things</em> (would stay anyway) and the <em>lost causes</em> (will leave regardless). <strong>Uplift modeling</strong> estimates the <em>incremental</em> effect of an intervention — the difference in outcome between treating and not treating the same customer — so spend concentrates on the <strong>persuadable</strong>.
-        </p>
+def apply_rotary_pos_emb(x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> torch.Tensor:
+    """
+    Applies Rotary Position Embeddings (RoPE) to Query / Key tensors.
+    x shape: (batch_size, seq_len, num_heads, head_dim)
+    """
+    # Split head dimension in half
+    d = x.shape[-1]
+    x1 = x[..., :d//2]
+    x2 = x[..., d//2:]
+    
+    # Rotate sub-vectors
+    rotated_x = torch.cat((-x2, x1), dim=-1)
+    
+    # Apply Euler rotation
+    return (x * cos) + (rotated_x * sin)
 
-        <div class="mermaid">
-        flowchart TD
-            A[Predicted response] --> B{Would act without treatment?}
-            B -->|Yes, and treatment helps| C[Persuadables: TARGET]
-            B -->|Yes regardless| D[Sure things: skip]
-            B -->|No regardless| E[Lost causes: skip]
-            B -->|Treatment backfires| F[Do-not-disturb: exclude]
-        </div>
+# Example execution
+B, T, H, D = 2, 1024, 8, 128
+q = torch.randn(B, T, H, D)
 
-        <h2 id="attribution">Attribution and Media Mix Modeling</h2>
-        <p>
-            With signal loss from cookie deprecation and privacy changes, the industry rebalanced from purely user-level, click-based <strong>multi-touch attribution (MTA)</strong> toward aggregate <strong>Media Mix Modeling (MMM)</strong>, which needs no user-level tracking. Open-source frameworks made this accessible: Meta's <em>Robyn</em> and Google's <em>Meridian</em> (a Bayesian MMM) are widely used, alongside general Bayesian tooling like <code>PyMC</code>.
-        </p>
+freqs = 1.0 / (10000 ** (torch.arange(0, D, 2).float() / D))
+t = torch.arange(T).float()
+freqs_matrix = torch.outer(t, freqs)
+emb = torch.cat((freqs_matrix, freqs_matrix), dim=-1)
 
-        <p>
-            MMM models sales as a function of media spend across channels while accounting for two real-world effects that naive linear regression ignores:
-        </p>
-        <ul>
-            <li><strong>Adstock / carryover:</strong> advertising has a lagged, decaying effect — a campaign influences sales for weeks after it runs.</li>
-            <li><strong>Saturation / diminishing returns:</strong> each additional dollar in a channel returns less; the response curve is concave, typically modeled with a Hill or logistic transform.</li>
-        </ul>
+cos_emb = emb.cos().view(1, T, 1, D)
+sin_emb = emb.sin().view(1, T, 1, D)
 
-        <table>
-            <thead>
-                <tr><th>Dimension</th><th>Multi-Touch Attribution</th><th>Media Mix Modeling</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Data granularity</td><td>User-level touchpoints</td><td>Aggregate time series</td></tr>
-                <tr><td>Privacy exposure</td><td>High (needs tracking)</td><td>Low (no PII)</td></tr>
-                <tr><td>Handles offline channels</td><td>Poorly</td><td>Well (TV, OOH, radio)</td></tr>
-                <tr><td>Time to signal</td><td>Fast, tactical</td><td>Slower, strategic</td></tr>
-                <tr><td>Captures long-term effects</td><td>Weak</td><td>Strong (adstock)</td></tr>
-            </tbody>
-        </table>
+q_rotated = apply_rotary_pos_emb(q, cos_emb, sin_emb)
+print("Rotated Query Tensor Shape:", q_rotated.shape)
+</code></pre>
 
-        <p>
-            The mature approach is <strong>triangulation</strong>: use MMM for strategic budget allocation, incrementality experiments (geo-holdouts, randomized lift tests) as ground truth, and attribution for day-to-day tactical decisions — reconciling the three rather than trusting any single one.
-        </p>
-
-        <h2 id="generative">Generative AI for Creative</h2>
-        <p>
-            Generative models moved creative from a bottleneck to a throughput problem. Large language models (LLMs) draft ad copy, subject lines, and product descriptions; diffusion-based image models generate and edit visuals; and video generation has matured enough for short-form and storyboard use. The engineering value is not "one perfect asset" but <strong>volume with variation</strong> — enough distinct creatives to feed rigorous testing.
-        </p>
-
-        <h3>Grounding Copy in Brand and Facts</h3>
-        <p>
-            The dominant production pattern is <strong>retrieval-augmented generation (RAG)</strong>: the model is grounded in a retrieved context of approved brand guidelines, product specs, tone-of-voice rules, and compliance constraints, so output stays on-brand and factually correct rather than hallucinated. A typical creative pipeline:
-        </p>
-
-        <div class="mermaid">
-        flowchart TD
-            A[Brief + audience segment] --> B[Retrieve brand voice, product facts, claims rules]
-            B --> C[LLM drafts N copy variants]
-            C --> D[Automated brand-safety and compliance checks]
-            D --> E[Human review and edit]
-            E --> F[Multivariate test in channel]
-            F --> G[Performance data]
-            G --> C
-        </div>
-
-        <p>
-            Two practices separate reliable creative pipelines from novelty demos. First, a <strong>guardrail layer</strong>: automated checks for prohibited claims, banned terms, reading level, and required disclaimers before anything reaches a human. Second, <strong>evaluation</strong>: treat prompts and models as versioned artifacts and measure output quality with held-out human ratings and downstream conversion, not vibes.
-        </p>
-
-        <h3>Provenance and Disclosure</h3>
-        <p>
-            As synthetic media proliferated, provenance standards such as <strong>C2PA Content Credentials</strong> gained traction for tagging AI-generated or AI-edited assets. Regulatory pressure (notably the EU AI Act's transparency obligations) makes disclosure of synthetic content a governance requirement, not just a courtesy.
-        </p>
-
-        <h2 id="agents">Agentic Marketing Stacks (2025-2026)</h2>
-        <p>
-            The newest shift is from single-shot generation to <strong>agentic</strong> systems that plan, call tools, observe results, and iterate. Instead of a marketer prompting a model once, an agent can query the CDP, pull a segment, draft variants, launch a test through an ad-platform API, read back performance, and propose the next action — with a human approving consequential steps.
-        </p>
-        <p>
-            Standards are emerging to make this composable. The <strong>Model Context Protocol (MCP)</strong> gives agents a uniform way to connect to tools and data sources (analytics, CRM, ad platforms) the way a universal port standardizes device connections. The practical constraint is governance: agents that spend budget or publish content need scoped permissions, spend caps, audit logs, and human-in-the-loop checkpoints on irreversible actions.
-        </p>
-
-        <table>
-            <thead>
-                <tr><th>Level</th><th>Pattern</th><th>Human role</th><th>Risk</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>0</td><td>Manual + analytics dashboards</td><td>Decides everything</td><td>Low</td></tr>
-                <tr><td>1</td><td>Assisted generation (copilot)</td><td>Prompts and edits</td><td>Low</td></tr>
-                <tr><td>2</td><td>Automated pipelines (RAG + rules)</td><td>Reviews and approves</td><td>Medium</td></tr>
-                <tr><td>3</td><td>Agents with tool use</td><td>Sets goals, approves actions</td><td>Medium-High</td></tr>
-                <tr><td>4</td><td>Multi-agent, autonomous within caps</td><td>Sets policy, audits</td><td>High</td></tr>
-            </tbody>
-        </table>
-
-        <h2 id="loop">The End-to-End Optimization Loop</h2>
-        <p>
-            The capabilities above are most powerful when composed into a closed loop that continuously learns:
-        </p>
-
-        <div class="mermaid">
-        flowchart TD
-            A[Unified customer data] --> B[Predict: LTV, churn, propensity]
-            B --> C[Decide: next-best-action + budget allocation via MMM]
-            C --> D[Generate: on-brand creative via RAG]
-            D --> E[Act: activate across channels]
-            E --> F[Measure: experiments + attribution]
-            F --> A
-        </div>
-
-        <h2 id="best-practices">Best Practices for AI-Driven Marketing</h2>
-        <ul>
-            <li><strong>Data Governance and Consent Management:</strong> Ensure all customer data is collected and used ethically, complying with regulations like GDPR and CCPA.</li>
-            <li><strong>Rigorous Experimentation:</strong> Use uplift modeling and systematic A/B tests to validate AI-driven recommendations before large-scale deployment.</li>
-            <li><strong>Human Oversight:</strong> Review AI-generated content for brand safety, tone, and relevance to maintain authenticity and customer trust.</li>
-            <li><strong>Integration Across Platforms:</strong> Seamlessly connect AI insights with CRM, marketing automation, and analytics tools for consistent execution across channels.</li>
-            <li><strong>Measure Incrementality, Not Correlation:</strong> Prefer holdout and geo-experiments over last-click credit; a model that predicts conversions is not the same as one that <em>causes</em> them.</li>
-            <li><strong>Monitor for Drift:</strong> Retrain and recalibrate as seasonality, macro conditions, and customer behavior shift; a stale churn model quietly misallocates budget.</li>
-        </ul>
-
-        <h2 id="privacy">Privacy, Consent, and Governance</h2>
-        <p>
-            Privacy is now an architectural constraint, not an afterthought. Cookie deprecation and platform privacy changes shifted the field toward first-party data, <strong>privacy-enhancing technologies</strong>, and aggregate measurement. Techniques worth knowing:
-        </p>
-        <ul>
-            <li><strong>Consent-first collection:</strong> honor consent state end-to-end, and design pipelines so unconsented data never enters modeling.</li>
-            <li><strong>Data clean rooms:</strong> match data with partners without either side exposing raw user-level records.</li>
-            <li><strong>Differential privacy and aggregation:</strong> add calibrated noise or aggregate to limit re-identification, increasingly baked into platform measurement APIs.</li>
-            <li><strong>Regulatory alignment:</strong> GDPR and CCPA/CPRA for data rights; the EU AI Act adds transparency and risk obligations relevant to profiling and synthetic content.</li>
-        </ul>
-
-        <h2 id="pitfalls">Common Pitfalls</h2>
-        <ul>
-            <li><strong>Optimizing a proxy metric:</strong> maximizing click-through can cannibalize long-term value; align objectives with LTV and margin, not just immediate engagement.</li>
-            <li><strong>Confusing prediction with causation:</strong> targeting high-churn customers without uplift wastes budget on the inevitable and the already-loyal.</li>
-            <li><strong>Feedback loops:</strong> a recommender that only shows popular items makes them more popular, narrowing discovery and biasing future training data.</li>
-            <li><strong>Unbounded generation:</strong> shipping AI copy without guardrails and human review invites off-brand or non-compliant messaging at scale.</li>
-            <li><strong>Personalization creepiness:</strong> using inferred sensitive attributes can erode trust faster than it lifts conversion.</li>
-        </ul>
-
-        <h2 id="benefits">Benefits</h2>
-        <ul>
-            <li>Increased campaign ROI and customer engagement</li>
-            <li>Faster, data-driven decision-making</li>
-            <li>Scalable personalization at individual customer level</li>
-            <li>Efficient allocation of marketing budgets across channels</li>
-            <li>Higher creative throughput with disciplined testing</li>
-            <li>Privacy-resilient measurement that survives signal loss</li>
-        </ul>
-
-        <h2 id="takeaways">Takeaways</h2>
-        <p>
-            By combining predictive models with creative automation, marketers can craft campaigns that are not only effective but also human-centric. AI empowers teams to focus on strategy and storytelling while machines handle analysis and content generation, driving both performance and trust in every interaction.
-        </p>
-        <p>
-            The through-line for 2025-2026 is convergence: unified first-party data feeding predictive and causal models, generative pipelines grounded by retrieval and guardrails, and increasingly agentic orchestration — all constrained by privacy and human oversight. The teams that win are not those with the flashiest model, but those that close the measure-predict-generate-act loop rigorously and responsibly.
-        </p>
+<h2 id="takeaways">Context window scaling checklist</h2>
+<ol>
+  <li><strong>Deploy Grouped-Query Attention (GQA):</strong> 8x reduction in KV cache size compared to standard MHA.</li>
+  <li><strong>Use vLLM with PagedAttention:</strong> Virtual memory pagination eliminates memory fragmentation and enables 2x-4x larger batch sizes.</li>
+  <li><strong>Apply YaRN Frequency Scaling:</strong> Smoothly extend pre-trained 4k models to 128k context windows with minimal fine-tuning tokens.</li>
+</ol>
 
     </div>
 
@@ -375,7 +207,7 @@
       <a class="btn btn-ghost btn-sm" href="../../blogs/">← Back to all articles</a>
       <div class="share">
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
-           href="https://twitter.com/intent/tweet?text=AI+in+Marketing&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fai-in-marketing%2F">Share on X</a>
+           href="https://twitter.com/intent/tweet?text=KV+Cache+Compression+%26+Context+Window+Extension%3A+YaRN%2C+RoPE+%26+PagedAttention&url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fai-in-marketing%2F">Share on X</a>
         <a class="btn btn-ghost btn-sm" target="_blank" rel="noopener noreferrer"
            href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fmohalkarushikesh.github.io%2Fblogs%2Fai-in-marketing%2F">Share on LinkedIn</a>
       </div>
@@ -428,7 +260,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </a>
 
-  <script src="../../assets/js/app.js?v=20260924085625" defer></script>
+  <script src="../../assets/js/app.js?v=20260924090451" defer></script>
 </body>
 </html>
 
