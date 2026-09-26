@@ -55,12 +55,11 @@
       </a>
 
       <div class="nav-menu">
-        <a class="link" href="{{ '/' | relative_url }}#home">Home</a>
         <a class="link" href="{{ '/' | relative_url }}#about">About</a>
         <a class="link" href="{{ '/' | relative_url }}#projects">Projects</a>
         <a class="link" href="{{ '/aiml-tree-structure.html' | relative_url }}">AI/ML Map</a>
-        <a class="link" href="{{ '/blogs/' | relative_url }}">Blogs</a>
-        <a class="link" href="{{ '/' | relative_url }}#resume">Resume</a>
+        <a class="link" href="{{ '/' | relative_url }}#blogs">Writing</a>
+        <a class="link" href="{{ '/' | relative_url }}#resume">Experience</a>
         <a class="link" href="{{ '/' | relative_url }}#contact">Contact</a>
       </div>
 
@@ -89,13 +88,18 @@
         <div class="footer-badge-tag">AI &amp; ML ENGINEERING PORTFOLIO</div>
       </div>
       <p class="fquote">"Until death: every defeat is psychological."</p>
+      <nav class="footer-socials" aria-label="Social links">
+        <a href="https://github.com/{{ site.social.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/{{ site.social.linkedin }}/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://www.instagram.com/mohalkarushikesh" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://x.com/{{ site.social.x }}" target="_blank" rel="noopener noreferrer">X</a>
+      </nav>
       <nav class="fnav">
-        <a href="{{ '/' | relative_url }}#home">Home</a>
         <a href="{{ '/' | relative_url }}#about">About</a>
         <a href="{{ '/' | relative_url }}#projects">Projects</a>
         <a href="{{ '/aiml-tree-structure.html' | relative_url }}">AI/ML Map</a>
-        <a href="{{ '/blogs/' | relative_url }}">Blogs</a>
-        <a href="{{ '/' | relative_url }}#resume">Resume</a>
+        <a href="{{ '/' | relative_url }}#blogs">Writing</a>
+        <a href="{{ '/' | relative_url }}#resume">Experience</a>
         <a href="{{ '/' | relative_url }}#contact">Contact</a>
       </nav>
       <p class="copy">© {{ site.time | date: "%Y" }} Rushikesh Mohalkar. Built with Montserrat &amp; Jekyll.</p>

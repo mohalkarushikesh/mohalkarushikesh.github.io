@@ -5,7 +5,7 @@
   description: "A multi-agent AI system for banking accounts-payable that autonomously reads invoices, scores them for fraud and risk, routes approvals, and auto-pays safe transactions — wrapped in six governance layers for full auditability and provenance."
   tags: [Multi-Agent, LiteLLM, Governance, FastAPI]
   metric: "6 governance layers · auto-pay"
-  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/custodian-ap"
+  repo: "https://github.com/mohalkarushikesh/custodian-ap"
   logo: stock-price.jpg
   date: 2026-08-13
 
@@ -15,7 +15,7 @@
   description: "An enterprise-grade Retrieval-Augmented Generation system for Kubernetes IT operations — hybrid search, cross-encoder reranking, HyDE, corrective and self-RAG loops, and Text2SQL, all orchestrated with LangGraph and guarded by a nine-layer safety framework."
   tags: [RAG, LangGraph, Qdrant, Guardrails]
   metric: "9-layer safety framework"
-  repo: "https://github.com/mohalkarushikesh/switch/tree/main/Projects/AdvacedRAG"
+  repo: "https://github.com/mohalkarushikesh/AdvancedRAG"
   logo: pexels-apple-1834328.jpg
   date: 2026-08-14
 
@@ -25,7 +25,7 @@
   description: "A minimal, highly performant chat model architecture and inference harness built from scratch in PyTorch — designed for low-latency local execution and custom instruction tuning without black boxes."
   tags: [GPT, Transformers, PyTorch, From-Scratch]
   metric: "Low-latency local inference"
-  repo: "https://github.com/mohalkarushikesh/microgpt-x"
+  repo: "https://github.com/mohalkarushikesh/NanoChat-X"
   logo: microgpt.jpg
   date: 2026-03-08
 
@@ -45,7 +45,7 @@
   description: "An AI-powered property tax copilot built with Google Gemini API, Flask, and Tailwind CSS for real-time tax calculations, regulatory compliance guidance, and automated payment deadline tracking."
   tags: [Gemini API, Flask, Property Tax, Copilot]
   metric: "Real-time tax calculations"
-  repo: "https://github.com/mohalkarushikesh/Taxly"
+  repo: "https://github.com/mohalkarushikesh/TaxPilot"
   logo: taxpilot.jpg
   date: 2026-08-27
 
@@ -55,7 +55,7 @@
   description: "An end-to-end LLM fine-tuning workbench and Flask deployment service using Hugging Face Transformers for domain-specific model adaptation, LoRA parameter tuning, and evaluation."
   tags: [Fine-Tuning, LoRA, Hugging Face, Transformers]
   metric: "Domain adaptation pipeline"
-  repo: "https://github.com/mohalkarushikesh/TextWiz"
+  repo: "https://github.com/mohalkarushikesh/finetune-forge"
   logo: finetune-forge.jpg
   date: 2026-08-27
 

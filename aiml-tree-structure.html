@@ -122,6 +122,247 @@
     html.dark section.algo h2 { color:#4ade80; }
     html.dark .mermaid { background:#f7fafc; box-shadow:0 15px 40px rgba(0,0,0,0.5); }
     html.dark .scroll-note { color:#94a3b8; }
+
+    /* Monochrome editorial map theme */
+    html, html.dark {
+      color-scheme: light;
+      background: #ffffff;
+      color: #111111;
+    }
+    body, html.dark body {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background: #ffffff !important;
+      color: #111111 !important;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .pagebar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 14px 12.5vw;
+      gap: 22px;
+      border: 0;
+      border-bottom: 1px solid #eaeaea;
+      background: #ffffff;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+    }
+    .pagebar .brand, .pagebar .brand span, .pagebar a,
+    html.dark .pagebar .brand, html.dark .pagebar .brand span,
+    html.dark .pagebar a {
+      color: #111111;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .pagebar .brand {
+      margin-right: auto;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    .theme-btn {
+      display: none !important;
+    }
+    h1, .hint, .scroll-note, .algo-title, .algo-sub, .toc, section.algo {
+      width: 75vw;
+      max-width: 1160px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+    h1 {
+      margin-top: 64px;
+      margin-bottom: 16px;
+      color: #111111;
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.2;
+      text-align: left;
+    }
+    .hint, .algo-sub, .section.algo .desc, .scroll-note {
+      color: #555555;
+      font-size: 0.92rem;
+      text-align: left;
+    }
+    .hint {
+      margin-top: 12px;
+      margin-bottom: 28px;
+    }
+    .hint a, .toc a, .top a, html.dark .hint a, html.dark .toc a, html.dark .top a {
+      color: #111111;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .hint .dash {
+      border-bottom-color: #666666;
+    }
+    .mermaid {
+      width: 75vw;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 20px 0;
+      overflow-x: auto;
+      border-top: 1px solid #eaeaea;
+      border-bottom: 1px solid #eaeaea;
+      background: #ffffff !important;
+      box-shadow: none !important;
+    }
+    #mapDiagram.pz-enabled {
+      width: 75vw;
+      max-width: 1160px;
+      height: 74vh;
+      min-height: 420px;
+      padding: 8px 0;
+      overflow: hidden;
+      background: #ffffff !important;
+    }
+    .mermaid svg {
+      background: #ffffff !important;
+      font-family: 'Montserrat', sans-serif !important;
+    }
+    .mermaid svg .node rect,
+    .mermaid svg .node circle,
+    .mermaid svg .node ellipse,
+    .mermaid svg .node polygon,
+    .mermaid svg .node path {
+      fill: #ffffff !important;
+      stroke: #999999 !important;
+      stroke-width: 1.25px !important;
+    }
+    .mermaid svg .node.root rect,
+    .mermaid svg .node.root circle,
+    .mermaid svg .node.main rect,
+    .mermaid svg .node.main circle {
+      fill: #ffffff !important;
+      stroke: #111111 !important;
+      stroke-width: 1.75px !important;
+    }
+    .mermaid svg .node.clickable rect,
+    .mermaid svg .node.clickable polygon,
+    .mermaid svg .node.clickable path {
+      stroke: #555555 !important;
+      stroke-dasharray: 5 3 !important;
+    }
+    .mermaid svg .node text,
+    .mermaid svg .node tspan,
+    .mermaid svg .label,
+    .mermaid svg .label text,
+    .mermaid svg .label tspan {
+      fill: #111111 !important;
+      color: #111111 !important;
+    }
+    .mermaid svg .edgePath path,
+    .mermaid svg .flowchart-link {
+      stroke: #888888 !important;
+    }
+    .mermaid svg marker path {
+      fill: #888888 !important;
+      stroke: #888888 !important;
+    }
+    .algo-title {
+      margin-top: 72px;
+      margin-bottom: 8px;
+      color: #111111;
+      font-size: 36px;
+      font-weight: 600;
+      text-align: left;
+    }
+    .algo-sub {
+      margin-bottom: 28px;
+    }
+    .toc {
+      margin-bottom: 44px;
+      padding: 18px 0;
+      border-top: 1px solid #eaeaea;
+      border-bottom: 1px solid #eaeaea;
+      background: #ffffff !important;
+      box-shadow: none !important;
+    }
+    .toc h3 {
+      color: #111111;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .toc ul {
+      columns: 3;
+    }
+    .toc li {
+      margin: 8px 0;
+    }
+    section.algo {
+      margin-bottom: 48px;
+      padding: 0;
+      border-top: 1px solid #eaeaea;
+      background: #ffffff !important;
+    }
+    section.algo h2 {
+      margin-top: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eaeaea;
+      color: #111111;
+      font-size: 1.45rem;
+      font-weight: 600;
+    }
+    section.algo .desc {
+      margin: 10px 0 18px;
+      color: #555555;
+      font-size: 0.92rem;
+    }
+    section.algo .mermaid {
+      width: 100%;
+      padding: 18px 0;
+      border: 0;
+    }
+    .pz-note, .scroll-note, .top a {
+      color: #666666;
+      font-size: 0.78rem;
+    }
+    .to-top {
+      right: 24px;
+      bottom: 24px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #d5d5d5;
+      background: #ffffff;
+      color: #111111;
+      font-size: 1rem;
+      box-shadow: none;
+    }
+    .to-top:hover {
+      background: #f7f7f7;
+    }
+    @media (max-width: 640px) {
+      .pagebar {
+        padding: 12px 20px;
+        gap: 12px;
+      }
+      .pagebar .brand {
+        width: 100%;
+      }
+      h1, .hint, .scroll-note, .algo-title, .algo-sub, .toc,
+      section.algo, .mermaid, #mapDiagram.pz-enabled {
+        width: calc(100% - 40px);
+      }
+      h1 {
+        margin-top: 42px;
+        font-size: 32px;
+      }
+      .algo-title {
+        margin-top: 52px;
+        font-size: 28px;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      #mapDiagram.pz-enabled {
+        min-height: 360px;
+        height: 68vh;
+      }
+    }
   </style>
 </head>
 <body>

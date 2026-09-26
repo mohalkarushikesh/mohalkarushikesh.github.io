@@ -1,9 +1,9 @@
 # Résumé data rendered on the home page. The downloadable PDF lives at resume/Resume.pdf.
 experience:
-  - role: "QA Engineer"
+  - role: "Programmer Analyst"
     org: "Cognizant"
     when: "July 2024 — Present"
-    detail: "Ensuring software quality through testing, automation, and process improvements while deepening my AI/ML foundations on the side."
+    detail: "Ensuring software quality through testing, automation, and process improvements across software releases."
   - role: "AI/ML Engineer"
     org: "Independent & Project-Based"
     when: "Ongoing"
