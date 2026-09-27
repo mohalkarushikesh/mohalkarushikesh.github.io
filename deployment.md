@@ -96,7 +96,7 @@ python -m http.server 4000 --directory _site  # → http://localhost:4000/
 
 > The canonical build is still GitHub Pages / Jekyll; `preview_build.py` covers the common cases
 > (home, blog listing, posts, 404, thanks) so you can eyeball changes without a Ruby toolchain.
-> A few Jekyll-only features (e.g. `page.previous`/`page.next`, the full `{% seo %}` tag) only render
+> A few Jekyll-only features (e.g. `page.previous`/`page.next`, the full {% raw %}{% seo %}{% endraw %} tag) only render
 > on the real Jekyll build.
 
 ---
@@ -105,7 +105,7 @@ python -m http.server 4000 --directory _site  # → http://localhost:4000/
 
 | Symptom | Cause / Fix |
 |---|---|
-| Raw `---` and `{% %}` text in the browser | Serving source instead of the build. Use a build path above. |
+| Raw `---` and {% raw %}{% %}{% endraw %} text in the browser | Serving source instead of the build. Use a build path above. |
 | Empty Projects/Blogs sections locally | Same cause — Liquid loops weren't compiled. |
 | `jekyll: command not found` | Ruby/Bundler not installed, or open a fresh terminal after installing. |
 | Styles missing after deploy | Check `url`/`baseurl` in `_config.yml` match where the site is served. |
