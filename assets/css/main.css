@@ -756,7 +756,7 @@ html.dark .nav-container {
   margin-top: 36px;
 }
 
-.resume-grid .sub {
+.resume-grid .sub, .resume-education .sub {
   font-size: 1.3rem;
   font-weight: 800;
   color: var(--text);
@@ -764,6 +764,10 @@ html.dark .nav-container {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.resume-education {
+  margin-top: 36px;
 }
 
 .timeline {
