@@ -10,3 +10,5 @@ vendor/
 
 # Python previewer scratch
 __pycache__/
+
+.venv/
