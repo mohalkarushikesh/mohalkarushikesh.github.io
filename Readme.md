@@ -16,13 +16,13 @@ serve the raw source and you'll see unrendered `{% %}`/`---` and empty sections.
 ```bash
 # A) Ruby / Jekyll (matches GitHub Pages exactly — see deployment.md for the one-time install)
 bundle install
-bundle exec jekyll serve --livereload   # → http://localhost:4000
+bundle exec jekyll serve --livereload   # → http://localhost:8000
 ```
 
 ```bash
 # B) No Ruby? Use the bundled Python previewer (python-liquid + pyyaml)
 python preview_build.py
-python -m http.server 4000 --directory _site   # → http://localhost:4000
+python -m http.server 8000 --directory _site   # → http://localhost:8000
 ```
 
 …or just push to GitHub and let Pages build it. Full details + troubleshooting in **deployment.md**.
